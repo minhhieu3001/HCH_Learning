@@ -1,4 +1,4 @@
-import {View, Text, Image} from 'react-native';
+import {View, Text, Image, Pressable} from 'react-native';
 import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -10,10 +10,15 @@ import ChatNav from './ChatNav';
 import RankNav from './RankNav';
 import AccountNav from './AccountNav';
 import Menu from './Menu';
+import {useSelector} from 'react-redux';
 
 const BottomTab = createBottomTabNavigator();
 
 export default function AppNav() {
+  const visibleTabNav = useSelector(state => {
+    return state.visibleTabNav;
+  });
+
   return (
     <BottomTab.Navigator
       screenOptions={{
@@ -23,7 +28,7 @@ export default function AppNav() {
           position: 'absolute',
           backgroundColor: 'white',
           height: 55,
-          display: 'flex',
+          display: visibleTabNav.visibleTabNav == false ? 'none' : 'flex',
         },
       }}>
       <BottomTab.Screen
@@ -79,8 +84,11 @@ export default function AppNav() {
         component={Menu}
         options={{
           tabBarHideOnKeyboard: true,
-          tabBarIcon: ({focused}) => (
-            <View
+          tabBarIcon: () => (
+            <Pressable
+              onPress={() => {
+                console.log(visibleTabNav);
+              }}
               style={{
                 justifyContent: 'center',
                 textAlign: 'center',
@@ -91,7 +99,7 @@ export default function AppNav() {
                 style={{position: 'absolute', height: 70, width: 70}}
                 resizeMode="cover"
               />
-            </View>
+            </Pressable>
           ),
         }}
       />

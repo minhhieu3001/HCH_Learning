@@ -18,6 +18,7 @@ export default function HomeTop() {
         name="bell-outline"
         size={30}
         style={{color: '#82cd', paddingTop: 10, paddingLeft: 10}}
+        onPress={() => {}}
       />
       <View
         style={{
@@ -43,6 +44,7 @@ export default function HomeTop() {
         name="dots-vertical"
         size={30}
         style={{color: '#82cd', paddingTop: 10, paddingRight: 10}}
+        onPress={() => {}}
       />
     </View>
   );
