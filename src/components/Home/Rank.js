@@ -38,7 +38,7 @@ const Item = ({teacher, index}) => {
         </Text>
       </View>
       <Image
-        source={require('../../assets/images.png')}
+        source={require('../../assets/images/images.png')}
         style={{width: 65, height: 65}}
         resizeMode="contain"
       />

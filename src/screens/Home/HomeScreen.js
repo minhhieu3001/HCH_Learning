@@ -8,10 +8,7 @@ import Rank from '../../components/Home/Rank';
 import Question from '../../components/Home/Question';
 import {WIDTH, HEIGHT} from '../../constant/dimentions';
 import {useDispatch} from 'react-redux';
-import {
-  hideTabNav,
-  showTabNav,
-} from '../../actions/visibleTabNav/visibleTabNavAction';
+import {hideTabNav, showTabNav} from '../../actions/visibleTabNavAction';
 
 export default function HomeScreen({navigation}) {
   const dispatch = useDispatch();
@@ -29,17 +26,17 @@ export default function HomeScreen({navigation}) {
 
   return (
     <View style={styles.container}>
-      <HomeTop />
+      <HomeTop navigation={navigation} />
       <ScrollView
         onScroll={e => {
           onScroll(e);
         }}
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}>
-        <ListFavorite />
-        <AllTeachers />
-        <Rank />
-        <Question />
+        <ListFavorite navigation={navigation} />
+        <AllTeachers navigation={navigation} />
+        <Rank navigation={navigation} />
+        <Question navigation={navigation} />
       </ScrollView>
     </View>
   );
@@ -50,6 +47,5 @@ const styles = StyleSheet.create({
     width: WIDTH,
     height: HEIGHT,
     backgroundColor: '#9876',
-    borderWidth: 1,
   },
 });

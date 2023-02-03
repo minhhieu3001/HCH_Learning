@@ -1,15 +1,9 @@
-import {
-  View,
-  Text,
-  Dimensions,
-  FlatList,
-  Image,
-  ScrollView,
-} from 'react-native';
+import {View, Text, FlatList, Image, ScrollView, Pressable} from 'react-native';
 import React from 'react';
 import * as data from '../../data/teacher';
-
-const WIDTH = Dimensions.get('window').width;
+import {WIDTH} from '../../constant/dimentions';
+import {useDispatch} from 'react-redux';
+import {hideTabNav} from '../../actions/visibleTabNavAction';
 
 const Item = ({teacher}) => {
   return (
@@ -25,7 +19,7 @@ const Item = ({teacher}) => {
         marginBottom: 10,
       }}>
       <Image
-        source={require('../../assets/images.png')}
+        source={require('../../assets/images/images.png')}
         style={{width: 65, height: 65}}
         resizeMode="contain"
       />
@@ -37,7 +31,8 @@ const Item = ({teacher}) => {
   );
 };
 
-export default function AllTeachers() {
+export default function AllTeachers({navigation}) {
+  const dispatch = useDispatch();
   return (
     <View style={{width: WIDTH}}>
       <View
@@ -47,7 +42,13 @@ export default function AllTeachers() {
           padding: 10,
         }}>
         <Text>Tất cả giáo viên</Text>
-        <Text>Xem thêm</Text>
+        <Pressable
+          onPress={() => {
+            dispatch(hideTabNav());
+            navigation.navigate('list-teacher');
+          }}>
+          <Text>Xem thêm</Text>
+        </Pressable>
       </View>
       <ScrollView
         horizontal

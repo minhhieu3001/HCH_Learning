@@ -4,6 +4,8 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
 import HomeScreen from '../screens/Home/HomeScreen';
 import ListTeacherScreen from '../screens/Home/ListTeacherScreen';
+import SearchScreen from '../screens/Home/SearchScreen';
+import DetailScreen from '../screens/Home/DetailScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -49,6 +51,28 @@ export default function HomeNav() {
       <Stack.Screen
         name="list-teacher"
         component={ListTeacherScreen}
+        options={{
+          gestureDirection: 'vertical',
+          transitionSpec: {
+            open: config,
+            close: closeConfig,
+          },
+        }}
+      />
+      <Stack.Screen
+        name="search-screen"
+        component={SearchScreen}
+        options={{
+          gestureDirection: 'vertical',
+          transitionSpec: {
+            open: config,
+            close: closeConfig,
+          },
+        }}
+      />
+      <Stack.Screen
+        name="detail-screen"
+        component={DetailScreen}
         options={{
           gestureDirection: 'vertical',
           transitionSpec: {

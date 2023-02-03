@@ -1,10 +1,9 @@
-import {View, Text, Dimensions} from 'react-native';
+import {View, Text} from 'react-native';
 import React from 'react';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import {WIDTH} from '../../constant/dimentions';
 
-const WIDTH = Dimensions.get('window').width;
-
-export default function HomeTop() {
+export default function HomeTop({navigation}) {
   return (
     <View
       style={{

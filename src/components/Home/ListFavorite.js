@@ -1,10 +1,11 @@
 import {View, Text, Dimensions, Pressable, FlatList, Image} from 'react-native';
 import React from 'react';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import {WIDTH} from '../../constant/dimentions';
 
 import * as data from '../../data/teacher';
-
-const WIDTH = Dimensions.get('window').width;
+import {useDispatch} from 'react-redux';
+import {hideTabNav} from '../../actions/visibleTabNavAction';
 
 const Item = ({teacher}) => {
   return (
@@ -19,7 +20,7 @@ const Item = ({teacher}) => {
         marginRight: 10,
       }}>
       <Image
-        source={require('../../assets/images.png')}
+        source={require('../../assets/images/images.png')}
         style={{width: 65, height: 65}}
         resizeMode="contain"
       />
@@ -41,7 +42,8 @@ const Header = () => {
   );
 };
 
-export default function ListFavorite() {
+export default function ListFavorite({navigation}) {
+  const dispatch = useDispatch();
   return (
     <View style={{backgroundColor: '#82C6D0', width: WIDTH}}>
       <View
@@ -53,7 +55,11 @@ export default function ListFavorite() {
           paddingTop: 10,
         }}>
         <Text>Danh sách giáo viên yêu thích</Text>
-        <Pressable>
+        <Pressable
+          onPress={() => {
+            dispatch(hideTabNav());
+            navigation.navigate('detail-screen');
+          }}>
           <Text>Xem thêm</Text>
         </Pressable>
       </View>

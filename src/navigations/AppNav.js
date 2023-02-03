@@ -1,5 +1,5 @@
 import {View, Text, Image, Pressable} from 'react-native';
-import React from 'react';
+import React, {useState} from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -9,8 +9,8 @@ import HomeNav from './HomeNav';
 import ChatNav from './ChatNav';
 import RankNav from './RankNav';
 import AccountNav from './AccountNav';
-import Menu from './Menu';
 import {useSelector} from 'react-redux';
+import MenuPopUp from './MenuPopup';
 
 const BottomTab = createBottomTabNavigator();
 
@@ -81,27 +81,29 @@ export default function AppNav() {
       />
       <BottomTab.Screen
         name="Menu"
-        component={Menu}
+        component={MenuPopUp}
         options={{
           tabBarHideOnKeyboard: true,
-          tabBarIcon: () => (
-            <Pressable
-              onPress={() => {
-                console.log(visibleTabNav);
-              }}
+          tabBarIcon: ({focused}) => (
+            <View
               style={{
                 justifyContent: 'center',
                 textAlign: 'center',
                 alignItems: 'center',
               }}>
               <Image
-                source={require('../assets/menu.png')}
+                source={require('../assets/images/menu.png')}
                 style={{position: 'absolute', height: 70, width: 70}}
                 resizeMode="cover"
               />
-            </Pressable>
+            </View>
           ),
         }}
+        listeners={({navigation}) => ({
+          tabPress: event => {
+            event.preventDefault();
+          },
+        })}
       />
       <BottomTab.Screen
         name="Rank"
