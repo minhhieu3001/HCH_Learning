@@ -14,7 +14,8 @@ export default function AccountTop() {
         justifyContent: 'space-between',
         backgroundColor: 'white',
       }}>
-      <Text style={{color: 'black', fontSize: 25, left: 10, top: 10}}>
+      <Text
+        style={{color: 'black', fontSize: 25, left: 10, alignSelf: 'center'}}>
         Tài khoản
       </Text>
       <View

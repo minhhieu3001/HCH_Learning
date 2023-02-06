@@ -16,7 +16,7 @@ export default function HomeTop({navigation}) {
       <Icon
         name="bell-outline"
         size={30}
-        style={{color: '#82cd', paddingTop: 10, paddingLeft: 10}}
+        style={{color: '#82cd', alignSelf: 'center', paddingLeft: 10}}
         onPress={() => {}}
       />
       <View
@@ -25,7 +25,6 @@ export default function HomeTop({navigation}) {
           borderWidth: 0.5,
           height: 30,
           top: 10,
-
           paddingTop: 5,
           paddingLeft: 10,
           paddingRight: 10,

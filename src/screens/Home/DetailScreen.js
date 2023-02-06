@@ -4,13 +4,13 @@ import {
   Text,
   Image,
   StyleSheet,
-  TouchableOpacity,
   Pressable,
   ScrollView,
 } from 'react-native';
 import {WIDTH, HEIGHT} from '../../constant/dimentions';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Rate from '../../components/Common/Rate';
+import * as Progress from 'react-native-progress';
 
 const Item = ({text}) => {
   return (
@@ -42,6 +42,26 @@ const DetailScreen = ({navigation}) => {
     'Hóa học',
     'Sinh học',
     'lịch sử',
+  ];
+  const reviews = [
+    {
+      star: 5,
+      userName: 'Hieu',
+      time: '2022/12/12',
+      content: 'Aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+    },
+    {
+      star: 4,
+      userName: 'Hien',
+      time: '2022/11/11',
+      content: 'Aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+    },
+    {
+      star: 3,
+      userName: 'Cuong',
+      time: '2023/02/03',
+      content: '',
+    },
   ];
 
   return (
@@ -283,9 +303,171 @@ const DetailScreen = ({navigation}) => {
             </Pressable>
           </View>
         </View>
-        <View style={{height: 50}}></View>
+        <View style={styles.introduction}>
+          <Text style={{fontSize: 18, marginBottom: 10, marginLeft: 10}}>
+            Đánh giá về giáo viên
+          </Text>
+          <View elevation={3} style={styles.viewShadow}>
+            <View>
+              <View
+                style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+                <Text
+                  style={{fontSize: 18, fontWeight: 'bold', color: 'black'}}>
+                  Đánh giá
+                </Text>
+                <Pressable>
+                  <Text style={{color: 'blue', fontSize: 14}}>Xem tất cả</Text>
+                </Pressable>
+              </View>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  paddingBottom: 10,
+                  borderBottomWidth: 0.5,
+                  borderBottomColor: 'gray',
+                }}>
+                <View>
+                  <Text style={{fontSize: 50, color: 'black'}}>4.8</Text>
+                  <Text
+                    style={{color: 'black', alignSelf: 'center', fontSize: 20}}>
+                    /5
+                  </Text>
+                </View>
+                <View style={{flexDirection: 'row'}}>
+                  <View>
+                    <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                      <Text>1</Text>
+                      <Image
+                        source={require('../../assets/images/star_filled.png')}
+                        style={{width: 14, height: 14}}
+                        resizeMode="cover"
+                      />
+                    </View>
+                    <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                      <Text>2</Text>
+                      <Image
+                        source={require('../../assets/images/star_filled.png')}
+                        style={{width: 14, height: 14}}
+                        resizeMode="cover"
+                      />
+                    </View>
+                    <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                      <Text>3</Text>
+                      <Image
+                        source={require('../../assets/images/star_filled.png')}
+                        style={{width: 14, height: 14}}
+                        resizeMode="cover"
+                      />
+                    </View>
+                    <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                      <Text>4</Text>
+                      <Image
+                        source={require('../../assets/images/star_filled.png')}
+                        style={{width: 14, height: 14}}
+                        resizeMode="cover"
+                      />
+                    </View>
+                    <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                      <Text>5</Text>
+                      <Image
+                        source={require('../../assets/images/star_filled.png')}
+                        style={{width: 14, height: 14}}
+                        resizeMode="cover"
+                      />
+                    </View>
+                  </View>
+                  <View>
+                    <Progress.Bar
+                      progress={0.9}
+                      width={150}
+                      height={6}
+                      color="#cccc00"
+                      style={{marginTop: 6, marginLeft: 5, marginRight: 5}}
+                    />
+                    <Progress.Bar
+                      progress={0.9}
+                      width={150}
+                      height={6}
+                      color="#cccc00"
+                      style={{marginTop: 11, marginLeft: 5, marginRight: 5}}
+                    />
+                    <Progress.Bar
+                      progress={0.9}
+                      width={150}
+                      height={6}
+                      color="#cccc00"
+                      style={{marginTop: 11, marginLeft: 5, marginRight: 5}}
+                    />
+                    <Progress.Bar
+                      progress={0.9}
+                      width={150}
+                      height={6}
+                      color="#cccc00"
+                      style={{marginTop: 11, marginLeft: 5, marginRight: 5}}
+                    />
+                    <Progress.Bar
+                      progress={0.9}
+                      width={150}
+                      height={6}
+                      color="#cccc00"
+                      style={{marginTop: 11, marginLeft: 5, marginRight: 5}}
+                    />
+                  </View>
+                </View>
+              </View>
+              <View>
+                {reviews.map((item, index) => {
+                  return (
+                    <View
+                      key={index}
+                      elevation={2}
+                      style={{
+                        marginVertical: 3,
+                        paddingBottom: 5,
+                        paddingLeft: 5,
+                        paddingRight: 5,
+                        borderRadius: 10,
+                        shadowColor: 'gray',
+                        shadowOpacity: 0.8,
+                        shadowRadius: 2,
+                        shadowOffset: {
+                          height: 1,
+                          width: 1,
+                        },
+                      }}>
+                      <Rate starNumber={item.star} isChoose={false} size={14} />
+                      <Text style={{fontSize: 16, color: 'black'}}>
+                        {item.content}
+                      </Text>
+                      <View
+                        style={{
+                          borderBottomWidth: 0.3,
+                          borderBottomColor: 'gray',
+                          height: 10,
+                        }}
+                      />
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          justifyContent: 'space-between',
+                          paddingTop: 5,
+                        }}>
+                        <Text style={{fontSize: 16, color: 'black'}}>
+                          {item.userName}
+                        </Text>
+                        <Text>{item.time}</Text>
+                      </View>
+                    </View>
+                  );
+                })}
+              </View>
+            </View>
+          </View>
+        </View>
+        <View style={{height: 20}}></View>
       </ScrollView>
-      <View style={{height: 100, backgroundColor: 'white'}}></View>
+      <View style={{height: 70, backgroundColor: 'white'}}></View>
       <View style={styles.bottomView}>
         <Pressable
           style={{
@@ -302,6 +484,7 @@ const DetailScreen = ({navigation}) => {
           <Text>Nhắn tin</Text>
         </Pressable>
         <Pressable
+          onPress={() => navigation.navigate('call-screen')}
           style={{
             flexDirection: 'row',
             borderRadius: 30,

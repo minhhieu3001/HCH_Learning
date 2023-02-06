@@ -4,7 +4,7 @@ import React from 'react';
 import HomeTop from '../../components/Home/HomeTop';
 import ListFavorite from '../../components/Home/ListFavorite';
 import AllTeachers from '../../components/Home/AllTeachers';
-import Rank from '../../components/Home/Rank';
+import Rank from '../../components/Home/RankTop3';
 import Question from '../../components/Home/Question';
 import {WIDTH, HEIGHT} from '../../constant/dimentions';
 import {useDispatch} from 'react-redux';
