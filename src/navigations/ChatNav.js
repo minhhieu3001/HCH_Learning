@@ -3,6 +3,7 @@ import React from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
 import ChatScreen from '../screens/Chat/ChatScreen';
+import ChatDetailScreen from '../screens/Chat/ChatDetailScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -37,6 +38,17 @@ export default function ChatNav() {
       <Stack.Screen
         name="chat-screen"
         component={ChatScreen}
+        options={{
+          gestureDirection: 'vertical',
+          transitionSpec: {
+            open: config,
+            close: closeConfig,
+          },
+        }}
+      />
+      <Stack.Screen
+        name="chat-detail-screen"
+        component={ChatDetailScreen}
         options={{
           gestureDirection: 'vertical',
           transitionSpec: {

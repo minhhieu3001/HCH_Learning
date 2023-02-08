@@ -4,7 +4,7 @@ export const questions = [
     subject: 'Toán',
     time: '2022/12/30',
     resolve: false,
-    content: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+    content: '1',
     answers: [],
   },
   {
@@ -12,7 +12,7 @@ export const questions = [
     subject: 'Toán',
     time: '2022/12/30',
     resolve: false,
-    content: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+    content: '2',
     answers: [],
   },
   {
@@ -20,7 +20,7 @@ export const questions = [
     subject: 'Toán',
     time: '2022/12/30',
     resolve: false,
-    content: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+    content: '3',
     answers: [],
   },
   {
@@ -28,7 +28,8 @@ export const questions = [
     subject: 'Toán',
     time: '2022/12/30',
     resolve: false,
-    content: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+    content:
+      'FCM là một dịch vụ từ Google dành cho gửi thông báo tới thiết bị di động hoặc web. Nó cung cấp các tính năng như gửi thông báo tới một hoặc nhiều thiết bị cùng một lúc, gửi thông báo tới thiết bị mà người dùng đang hoạt động hoặc không hoạt động, và gửi thông báo định kỳ.',
     answers: [],
   },
   {
@@ -36,7 +37,8 @@ export const questions = [
     subject: 'Toán',
     time: '2022/12/30',
     resolve: false,
-    content: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+    content:
+      'Bạn có thể sử dụng thuộc tính onTextLayout của Text component để lấy ra chiều cao của text và so sánh nó với chiều cao của view. Nếu chiều cao của text lớn hơn chiều cao của view, bạn có thể sử dụng thuộc tính numberOfLines của Text để giới hạn số dòng text được hiển thị, và có thể thêm một dấu "..." để cho biết rằng text đó đã bị cắt.',
     answers: [],
   },
   {

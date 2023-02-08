@@ -1,21 +1,21 @@
 export const rank = [
   {
     id: 1,
-    name: 'Hieu',
+    name: 'Bùi Minh Hiếu',
     status: 1,
     point: 1,
     star: 1,
   },
   {
     id: 2,
-    name: 'Hien',
+    name: 'Lê Mạnh Cường',
     status: 2,
     point: 2,
     star: 2,
   },
   {
     id: 3,
-    name: 'Cuong',
+    name: 'Hồ An Huy',
     status: 1,
     point: 3,
     star: 3,

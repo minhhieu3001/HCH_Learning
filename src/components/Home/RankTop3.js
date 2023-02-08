@@ -8,43 +8,47 @@ import {
   Image,
 } from 'react-native';
 import React from 'react';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-
+import {WIDTH, HEIGHT} from '../../constant/dimentions';
 import * as data from '../../data/rank';
-
-const WIDTH = Dimensions.get('window').width;
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import LinearGradient from 'react-native-linear-gradient';
 
 const Item = ({teacher, index}) => {
   return (
     <View
       style={{
         flexDirection: 'row',
-        backgroundColor: 'gray',
-        borderRadius: 10,
-        width: WIDTH - 100,
+        width: WIDTH - 80,
         height: 80,
         padding: 5,
+        borderBottomWidth: 0.3,
+        borderBottomColor: 'gray',
         marginBottom: 2,
       }}>
       <View style={{padding: 10, justifyContent: 'center'}}>
-        <MaterialCommunityIcons
+        <Icon
           name="crown-outline"
-          size={25}
-          color={index === 0 ? 'yellow' : index === 1 ? 'white' : 'brown'}
+          size={28}
+          color={'#ffc61a'}
           style={{alignSelf: 'center'}}
         />
-        <Text style={{fontSize: 20, textAlign: 'center', fontWeight: '900'}}>
+        <Text
+          style={{
+            fontSize: 20,
+            textAlign: 'center',
+            fontWeight: '900',
+            color: 'black',
+          }}>
           {index + 1}
         </Text>
       </View>
       <Image
         source={require('../../assets/images/images.png')}
-        style={{width: 65, height: 65}}
-        resizeMode="contain"
+        style={{width: 70, height: 70, borderRadius: 35}}
+        resizeMode="cover"
       />
-      <View>
-        <Text>{teacher.name}</Text>
-        <Text>{teacher.status == 1 ? 'Online' : 'Offline'} </Text>
+      <View style={{marginLeft: 10, alignSelf: 'center'}}>
+        <Text style={{fontSize: 18, color: 'black'}}>{teacher.name}</Text>
       </View>
     </View>
   );
@@ -52,19 +56,28 @@ const Item = ({teacher, index}) => {
 
 const Header = ({id}) => {
   return (
-    <View
+    <LinearGradient
+      colors={['#97CADB', '#018ABE', '#97CADB']}
+      start={{x: 0, y: 0}}
+      end={{x: 1, y: 0}}
       style={{
         width: WIDTH - 100,
         height: 40,
         justifyContent: 'center',
-        backgroundColor: '#82c9',
         marginBottom: 10,
         borderRadius: 10,
+        alignSelf: 'center',
       }}>
-      <Text style={{textAlign: 'center', color: 'white'}}>
+      <Text
+        style={{
+          textAlign: 'center',
+          color: 'white',
+          fontSize: 16,
+          fontWeight: '500',
+        }}>
         {id === 0 ? 'Ngày' : id === 1 ? 'Tuần' : 'Tháng'}
       </Text>
-    </View>
+    </LinearGradient>
   );
 };
 
@@ -74,13 +87,23 @@ export default function Rank() {
     <View style={{width: WIDTH}}>
       <View
         style={{
-          padding: 10,
+          paddingBottom: 10,
+          paddingLeft: 10,
+          paddingRight: 10,
           flexDirection: 'row',
           justifyContent: 'space-between',
         }}>
-        <Text>Xếp hạng</Text>
-        <Pressable>
-          <Text>Xem thêm</Text>
+        <Text style={{fontSize: 20, color: '#02457A', fontWeight: '500'}}>
+          Xếp hạng
+        </Text>
+        <Pressable style={{alignSelf: 'flex-end', flexDirection: 'row'}}>
+          <Text style={{color: '#018ABE', fontSize: 16}}>Xem thêm</Text>
+          <Icon
+            name="chevron-right"
+            size={24}
+            color="#018ABE"
+            style={{alignSelf: 'center'}}
+          />
         </Pressable>
       </View>
       <ScrollView
@@ -101,8 +124,13 @@ export default function Rank() {
               style={{
                 left: 10,
                 marginRight: 10,
-                padding: 10,
+                paddingTop: 10,
+                paddingRight: 10,
+                paddingLeft: 10,
                 backgroundColor: 'white',
+                elevation: 5,
+                shadowColor: 'gray',
+                borderRadius: 10,
               }}
             />
           );

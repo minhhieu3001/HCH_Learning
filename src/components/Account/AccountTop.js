@@ -1,6 +1,7 @@
 import {View, Text, Dimensions} from 'react-native';
 import React from 'react';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Point from '../Common/Point';
 
 const WIDTH = Dimensions.get('window').width;
 
@@ -13,31 +14,13 @@ export default function AccountTop() {
         height: 55,
         justifyContent: 'space-between',
         backgroundColor: 'white',
+        paddingRight: 10,
       }}>
       <Text
         style={{color: 'black', fontSize: 25, left: 10, alignSelf: 'center'}}>
         Tài khoản
       </Text>
-      <View
-        style={{
-          flexDirection: 'row',
-          borderWidth: 0.5,
-          height: 30,
-          top: 10,
-          right: 10,
-          paddingTop: 5,
-          paddingLeft: 10,
-          paddingRight: 10,
-          borderRadius: 20,
-        }}>
-        <Text>1234P</Text>
-
-        <Icon
-          name="plus-circle-outline"
-          size={20}
-          style={{marginLeft: 5, color: '#82dc'}}
-        />
-      </View>
+      <Point />
     </View>
   );
 }

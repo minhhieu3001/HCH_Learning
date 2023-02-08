@@ -1,12 +1,24 @@
-import React from 'react';
-import {View, StyleSheet, Animated, Modal} from 'react-native';
+import React, {useState, useEffect} from 'react';
+import {
+  TouchableOpacity,
+  View,
+  TextInput,
+  StyleSheet,
+  Text,
+  Pressable,
+  ScrollView,
+  Animated,
+  Modal,
+} from 'react-native';
 
 const ModalPopup = ({visible, children}) => {
   const [showModal, setShowModal] = React.useState(visible);
   const scaleValue = React.useRef(new Animated.Value(0)).current;
+
   React.useEffect(() => {
     toggleModal();
   }, [visible]);
+
   const toggleModal = () => {
     if (visible) {
       setShowModal(true);
@@ -27,8 +39,7 @@ const ModalPopup = ({visible, children}) => {
   return (
     <Modal transparent visible={showModal}>
       <View style={styles.modalBackGround}>
-        <Animated.View
-          style={[styles.modalContainer, {transform: [{scale: scaleValue}]}]}>
+        <Animated.View style={[{transform: [{scale: scaleValue}]}]}>
           {children}
         </Animated.View>
       </View>
@@ -40,16 +51,6 @@ const styles = StyleSheet.create({
   modalBackGround: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalContainer: {
-    width: '80%',
-    backgroundColor: 'white',
-    paddingHorizontal: 20,
-    paddingVertical: 30,
-    borderRadius: 20,
-    elevation: 20,
   },
 });
 

@@ -3,14 +3,15 @@ import React, {useState} from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 import HomeNav from './HomeNav';
 import ChatNav from './ChatNav';
 import RankNav from './RankNav';
 import AccountNav from './AccountNav';
 import {useSelector} from 'react-redux';
-import MenuPopUp from './MenuPopup';
+import {useDispatch} from 'react-redux';
+import {showMenuPopup} from '../actions/visibleMenuPopupAction';
+import MenuPopup from '../components/Common/MenuPopup';
 
 const BottomTab = createBottomTabNavigator();
 
@@ -18,6 +19,8 @@ export default function AppNav() {
   const visibleTabNav = useSelector(state => {
     return state.visibleTabNav;
   });
+
+  const dispatch = useDispatch();
 
   return (
     <BottomTab.Navigator
@@ -43,12 +46,11 @@ export default function AppNav() {
                 alignItems: 'center',
               }}>
               <Icon
-                name="home-outline"
-                size={20}
-                color={focused ? '#82C6D0' : '#748c94'}
+                name={focused ? 'home' : 'home-outline'}
+                size={26}
+                color={focused ? '#018ABE' : 'gray'}
               />
-              <Text
-                style={{color: focused ? '#82C6D0' : '#748c94', fontSize: 12}}>
+              <Text style={{color: focused ? '#018ABE' : 'gray', fontSize: 13}}>
                 Trang chủ
               </Text>
             </View>
@@ -67,12 +69,15 @@ export default function AppNav() {
                 alignItems: 'center',
               }}>
               <Icon
-                name="chatbubble-ellipses-outline"
-                size={20}
-                color={focused ? '#82C6D0' : '#748c94'}
+                name={
+                  focused
+                    ? 'chatbubble-ellipses'
+                    : 'chatbubble-ellipses-outline'
+                }
+                size={26}
+                color={focused ? '#018ABE' : 'gray'}
               />
-              <Text
-                style={{color: focused ? '#82C6D0' : '#748c94', fontSize: 12}}>
+              <Text style={{color: focused ? '#018ABE' : 'gray', fontSize: 13}}>
                 Tin nhắn
               </Text>
             </View>
@@ -81,7 +86,7 @@ export default function AppNav() {
       />
       <BottomTab.Screen
         name="Menu"
-        component={MenuPopUp}
+        component={MenuPopup}
         options={{
           tabBarHideOnKeyboard: true,
           tabBarIcon: ({focused}) => (
@@ -93,7 +98,7 @@ export default function AppNav() {
               }}>
               <Image
                 source={require('../assets/images/menu.png')}
-                style={{position: 'absolute', height: 70, width: 70}}
+                style={{position: 'absolute', height: 80, width: 80}}
                 resizeMode="cover"
               />
             </View>
@@ -102,6 +107,7 @@ export default function AppNav() {
         listeners={({navigation}) => ({
           tabPress: event => {
             event.preventDefault();
+            dispatch(showMenuPopup());
           },
         })}
       />
@@ -117,12 +123,11 @@ export default function AppNav() {
                 alignItems: 'center',
               }}>
               <MaterialCommunityIcons
-                name="crown-outline"
-                size={20}
-                color={focused ? '#82C6D0' : '#748c94'}
+                name={focused ? 'crown' : 'crown-outline'}
+                size={26}
+                color={focused ? '#018ABE' : 'gray'}
               />
-              <Text
-                style={{color: focused ? '#82C6D0' : '#748c94', fontSize: 12}}>
+              <Text style={{color: focused ? '#018ABE' : 'gray', fontSize: 13}}>
                 Xếp hạng
               </Text>
             </View>
@@ -140,13 +145,12 @@ export default function AppNav() {
                 textAlign: 'center',
                 alignItems: 'center',
               }}>
-              <FontAwesome
-                name="user-o"
-                size={20}
-                color={focused ? '#82C6D0' : '#748c94'}
+              <MaterialCommunityIcons
+                name={focused ? 'account' : 'account-outline'}
+                size={26}
+                color={focused ? '#018ABE' : 'gray'}
               />
-              <Text
-                style={{color: focused ? '#82C6D0' : '#748c94', fontSize: 12}}>
+              <Text style={{color: focused ? '#018ABE' : 'gray', fontSize: 13}}>
                 Tài khoản
               </Text>
             </View>

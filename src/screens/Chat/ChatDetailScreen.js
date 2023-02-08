@@ -1,10 +1,10 @@
 import {View, Text} from 'react-native';
 import React from 'react';
 
-export default function MenuPopup() {
+export default function ChatDetailScreen() {
   return (
     <View>
-      <Text>MenuPopup</Text>
+      <Text>ChatDetailScreen</Text>
     </View>
   );
 }

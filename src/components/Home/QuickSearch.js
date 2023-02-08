@@ -1,6 +1,9 @@
 import {View, Text, StyleSheet, FlatList, Pressable} from 'react-native';
 import React, {useState} from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
+import {subjects} from '../../data/subjects';
+import LinearGradient from 'react-native-linear-gradient';
+import {WIDTH} from '../../constant/dimentions';
 
 const Item = ({text, active, onPress}) => {
   return (
@@ -15,18 +18,6 @@ const Item = ({text, active, onPress}) => {
 };
 
 export default function QuickSearch({navigation}) {
-  const subjects = [
-    {id: 1, name: 'Toán học'},
-    {id: 2, name: 'Ngữ văn'},
-    {id: 3, name: 'Ngoại ngữ'},
-    {id: 4, name: 'Vật lí'},
-    {id: 5, name: 'Hóa học'},
-    {id: 6, name: 'Sinh học'},
-    {id: 7, name: 'Địa lí'},
-    {id: 8, name: 'Lịch sử'},
-    {id: 9, name: 'GDCD'},
-  ];
-
   const [chooseItem, setChooseItem] = useState('');
 
   const handleChoose = text => {
@@ -34,52 +25,53 @@ export default function QuickSearch({navigation}) {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={{color: 'white', fontWeight: 'bold', fontSize: 25}}>
-        Môn học
-      </Text>
-      <FlatList
-        data={subjects}
-        renderItem={({item}) => (
-          <Item
-            text={item.name}
-            active={chooseItem === item.name ? true : false}
-            onPress={() => {
-              handleChoose(item.name);
-            }}
-          />
-        )}
-        keyExtractor={item => item.id}
-        numColumns={3}
-        horizontal={false}
-        style={{alignSelf: 'center', top: 10, marginBottom: 20}}
-      />
-      <Pressable
-        style={styles.buttonSearch}
-        onPress={() => navigation.navigate('search-screen')}>
-        <Icon
-          name="options-outline"
-          size={24}
-          color="#82ce"
-          style={{alignSelf: 'center'}}
-        />
-        <Text
-          style={{
-            paddingLeft: 10,
-            fontSize: 16,
-            color: 'black',
-            alignSelf: 'center',
-          }}>
-          Thêm lọc
+    <LinearGradient style={{width: WIDTH}} colors={['#ffe6ff', '#ccffff']}>
+      <View style={styles.container}>
+        <Text style={{color: 'white', fontWeight: 'bold', fontSize: 25}}>
+          Môn học
         </Text>
-      </Pressable>
-    </View>
+        <FlatList
+          data={subjects}
+          renderItem={({item}) => (
+            <Item
+              text={item.name}
+              active={chooseItem === item.name ? true : false}
+              onPress={() => {
+                handleChoose(item.name);
+              }}
+            />
+          )}
+          keyExtractor={item => item.id}
+          numColumns={3}
+          horizontal={false}
+          style={{alignSelf: 'center', top: 10, marginBottom: 20}}
+        />
+        <Pressable
+          style={styles.buttonSearch}
+          onPress={() => navigation.navigate('search-screen')}>
+          <Icon
+            name="options-outline"
+            size={24}
+            color="#82ce"
+            style={{alignSelf: 'center'}}
+          />
+          <Text
+            style={{
+              paddingLeft: 10,
+              fontSize: 16,
+              color: 'black',
+              alignSelf: 'center',
+            }}>
+            Thêm lọc
+          </Text>
+        </Pressable>
+      </View>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#8cd',
     padding: 10,
     borderBottomWidth: 1,
   },

@@ -2,33 +2,26 @@ import {View, Text, StyleSheet} from 'react-native';
 import React from 'react';
 import {HEIGHT, WIDTH} from '../../constant/dimentions';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import MenuPopup from '../../components/Common/MenuPopup';
+import {useDispatch, useSelector} from 'react-redux';
+import Point from '../../components/Common/Point';
 
-export default function RankScreen() {
+export default function RankScreen({navigation}) {
+  const visibleMenuPopup = useSelector(state => {
+    return state.visibleMenuPopup;
+  });
+
   return (
-    <View style={StyleSheet.container}>
+    <View style={styles.container}>
+      <MenuPopup
+        show={visibleMenuPopup.visibleMenuPopup}
+        navigation={navigation}
+      />
       <View style={styles.rankTop}>
         <Text style={{fontSize: 25, color: 'black', alignSelf: 'center'}}>
           Xếp hạng
         </Text>
-        <View
-          style={{
-            flexDirection: 'row',
-            borderWidth: 0.5,
-            height: 30,
-            top: 10,
-            paddingTop: 5,
-            paddingLeft: 10,
-            paddingRight: 10,
-            borderRadius: 20,
-          }}>
-          <Text>1234P</Text>
-
-          <Icon
-            name="plus-circle-outline"
-            size={20}
-            style={{marginLeft: 5, color: '#82dc'}}
-          />
-        </View>
+        <Point />
       </View>
     </View>
   );
@@ -38,6 +31,7 @@ const styles = StyleSheet.create({
   container: {
     width: WIDTH,
     height: HEIGHT,
+    backgroundColor: '#D6E8EE',
   },
   rankTop: {
     flexDirection: 'row',

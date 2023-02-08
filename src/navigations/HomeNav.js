@@ -7,6 +7,7 @@ import ListTeacherScreen from '../screens/Home/ListTeacherScreen';
 import SearchScreen from '../screens/Home/SearchScreen';
 import DetailScreen from '../screens/Home/DetailScreen';
 import CallScreen from '../screens/Home/CallScreen';
+import QuestionTabNav from '../navigations/Question/QuestionTabNav';
 
 const Stack = createNativeStackNavigator();
 
@@ -85,6 +86,17 @@ export default function HomeNav() {
       <Stack.Screen
         name="call-screen"
         component={CallScreen}
+        options={{
+          gestureDirection: 'vertical',
+          transitionSpec: {
+            open: config,
+            close: closeConfig,
+          },
+        }}
+      />
+      <Stack.Screen
+        name="question-screen"
+        component={QuestionTabNav}
         options={{
           gestureDirection: 'vertical',
           transitionSpec: {

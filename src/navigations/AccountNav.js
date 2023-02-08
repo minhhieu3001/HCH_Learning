@@ -2,6 +2,10 @@ import {Easing} from 'react-native';
 import React from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import AccountScreen from '../screens/Account/AccountScreen';
+import SettingScreen from '../screens/Common/SettingScreen';
+import ListTeacherScreen from '../screens/Home/ListTeacherScreen';
+import QuestionTabNav from '../navigations/Question/QuestionTabNav';
+import EditProfileScreen from '../screens/Account/EditProfileScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -36,6 +40,50 @@ export default function AccountNav() {
       <Stack.Screen
         name="Account_screen"
         component={AccountScreen}
+        options={{
+          gestureDirection: 'vertical',
+          transitionSpec: {
+            open: config,
+            close: closeConfig,
+          },
+        }}
+      />
+      <Stack.Screen
+        name="setting-screen"
+        component={SettingScreen}
+        options={{
+          gestureDirection: 'vertical',
+          transitionSpec: {
+            open: config,
+            close: closeConfig,
+          },
+        }}
+      />
+      <Stack.Screen
+        name="list-teacher"
+        component={ListTeacherScreen}
+        options={{
+          gestureDirection: 'vertical',
+          transitionSpec: {
+            open: config,
+            close: closeConfig,
+          },
+        }}
+      />
+      <Stack.Screen
+        name="question-screen"
+        component={QuestionTabNav}
+        options={{
+          gestureDirection: 'vertical',
+          transitionSpec: {
+            open: config,
+            close: closeConfig,
+          },
+        }}
+      />
+      <Stack.Screen
+        name="edit-screen"
+        component={EditProfileScreen}
         options={{
           gestureDirection: 'vertical',
           transitionSpec: {

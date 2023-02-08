@@ -7,7 +7,7 @@ export default function CallScreen({navigation}) {
     appId: '84e6846fa5ca43c68fe534ebd95b4730',
     channel: 'test_1',
     token:
-      '007eJxTYPiyyWnLjMeX8pYxhxxVmhD4ZtnRSvW/C6+8PCJYcE6/KFNSgcHCJNXMwsQsLdE0OdHEONnMIi3V1NgkNSnF0jTJxNzYoCn9XnJDICPDC/sgZkYGCATx2RhKUotL4g0ZGABWHSJa',
+      '007eJxTYOhsvC45f//7XcH824UWpcwXnWsVl2yw74u2Q8Px5TPiPl5VYLAwSTWzMDFLSzRNTjQxTjazSEs1NTZJTUqxNE0yMTc2MKl7kNwQyMgg+ukeMyMDBIL4bAwlqcUl8YYMDADbDiFi',
   };
 
   const callbacks = {

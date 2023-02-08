@@ -3,6 +3,8 @@ import React from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
 import RankScreen from '../screens/Rank/RankScreen';
+import ListTeacherScreen from '../screens/Home/ListTeacherScreen';
+import QuestionTabNav from '../navigations/Question/QuestionTabNav';
 
 const Stack = createNativeStackNavigator();
 
@@ -37,6 +39,28 @@ export default function RankNav() {
       <Stack.Screen
         name="rank-screen"
         component={RankScreen}
+        options={{
+          gestureDirection: 'vertical',
+          transitionSpec: {
+            open: config,
+            close: closeConfig,
+          },
+        }}
+      />
+      <Stack.Screen
+        name="list-teacher"
+        component={ListTeacherScreen}
+        options={{
+          gestureDirection: 'vertical',
+          transitionSpec: {
+            open: config,
+            close: closeConfig,
+          },
+        }}
+      />
+      <Stack.Screen
+        name="question-screen"
+        component={QuestionTabNav}
         options={{
           gestureDirection: 'vertical',
           transitionSpec: {
