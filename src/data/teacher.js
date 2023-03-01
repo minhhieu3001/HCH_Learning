@@ -2,7 +2,7 @@ export const teachers = [
   {
     id: 1,
     name: 'Bùi Minh Hiếu',
-    status: 1,
+    status: 0,
     point: 1,
     star: 1,
   },

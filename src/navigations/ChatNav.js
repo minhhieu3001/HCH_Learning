@@ -1,9 +1,14 @@
 import {Easing} from 'react-native';
-import React from 'react';
+import React, {useEffect, useRef} from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
 import ChatScreen from '../screens/Chat/ChatScreen';
 import ChatDetailScreen from '../screens/Chat/ChatDetailScreen';
+import DetailScreen from '../screens/Home/DetailScreen';
+import QuestionTabNav from '../navigations/Question/QuestionTabNav';
+import ListTeacherScreen from '../screens/Home/ListTeacherScreen';
+import {useFocusEffect} from '@react-navigation/native';
+import {io} from 'socket.io-client';
 
 const Stack = createNativeStackNavigator();
 
@@ -49,6 +54,17 @@ export default function ChatNav() {
       <Stack.Screen
         name="chat-detail-screen"
         component={ChatDetailScreen}
+        options={{
+          gestureDirection: 'vertical',
+          transitionSpec: {
+            open: config,
+            close: closeConfig,
+          },
+        }}
+      />
+      <Stack.Screen
+        name="detail-screen"
+        component={DetailScreen}
         options={{
           gestureDirection: 'vertical',
           transitionSpec: {

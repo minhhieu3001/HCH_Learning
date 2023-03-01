@@ -1,5 +1,5 @@
 import {View, Text, Image, Pressable} from 'react-native';
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -12,18 +12,26 @@ import {useSelector} from 'react-redux';
 import {useDispatch} from 'react-redux';
 import {showMenuPopup} from '../actions/visibleMenuPopupAction';
 import MenuPopup from '../components/Common/MenuPopup';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {initSocket} from '../actions/socketAction';
 
 const BottomTab = createBottomTabNavigator();
 
-export default function AppNav() {
+export default function AppNav({setIsLogin}) {
   const visibleTabNav = useSelector(state => {
     return state.visibleTabNav;
   });
 
   const dispatch = useDispatch();
 
+  useEffect(() => {
+    dispatch(initSocket());
+    // socket.on('message', msg => console.log(msg));
+  }, []);
+
   return (
     <BottomTab.Navigator
+      initialRouteName="Home"
       screenOptions={{
         headerShown: false,
         tabBarShowLabel: false,
@@ -31,6 +39,7 @@ export default function AppNav() {
           position: 'absolute',
           backgroundColor: 'white',
           height: 55,
+          bottom: 0,
           display: visibleTabNav.visibleTabNav == false ? 'none' : 'flex',
         },
       }}>
@@ -98,7 +107,11 @@ export default function AppNav() {
               }}>
               <Image
                 source={require('../assets/images/menu.png')}
-                style={{position: 'absolute', height: 80, width: 80}}
+                style={{
+                  position: 'absolute',
+                  height: 55,
+                  width: 46,
+                }}
                 resizeMode="cover"
               />
             </View>
@@ -136,7 +149,6 @@ export default function AppNav() {
       />
       <BottomTab.Screen
         name="Profile"
-        component={AccountNav}
         options={{
           tabBarIcon: ({focused}) => (
             <View
@@ -155,8 +167,9 @@ export default function AppNav() {
               </Text>
             </View>
           ),
-        }}
-      />
+        }}>
+        {props => <AccountNav {...props} setIsLogin={setIsLogin} />}
+      </BottomTab.Screen>
     </BottomTab.Navigator>
   );
 }

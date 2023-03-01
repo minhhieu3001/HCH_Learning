@@ -1,6 +1,5 @@
 import {View, Text, FlatList, Image, ScrollView, Pressable} from 'react-native';
 import React from 'react';
-import {teachers} from '../../data/teacher';
 import {WIDTH} from '../../constant/dimentions';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Rate from '../Common/Rate';
@@ -8,12 +7,12 @@ import {useDispatch} from 'react-redux';
 import {hideTabNav} from '../../actions/visibleTabNavAction';
 import Item from '../Common/Item';
 
-export default function AllTeachers({navigation}) {
+export default function AllTeachers({navigation, allTeachers}) {
   const dispatch = useDispatch();
 
-  const navigateToDetailScreen = () => {
+  const navigateToDetailScreen = id => {
     dispatch(hideTabNav());
-    navigation.navigate('detail-screen');
+    navigation.navigate('detail-screen', {teacherId: id});
   };
   return (
     <View style={{width: WIDTH}}>
@@ -47,22 +46,31 @@ export default function AllTeachers({navigation}) {
         horizontal
         style={{paddingLeft: 10, paddingRight: 10}}
         showsHorizontalScrollIndicator={false}>
-        {teachers.map((item, index) => {
+        {allTeachers?.map((item, index) => {
           if (index % 4 === 0) {
             return (
               <View style={{paddingRight: 10}} key={item.id}>
-                <Item teacher={item} press={navigateToDetailScreen} />
                 <Item
-                  teacher={teachers[index + 1]}
-                  press={navigateToDetailScreen}
+                  teacher={item}
+                  press={() => navigateToDetailScreen(item.id)}
                 />
                 <Item
-                  teacher={teachers[index + 2]}
-                  press={navigateToDetailScreen}
+                  teacher={allTeachers[index + 1]}
+                  press={() =>
+                    navigateToDetailScreen(allTeachers[index + 1].id)
+                  }
                 />
                 <Item
-                  teacher={teachers[index + 3]}
-                  press={navigateToDetailScreen}
+                  teacher={allTeachers[index + 2]}
+                  press={() =>
+                    navigateToDetailScreen(allTeachers[index + 2].id)
+                  }
+                />
+                <Item
+                  teacher={allTeachers[index + 3]}
+                  press={() =>
+                    navigateToDetailScreen(allTeachers[index + 3].id)
+                  }
                 />
               </View>
             );

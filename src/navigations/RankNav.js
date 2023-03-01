@@ -47,28 +47,6 @@ export default function RankNav() {
           },
         }}
       />
-      <Stack.Screen
-        name="list-teacher"
-        component={ListTeacherScreen}
-        options={{
-          gestureDirection: 'vertical',
-          transitionSpec: {
-            open: config,
-            close: closeConfig,
-          },
-        }}
-      />
-      <Stack.Screen
-        name="question-screen"
-        component={QuestionTabNav}
-        options={{
-          gestureDirection: 'vertical',
-          transitionSpec: {
-            open: config,
-            close: closeConfig,
-          },
-        }}
-      />
     </Stack.Navigator>
   );
 }

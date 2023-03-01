@@ -6,7 +6,8 @@ import {
   TextInput,
   Switch,
   Keyboard,
-  TouchableNativeFeedback,
+  Platform,
+  NativeEventEmitter,
 } from 'react-native';
 import React, {useState, useEffect} from 'react';
 import {HEIGHT, WIDTH} from '../../constant/dimentions';
@@ -23,12 +24,15 @@ const Button = ({leftText, rightText}) => {
 };
 
 export default function SearchScreen({navigation}) {
+  const keyboardEventEmitter =
+    Platform.OS === 'ios' ? new NativeEventEmitter(Keyboard) : Keyboard;
+
   const [visibleClose, setVisibleClose] = useState(false);
   const [filterOnline, setFilterOnline] = useState(false);
 
   const handleBack = navigation => {
     if (visibleClose) {
-      Keyboard.dismiss();
+      keyboardEventEmitter.dismiss();
       setVisibleClose(false);
     } else {
       navigation.goBack();
@@ -37,12 +41,7 @@ export default function SearchScreen({navigation}) {
 
   useEffect(() => {}, []);
   return (
-    <View
-      style={styles.container}
-      //   onTouchStart={e => {
-      //     console.log(e.nativeEvent.locationX + ', ' + e.nativeEvent.locationY);
-      //   }}>
-    >
+    <View style={styles.container}>
       <View style={styles.top}>
         <Icon
           name="arrow-back-outline"

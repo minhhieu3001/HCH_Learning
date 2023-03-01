@@ -5,9 +5,9 @@ import AgoraUIKit from 'agora-rn-uikit';
 export default function CallScreen({navigation}) {
   const connectionData = {
     appId: '84e6846fa5ca43c68fe534ebd95b4730',
-    channel: 'test_1',
+    channel: 'test1',
     token:
-      '007eJxTYOhsvC45f//7XcH824UWpcwXnWsVl2yw74u2Q8Px5TPiPl5VYLAwSTWzMDFLSzRNTjQxTjazSEs1NTZJTUqxNE0yMTc2MKl7kNwQyMgg+ukeMyMDBIL4bAwlqcUl8YYMDADbDiFi',
+      '007eJxTYDASW1gW9ZI3pfKSScf9C6Wnn56QPZk+2UxpQ7qnd5ne4W0KDBYmqWYWJmZpiabJiSbGyWYWaammxiapSSmWpkkm5sYGd559TG4IZGTwc77FxMgAgSA+K0NJanGJIQMDAJdpIOk=',
   };
 
   const callbacks = {

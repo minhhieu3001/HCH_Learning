@@ -33,18 +33,18 @@ const Item = ({teacher, press}) => {
         <View style={{flexDirection: 'row', paddingTop: 3}}>
           <Icon
             name={
-              teacher.status === 1
+              teacher.status === 0
                 ? 'check-circle'
-                : teacher.status === 2
-                ? 'check-decagram'
+                : teacher.status === 1
+                ? 'timer-off'
                 : 'clock'
             }
             color={
-              teacher.status === 1
+              teacher.status === 0
                 ? 'green'
-                : teacher.status === 2
-                ? '#ff6600'
-                : 'red'
+                : teacher.status === 1
+                ? 'red'
+                : '#ff6600'
             }
             size={18}
           />
@@ -53,17 +53,17 @@ const Item = ({teacher, press}) => {
               fontSize: 14,
               paddingLeft: 5,
               color:
-                teacher.status === 1
+                teacher.status === 0
                   ? 'green'
-                  : teacher.status === 2
-                  ? '#ff6600'
-                  : 'red',
+                  : teacher.status === 1
+                  ? 'red'
+                  : '#ff6600',
             }}>
-            {teacher.status === 1
+            {teacher.status === 0
               ? 'Trực tuyến'
-              : teacher.status === 2
-              ? 'Đang gọi điện'
-              : 'Ngoại tuyến'}
+              : teacher.status === 1
+              ? 'Ngoại tuyến'
+              : 'Đang trong cuộc gọi'}
           </Text>
         </View>
       </View>

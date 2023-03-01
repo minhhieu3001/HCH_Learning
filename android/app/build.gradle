@@ -3,6 +3,7 @@ apply plugin: "com.android.application"
 import com.android.build.OutputFile
 import org.apache.tools.ant.taskdefs.condition.Os
 
+
 /**
  * The react.gradle file registers a task for each build variant (e.g. bundleDebugJsAndAssets
  * and bundleReleaseJsAndAssets).
@@ -256,7 +257,9 @@ dependencies {
 
     implementation 'com.facebook.fresco:animated-gif:2.6.0' 
     implementation 'com.facebook.fresco:animated-webp:2.6.0'
-  implementation 'com.facebook.fresco:webpsupport:2.6.0'
+    implementation 'com.facebook.fresco:webpsupport:2.6.0'
+
+    implementation project(':react-native-splash-screen')
 
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
 

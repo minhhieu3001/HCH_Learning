@@ -8,6 +8,7 @@ import SearchScreen from '../screens/Home/SearchScreen';
 import DetailScreen from '../screens/Home/DetailScreen';
 import CallScreen from '../screens/Home/CallScreen';
 import QuestionTabNav from '../navigations/Question/QuestionTabNav';
+import ChatDetailScreen from '../screens/Chat/ChatDetailScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -97,6 +98,17 @@ export default function HomeNav() {
       <Stack.Screen
         name="question-screen"
         component={QuestionTabNav}
+        options={{
+          gestureDirection: 'vertical',
+          transitionSpec: {
+            open: config,
+            close: closeConfig,
+          },
+        }}
+      />
+      <Stack.Screen
+        name="chat-detail-screen"
+        component={ChatDetailScreen}
         options={{
           gestureDirection: 'vertical',
           transitionSpec: {

@@ -1,11 +1,9 @@
 import {Easing} from 'react-native';
 import React from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import AccountScreen from '../screens/Account/AccountScreen';
-import SettingScreen from '../screens/Common/SettingScreen';
-import ListTeacherScreen from '../screens/Home/ListTeacherScreen';
-import QuestionTabNav from '../navigations/Question/QuestionTabNav';
-import EditProfileScreen from '../screens/Account/EditProfileScreen';
+
+import SignInScreen from '../screens/Session/SignInScreen';
+import SignUpScreen from '../screens/Session/SignUpScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -29,7 +27,7 @@ const closeConfig = {
   },
 };
 
-export default function AccountNav({setIsLogin}) {
+export default function SessionNav({setIsLogin}) {
   return (
     <Stack.Navigator
       screenOptions={{
@@ -38,7 +36,10 @@ export default function AccountNav({setIsLogin}) {
         gestureDirection: 'horizontal',
       }}>
       <Stack.Screen
-        name="Account_screen"
+        key="sign-in"
+        name="sign-in-screen"
+        // component={SignInScreen}
+        // initialParams={{setIsLogin}}
         options={{
           gestureDirection: 'vertical',
           transitionSpec: {
@@ -46,22 +47,11 @@ export default function AccountNav({setIsLogin}) {
             close: closeConfig,
           },
         }}>
-        {props => <AccountScreen {...props} setIsLogin={setIsLogin} />}
+        {props => <SignInScreen setIsLogin={setIsLogin} {...props} />}
       </Stack.Screen>
       <Stack.Screen
-        name="setting-screen"
-        component={SettingScreen}
-        options={{
-          gestureDirection: 'vertical',
-          transitionSpec: {
-            open: config,
-            close: closeConfig,
-          },
-        }}
-      />
-      <Stack.Screen
-        name="edit-screen"
-        component={EditProfileScreen}
+        name="sign-up-screen"
+        component={SignUpScreen}
         options={{
           gestureDirection: 'vertical',
           transitionSpec: {

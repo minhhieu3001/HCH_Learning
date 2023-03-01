@@ -1,6 +1,8 @@
 import {View, Text, Pressable, StyleSheet, Dimensions} from 'react-native';
 import React from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useDispatch} from 'react-redux';
 
 const WIDTH = Dimensions.get('window').width;
 
@@ -22,10 +24,15 @@ const Button = ({iconName, text, press}) => {
   );
 };
 
-export default function Setting({navigation}) {
-  const handlePress = buttonName => {
+export default function Setting({navigation, setIsLogin}) {
+  const handlePress = async buttonName => {
     if (buttonName === 'settings') {
       navigation.navigate('setting-screen');
+    } else if (buttonName === 'log-out-outline') {
+      await AsyncStorage.setItem('token', '');
+      await AsyncStorage.setItem('isLogin', 'false');
+      await AsyncStorage.setItem('user', '');
+      setIsLogin(false);
     }
   };
 
@@ -36,6 +43,7 @@ export default function Setting({navigation}) {
       <Button iconName="notifications-outline" text="Cài đặt thông báo" />
       <Button iconName="help-circle" text="Trợ giúp" />
       <Button iconName="settings" text="Các cài đặt khác" press={handlePress} />
+      <Button iconName="log-out-outline" text="Đăng xuất" press={handlePress} />
     </View>
   );
 }

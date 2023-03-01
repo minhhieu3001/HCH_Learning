@@ -6,19 +6,104 @@ import {
   Image,
   Pressable,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState, useRef, useLayoutEffect} from 'react';
 import ChatTop from '../../components/Chat/ChatTop';
 import {WIDTH, HEIGHT} from '../../constant/dimentions';
-import {teachers} from '../../data/teacher';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import {messages} from '../../data/messages';
 import LinearGradient from 'react-native-linear-gradient';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {hideTabNav, showTabNav} from '../../actions/visibleTabNavAction';
 import Loading from '../../components/Common/Loading';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {BASE_URL} from '../../constant/constants';
+import {useFocusEffect} from '@react-navigation/native';
+import CustomAvatar from '../../components/Common/CustomAvatar';
 
 export default function ChatScreen({navigation}) {
   const dispatch = useDispatch();
+
+  const [user, setUser] = useState(undefined);
+  const [conversations, setConversations] = useState(undefined);
+  const [newMsg, setNewMsg] = useState(null);
+
+  const getUser = async () => {
+    const data = await AsyncStorage.getItem('user');
+    if (data !== null) {
+      const user = await JSON.parse(data);
+      setUser(user);
+    }
+  };
+
+  const getConversations = async () => {
+    const token = await AsyncStorage.getItem('token');
+    const config = {
+      headers: {
+        Authorization: token,
+      },
+    };
+    await axios.get(`${BASE_URL}/chat/student`, config).then(res => {
+      if (res.data.code === 0) {
+        setConversations(res.data.object);
+      }
+    });
+  };
+
+  const socket = useSelector(state => {
+    return state.socket;
+  });
+
+  const handleNewMessage = async () => {
+    if (newMsg) {
+      const exist = conversations.filter(
+        conversation => conversation.id == newMsg.from,
+      );
+      if (exist) {
+        const cvsts = conversations.filter(
+          conversation => conversation.id !== exist.id,
+        );
+        const newList = [exist, ...cvsts];
+        setConversations(newList);
+      }
+    }
+  };
+
+  useEffect(() => {
+    getUser();
+    getConversations();
+    if (socket.socket) {
+      socket.socket.on('msg-receive', data => {
+        setNewMsg(data);
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    handleNewMessage();
+  }, [newMsg]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      dispatch(showTabNav());
+      getUser();
+      getConversations();
+      if (socket.socket) {
+        socket.socket.on('msg-receive', data => {
+          setNewMsg(data);
+        });
+      }
+    }, []),
+  );
+
+  useEffect(() => {
+    if (user) {
+      socket.socket.emit('add-user', user.id);
+    }
+  }, [user]);
+
+  useLayoutEffect(() => {
+    console.log('aaaaaa');
+  }, []);
 
   const onScroll = event => {
     const currentOffset = event.nativeEvent.contentOffset.y;
@@ -34,118 +119,111 @@ export default function ChatScreen({navigation}) {
     <View style={styles.container}>
       <ChatTop />
       <View>
-        {!teachers || !messages ? (
+        {!conversations ? (
           <Loading />
         ) : (
           <ScrollView
             onScroll={e => onScroll(e)}
             showsVerticalScrollIndicator={false}>
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              {!teachers ? (
-                <View
-                  style={{
-                    marginTop: 20,
-                    marginBottom: 20,
-                    height: 110,
-                    width: WIDTH,
-                  }}>
-                  <Text
-                    style={{fontSize: 20, color: 'black', alignSelf: 'center'}}>
-                    Chưa yêu thích giáo viên nào
-                  </Text>
-                </View>
+              {conversations.length == 0 ? (
+                <></>
               ) : (
-                teachers.map((item, index) => {
-                  return (
-                    <Pressable
-                      key={item.id}
-                      onPress={() => navigation.navigate('chat-detail-screen')}
-                      key={item.id}
-                      style={{
-                        marginTop: 20,
-                        marginBottom: 10,
-                        marginLeft: 10,
-                        marginRight: 10,
-                        height: 110,
-                        width: 80,
-                      }}>
-                      <Image
-                        source={require('../../assets/images/images.png')}
+                conversations.map((item, index) => {
+                  if (item.teacher.status === 0) {
+                    return (
+                      <Pressable
+                        key={item.id}
+                        onPress={() =>
+                          navigation.navigate('chat-detail-screen', {
+                            teacherId: item.teacher.id,
+                            teacherName: item.teacher.realName,
+                            teacherStatus: item.status,
+                          })
+                        }
                         style={{
-                          width: 70,
-                          height: 70,
-                          borderRadius: 35,
-                          alignSelf: 'center',
-                        }}
-                      />
-                      <Icon
-                        name="moon-full"
-                        size={18}
-                        style={{
-                          color: 'green',
-                          position: 'absolute',
-                          left: 50,
-                          top: 50,
-                          padding: 1,
-                          backgroundColor: 'white',
-                          borderRadius: 9,
-                        }}
-                      />
-                      <Text
-                        style={{
-                          alignSelf: 'center',
-                          textAlign: 'center',
-                          fontSize: 14,
-                          color: 'black',
+                          marginTop: 20,
+                          marginBottom: 10,
+                          marginLeft: 10,
+                          marginRight: 10,
+                          height: 110,
+                          width: 80,
                         }}>
-                        {item.name}
-                      </Text>
-                    </Pressable>
-                  );
+                        <CustomAvatar
+                          size={70}
+                          text={item.teacher.realName}
+                          url={
+                            !item.teacher.avaPath ? '' : item.teacher.avaPath
+                          }
+                        />
+                        <Icon
+                          name="moon-full"
+                          size={18}
+                          style={{
+                            color: 'green',
+                            position: 'absolute',
+                            left: 50,
+                            top: 50,
+                            padding: 1,
+                            backgroundColor: 'white',
+                            borderRadius: 9,
+                          }}
+                        />
+                        <Text
+                          style={{
+                            alignSelf: 'center',
+                            textAlign: 'center',
+                            fontSize: 14,
+                            color: 'black',
+                          }}>
+                          {item.teacher.realName}
+                        </Text>
+                      </Pressable>
+                    );
+                  }
                 })
               )}
             </ScrollView>
             <View>
-              {!messages ? (
-                <View></View>
-              ) : (
-                messages.map((item, index) => {
-                  return (
-                    <Pressable
-                      key={item.id}
-                      onPress={() => navigation.navigate('chat-detail-screen')}
-                      style={{
-                        flexDirection: 'row',
-                        width: WIDTH,
-                        height: 80,
-                      }}>
-                      <Image
-                        source={require('../../assets/images/images.png')}
+              {conversations?.map((item, index) => {
+                return (
+                  <Pressable
+                    key={item.id}
+                    onPress={() =>
+                      navigation.navigate('chat-detail-screen', {
+                        teacherId: item.teacher.id,
+                        teacherName: item.teacher.realName,
+                        teacherStatus: item.teacher.status,
+                      })
+                    }
+                    style={{
+                      flexDirection: 'row',
+                      width: WIDTH,
+                      height: 80,
+                      paddingLeft: 10,
+                      paddingRight: 10,
+                    }}>
+                    <CustomAvatar
+                      size={70}
+                      text={item.teacher.realName}
+                      url={!item.teacher.avaPath ? '' : item.teacher.avaPath}
+                    />
+                    <View style={{padding: 10, width: WIDTH - 80}}>
+                      <Text
                         style={{
-                          width: 70,
-                          height: 70,
-                          borderRadius: 35,
-                          alignSelf: 'center',
-                          marginLeft: 10,
-                        }}
-                      />
-                      <View style={{padding: 10, width: WIDTH - 80}}>
-                        <Text
-                          style={{
-                            fontSize: 18,
-                            color: 'black',
-                            fontWeight: '500',
-                          }}>
-                          {item.userName}
-                        </Text>
-                        <Text style={{fontSize: 16}} numberOfLines={1}>
-                          {item.message}
-                        </Text>
-                      </View>
-                    </Pressable>
-                  );
-                })
-              )}
+                          fontSize: 18,
+                          color: 'black',
+                          fontWeight: '500',
+                        }}>
+                        {item.teacher.realName}
+                      </Text>
+                      <Text style={{fontSize: 16}} numberOfLines={1}>
+                        {item.lastMessage}
+                      </Text>
+                    </View>
+                  </Pressable>
+                );
+              })}
             </View>
           </ScrollView>
         )}
