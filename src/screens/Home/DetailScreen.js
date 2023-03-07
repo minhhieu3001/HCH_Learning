@@ -12,11 +12,14 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Rate from '../../components/Common/Rate';
 import * as Progress from 'react-native-progress';
 import axios from 'axios';
-import {BASE_URL} from '../../constant/constants';
+import {
+  BASE_URL,
+  TEACHER_OFFLINE,
+  TEACHER_ONLINE,
+} from '../../constant/constants';
 import Loading from '../../components/Common/Loading';
-import {useDispatch} from 'react-redux';
-import {hideTabNav} from '../../actions/visibleTabNavAction';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import ModalPopup from '../../components/Common/ModalPopup';
 
 const Item = ({text}) => {
   return (
@@ -40,17 +43,7 @@ const Item = ({text}) => {
 
 const DetailScreen = ({route, navigation}) => {
   const {teacherId} = route.params;
-  const dispatch = useDispatch();
 
-  const subjects = [
-    'Toán học',
-    ' Ngoại ngữ',
-    'Ngữ văn',
-    'Vật lí',
-    'Hóa học',
-    'Sinh học',
-    'lịch sử',
-  ];
   const reviews = [
     {
       star: 5,
@@ -73,6 +66,11 @@ const DetailScreen = ({route, navigation}) => {
   ];
 
   const [teacher, setTeacher] = useState();
+  const [favorite, setFavorite] = useState(null);
+
+  const [time, setTime] = useState(null);
+  const [showRequestCall, setShowRequestCall] = useState(false);
+  const [counting, setCounting] = useState(false);
 
   const getDetailTeacher = async () => {
     const token = await AsyncStorage.getItem('token');
@@ -87,8 +85,12 @@ const DetailScreen = ({route, navigation}) => {
         config,
       )
       .then(res => {
+        console.log(res.data.object);
         if (res.data.code === 0) {
           setTeacher(res.data.object);
+          if (!res.data.object.isFavorite) {
+            setFavorite(false);
+          } else setFavorite(true);
         }
       })
       .catch(err => {
@@ -96,12 +98,66 @@ const DetailScreen = ({route, navigation}) => {
       });
   };
 
+  const favoriteTeacher = async () => {
+    const token = await AsyncStorage.getItem('token');
+    const config = {
+      headers: {
+        Authorization: token,
+      },
+    };
+    axios
+      .put(
+        `${BASE_URL}/ums/session/student/favTeacher?teacherId=${teacherId}`,
+        null,
+        config,
+      )
+      .then(res => {
+        console.log(res.data);
+        setFavorite(true);
+      });
+  };
+
+  const deleteFavoriteTeacher = async () => {
+    setFavorite(false);
+  };
+
+  const requestCall = async () => {
+    setTime(90);
+    setShowRequestCall(true);
+    setCounting(true);
+  };
+
+  useEffect(() => {
+    console.log(time, counting);
+    let timer;
+    if (counting && time > 0) {
+      timer = setInterval(() => {
+        setTime(time - 1);
+      }, 1000);
+    } else if (counting && time === 0) {
+      setCounting(false);
+    }
+    return () => clearInterval(timer);
+  }, [counting, time]);
+
   useEffect(() => {
     getDetailTeacher();
-  }, [teacher]);
+  }, []);
 
   return (
     <View style={styles.container}>
+      <ModalPopup visible={showRequestCall}>
+        <View>
+          <Text style={{fontSize: 30, color: 'white'}}>{time}</Text>
+          <Pressable
+            onPress={() => {
+              setShowRequestCall(false);
+              setCounting(false);
+            }}>
+            <Text>Hủy bỏ</Text>
+          </Pressable>
+        </View>
+      </ModalPopup>
       <View style={styles.header}>
         <Icon
           name="keyboard-backspace"
@@ -158,10 +214,24 @@ const DetailScreen = ({route, navigation}) => {
               style={styles.avatar}
               resizeMode="cover"
             />
-            <Pressable style={styles.addFavorite}>
-              <Icon name="plus" size={24} />
-              <Text style={{fontSize: 16}}>Yêu thích</Text>
-            </Pressable>
+            {favorite ? (
+              <Pressable
+                style={styles.addFavorite}
+                onPress={() => deleteFavoriteTeacher()}>
+                <Icon name="check" size={24} style={{color: '#018ABE'}} />
+                <Text
+                  style={{fontSize: 16, color: '#018ABE', fontWeight: '500'}}>
+                  Đã yêu thích
+                </Text>
+              </Pressable>
+            ) : (
+              <Pressable
+                style={styles.addFavorite}
+                onPress={() => favoriteTeacher()}>
+                <Icon name="plus" size={24} />
+                <Text style={{fontSize: 16}}>Yêu thích</Text>
+              </Pressable>
+            )}
           </View>
           <View style={styles.userInfo}>
             <View
@@ -171,16 +241,16 @@ const DetailScreen = ({route, navigation}) => {
               }}>
               <Icon
                 name={
-                  teacher.status === 0
+                  teacher.status === TEACHER_ONLINE
                     ? 'check-circle'
-                    : teacher.status === 1
+                    : teacher.status === TEACHER_OFFLINE
                     ? 'timer-off'
                     : 'clock'
                 }
                 color={
-                  teacher.status === 0
+                  teacher.status === TEACHER_ONLINE
                     ? 'green'
-                    : teacher.status === 1
+                    : teacher.status === TEACHER_OFFLINE
                     ? 'red'
                     : '#ff6600'
                 }
@@ -191,15 +261,15 @@ const DetailScreen = ({route, navigation}) => {
                   fontSize: 14,
                   paddingLeft: 5,
                   color:
-                    teacher.status === 0
+                    teacher.status === TEACHER_ONLINE
                       ? 'green'
-                      : teacher.status === 1
+                      : teacher.status === TEACHER_OFFLINE
                       ? 'red'
                       : '#ff6600',
                 }}>
-                {teacher.status === 0
+                {teacher.status === TEACHER_ONLINE
                   ? 'Trực tuyến'
-                  : teacher.status === 1
+                  : teacher.status === TEACHER_OFFLINE
                   ? 'Ngoại tuyến'
                   : 'Đang trong cuộc gọi'}
               </Text>
@@ -234,7 +304,7 @@ const DetailScreen = ({route, navigation}) => {
               }}>
               <View style={{flexDirection: 'row'}}>
                 <Icon name="chat-processing-outline" size={14} />
-                <Text> {teacher.pointOfCharacter}p/1 kí tự</Text>
+                <Text> {teacher.priceChat}p/1 kí tự</Text>
               </View>
               <View
                 style={{
@@ -243,7 +313,7 @@ const DetailScreen = ({route, navigation}) => {
                   justifyContent: 'center',
                 }}>
                 <Icon name="phone-outline" size={14} />
-                <Text> {teacher.pointOfCall}p/1 phút</Text>
+                <Text> {teacher.priceCall}p/1 phút</Text>
               </View>
             </View>
             <View
@@ -264,13 +334,21 @@ const DetailScreen = ({route, navigation}) => {
                     width: WIDTH,
                     flex: 1,
                   }}>
-                  {!teacher.classes ? (
-                    <></>
-                  ) : (
-                    teacher.classes.map((item, index) => {
-                      return <Item text={item} key={index} />;
-                    })
-                  )}
+                  <View
+                    style={{
+                      paddingStart: 8,
+                      paddingEnd: 8,
+                      paddingTop: 2,
+                      paddingBottom: 2,
+                      borderWidth: 1,
+                      minWidth: 50,
+                      borderRadius: 15,
+                      marginHorizontal: 5,
+                      marginVertical: 5,
+                      alignItems: 'center',
+                    }}>
+                    <Text>{teacher.course}</Text>
+                  </View>
                 </View>
               </View>
               <View style={styles.subject}>
@@ -284,7 +362,7 @@ const DetailScreen = ({route, navigation}) => {
                     width: WIDTH,
                     flex: 1,
                   }}>
-                  {subjects.map((item, index) => {
+                  {teacher?.subjects.map((item, index) => {
                     return <Item text={item} key={index} />;
                   })}
                 </View>
@@ -303,8 +381,9 @@ const DetailScreen = ({route, navigation}) => {
             </Text>
             <View style={styles.viewShadow}>
               <Text>
-                Lời tự giới thiệu của giáo viên, tên tuổi, tính cách, phong cách
-                dạy, các chứng chỉ, kinh nghiệm......
+                {teacher.introduceMySelf
+                  ? teacher.introduceMySelf
+                  : 'Chưa có lời giới thiệu'}
               </Text>
               <View style={{borderBottomWidth: 0.5, height: 20}}></View>
               <View
@@ -320,75 +399,7 @@ const DetailScreen = ({route, navigation}) => {
               </View>
             </View>
           </View>
-          <View style={styles.introduction}>
-            <Text
-              style={{
-                fontSize: 18,
-                marginBottom: 10,
-                marginLeft: 10,
-                color: '#02457A',
-              }}>
-              Bài đăng của giáo viên
-            </Text>
-            <View style={styles.viewShadow}>
-              <View style={styles.timelineTop}>
-                <Image
-                  source={require('../../assets/images/images.png')}
-                  style={{width: 40, height: 40, borderRadius: 20}}
-                  resizeMode="cover"
-                />
-                <Text style={{fontSize: 16, marginLeft: 10, color: 'black'}}>
-                  Tên giáo viên
-                </Text>
-                <Text style={{fontSize: 12, marginLeft: 'auto'}}>
-                  2022/10/18 13:30
-                </Text>
-              </View>
-              <View>
-                <Text>Đoạn này là nội dung của bài post</Text>
-              </View>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  paddingTop: 10,
-                  paddingBottom: 5,
-                  borderBottomColor: 'gray',
-                  borderBottomWidth: 0.5,
-                }}>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-evenly',
-                    width: 80,
-                  }}>
-                  <Icon name="cards-heart-outline" size={24} />
-                  <Icon name="comment-edit-outline" size={24} />
-                </View>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    width: 160,
-                  }}>
-                  <Text>10 lượt thích</Text>
-                  <Text>0 bình luận</Text>
-                </View>
-              </View>
-              <Pressable style={{height: 30}}>
-                <Text
-                  style={{
-                    fontSize: 16,
-                    color: 'purple',
-                    alignSelf: 'center',
-                    top: 8,
-                    color: '#018ABE',
-                  }}>
-                  Xem thêm
-                </Text>
-              </Pressable>
-            </View>
-          </View>
+
           <View style={styles.introduction}>
             <Text
               style={{
@@ -612,14 +623,19 @@ const DetailScreen = ({route, navigation}) => {
             </Text>
           </Pressable>
           <Pressable
-            onPress={() => navigation.navigate('call-screen')}
+            onPress={() => {
+              requestCall();
+            }}
             style={{
               flexDirection: 'row',
               borderRadius: 30,
-              borderWidth: teacher.status !== 0 ? 2 : 0,
-              borderStyle: teacher.status !== 0 ? 'dashed' : 'solid',
-              backgroundColor: teacher.status !== 0 ? 'white' : '#D6E8EE',
-              borderColor: teacher.status !== 0 ? 'gray' : 'black',
+              borderWidth: teacher.status !== TEACHER_ONLINE ? 2 : 0,
+              borderStyle:
+                teacher.status !== TEACHER_ONLINE ? 'dashed' : 'solid',
+              backgroundColor:
+                teacher.status !== TEACHER_ONLINE ? 'white' : '#D6E8EE',
+              borderColor:
+                teacher.status !== TEACHER_ONLINE ? 'gray' : '#02457A',
               height: 50,
               alignSelf: 'center',
               justifyContent: 'center',
@@ -629,13 +645,15 @@ const DetailScreen = ({route, navigation}) => {
             <Icon
               name="phone"
               size={30}
-              style={{color: teacher.status !== 1 ? 'gray' : '#02457A'}}
+              style={{
+                color: teacher.status !== TEACHER_ONLINE ? 'gray' : '#02457A',
+              }}
             />
             <Text
               style={{
                 fontSize: 16,
                 marginLeft: 5,
-                color: teacher.status !== 1 ? 'gray' : '#02457A',
+                color: teacher.status !== TEACHER_ONLINE ? 'gray' : '#02457A',
               }}>
               Gọi điện
             </Text>
@@ -676,19 +694,22 @@ const styles = StyleSheet.create({
     bottom: -55,
     left: 15,
     borderRadius: 75,
+    borderWidth: 1,
+    borderColor: 'gray',
   },
   addFavorite: {
     flexDirection: 'row',
-    backgroundColor: 'pink',
-    height: 25,
-    paddingEnd: 15,
+    backgroundColor: 'white',
+    height: 35,
+    paddingStart: 20,
+    paddingEnd: 20,
     position: 'absolute',
-    bottom: -12.5,
-    borderRadius: 14,
+    bottom: -15,
+    borderRadius: 20,
     right: 10,
     alignItems: 'center',
-    borderWidth: 0.5,
-    borderColor: 'green',
+    borderWidth: 1,
+    borderColor: 'black',
   },
   userInfo: {
     marginTop: 60,

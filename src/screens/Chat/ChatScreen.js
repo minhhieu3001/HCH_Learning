@@ -16,9 +16,20 @@ import {hideTabNav, showTabNav} from '../../actions/visibleTabNavAction';
 import Loading from '../../components/Common/Loading';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {BASE_URL} from '../../constant/constants';
+import {BASE_URL, TEACHER_ONLINE} from '../../constant/constants';
 import {useFocusEffect} from '@react-navigation/native';
 import CustomAvatar from '../../components/Common/CustomAvatar';
+import Sound from 'react-native-sound';
+
+Sound.setCategory('Playback');
+const newMsgSound = new Sound('new_msg.mp3', Sound.MAIN_BUNDLE, error => {
+  if (error) {
+    console.log('failed to load the sound', error);
+    return;
+  }
+});
+
+newMsgSound.setVolume(1);
 
 export default function ChatScreen({navigation}) {
   const dispatch = useDispatch();
@@ -26,6 +37,7 @@ export default function ChatScreen({navigation}) {
   const [user, setUser] = useState(undefined);
   const [conversations, setConversations] = useState(undefined);
   const [newMsg, setNewMsg] = useState(null);
+  const [listNewChat, setListNewChat] = useState([]);
 
   const getUser = async () => {
     const data = await AsyncStorage.getItem('user');
@@ -54,17 +66,59 @@ export default function ChatScreen({navigation}) {
   });
 
   const handleNewMessage = async () => {
-    if (newMsg) {
-      const exist = conversations.filter(
-        conversation => conversation.id == newMsg.from,
+    console.log('newMsg', newMsg);
+    if (newMsg != null) {
+      newMsgSound.play();
+      const index = conversations.findIndex(
+        obj => obj.teacher.id == newMsg.senderId,
       );
-      if (exist) {
-        const cvsts = conversations.filter(
-          conversation => conversation.id !== exist.id,
-        );
-        const newList = [exist, ...cvsts];
-        setConversations(newList);
-      }
+      const myObject = conversations.splice(index, 1)[0];
+      myObject.lastMessage = newMsg.msg;
+      const newList = [myObject, ...conversations];
+
+      setConversations(newList);
+
+      const newListLastChat =
+        listNewChat.length == 0
+          ? []
+          : listNewChat.filter(obj => obj.id != myObject.id);
+
+      const newChat = [
+        ...newListLastChat,
+        {
+          id: myObject.id,
+          type: 'text',
+          msg: newMsg.msg,
+          sendTime: new Date().getTime(),
+        },
+      ];
+      setListNewChat(newChat);
+      setNewMsg(null);
+    }
+  };
+
+  const handleReadMessage = async id => {
+    const newList = listNewChat.filter(obj => obj.id != id);
+    setListNewChat(newList);
+    const token = await AsyncStorage.getItem('token');
+    const config = {
+      headers: {
+        Authorization: token,
+      },
+    };
+    axios
+      .get(`${BASE_URL}/chat/student/read?chatId=${id}`, config)
+      .then(res => {});
+  };
+
+  const handleTime = time => {
+    const date = new Date(time);
+    const now = new Date();
+
+    if (date.getDate() == now.getDate() && date.getMonth() == now.getMonth()) {
+      return `${date.getHours()}:${date.getMinutes()}`;
+    } else {
+      return `${date.getDate()}/Th${date.getMonth() + 1}`;
     }
   };
 
@@ -73,6 +127,7 @@ export default function ChatScreen({navigation}) {
     getConversations();
     if (socket.socket) {
       socket.socket.on('msg-receive', data => {
+        console.log('useEffect', data);
         setNewMsg(data);
       });
     }
@@ -87,11 +142,13 @@ export default function ChatScreen({navigation}) {
       dispatch(showTabNav());
       getUser();
       getConversations();
-      if (socket.socket) {
-        socket.socket.on('msg-receive', data => {
-          setNewMsg(data);
-        });
-      }
+
+      // if (socket.socket) {
+      //   socket.socket.on('msg-receive', data => {
+      //     console.log('useFocusEffect', data);
+      //     setNewMsg(data);
+      //   });
+      // }
     }, []),
   );
 
@@ -100,10 +157,6 @@ export default function ChatScreen({navigation}) {
       socket.socket.emit('add-user', user.id);
     }
   }, [user]);
-
-  useLayoutEffect(() => {
-    console.log('aaaaaa');
-  }, []);
 
   const onScroll = event => {
     const currentOffset = event.nativeEvent.contentOffset.y;
@@ -130,17 +183,18 @@ export default function ChatScreen({navigation}) {
                 <></>
               ) : (
                 conversations.map((item, index) => {
-                  if (item.teacher.status === 0) {
+                  if (item.teacher.status === TEACHER_ONLINE) {
                     return (
                       <Pressable
                         key={item.id}
-                        onPress={() =>
+                        onPress={() => {
                           navigation.navigate('chat-detail-screen', {
                             teacherId: item.teacher.id,
                             teacherName: item.teacher.realName,
-                            teacherStatus: item.status,
-                          })
-                        }
+                            teacherStatus: item.teacher.status,
+                          });
+                          handleReadMessage(item.id);
+                        }}
                         style={{
                           marginTop: 20,
                           marginBottom: 10,
@@ -149,24 +203,26 @@ export default function ChatScreen({navigation}) {
                           height: 110,
                           width: 80,
                         }}>
-                        <CustomAvatar
-                          size={70}
-                          text={item.teacher.realName}
-                          url={
-                            !item.teacher.avaPath ? '' : item.teacher.avaPath
-                          }
-                        />
+                        {item.teacher.avaPath == 'null' ||
+                        item.teacher.avaPath == null ? (
+                          <CustomAvatar
+                            size={60}
+                            text={item.teacher.realName}
+                            url={null}
+                          />
+                        ) : (
+                          <CustomAvatar size={60} url={item.teacher.avaPath} />
+                        )}
                         <Icon
                           name="moon-full"
-                          size={18}
+                          size={14}
                           style={{
                             color: 'green',
                             position: 'absolute',
-                            left: 50,
-                            top: 50,
-                            padding: 1,
+                            left: 55,
+                            top: 42,
                             backgroundColor: 'white',
-                            borderRadius: 9,
+                            borderRadius: 8,
                           }}
                         />
                         <Text
@@ -189,13 +245,14 @@ export default function ChatScreen({navigation}) {
                 return (
                   <Pressable
                     key={item.id}
-                    onPress={() =>
+                    onPress={() => {
                       navigation.navigate('chat-detail-screen', {
                         teacherId: item.teacher.id,
                         teacherName: item.teacher.realName,
                         teacherStatus: item.teacher.status,
-                      })
-                    }
+                      });
+                      handleReadMessage(item.id);
+                    }}
                     style={{
                       flexDirection: 'row',
                       width: WIDTH,
@@ -203,22 +260,70 @@ export default function ChatScreen({navigation}) {
                       paddingLeft: 10,
                       paddingRight: 10,
                     }}>
-                    <CustomAvatar
-                      size={70}
-                      text={item.teacher.realName}
-                      url={!item.teacher.avaPath ? '' : item.teacher.avaPath}
-                    />
+                    {item.teacher.avaPath == 'null' ||
+                    item.teacher.avaPath == null ? (
+                      <CustomAvatar
+                        size={60}
+                        text={item.teacher.realName}
+                        url={null}
+                      />
+                    ) : (
+                      <CustomAvatar size={60} url={item.teacher.avaPath} />
+                    )}
                     <View style={{padding: 10, width: WIDTH - 80}}>
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          justifyContent: 'space-between',
+                        }}>
+                        <Text
+                          style={{
+                            fontSize: 18,
+                            color: 'black',
+                            fontWeight: '500',
+                          }}>
+                          {item.teacher.realName}
+                        </Text>
+                        <Text>
+                          {handleTime(
+                            listNewChat.findIndex(obj => obj.id == item.id) !=
+                              -1
+                              ? listNewChat[
+                                  listNewChat.findIndex(
+                                    obj => obj.id == item.id,
+                                  )
+                                ].sendTime
+                              : item.actionTime,
+                          )}
+                        </Text>
+                      </View>
                       <Text
                         style={{
-                          fontSize: 18,
-                          color: 'black',
-                          fontWeight: '500',
-                        }}>
-                        {item.teacher.realName}
-                      </Text>
-                      <Text style={{fontSize: 16}} numberOfLines={1}>
-                        {item.lastMessage}
+                          fontSize: 16,
+                          color:
+                            !item.readStudentSize ||
+                            listNewChat.findIndex(obj => obj.id == item.id) !=
+                              -1
+                              ? 'black'
+                              : 'gray',
+                          fontWeight:
+                            !item.readStudentSize ||
+                            listNewChat.findIndex(obj => obj.id == item.id) !=
+                              -1
+                              ? 'bold'
+                              : 'normal',
+                        }}
+                        numberOfLines={1}>
+                        {listNewChat.findIndex(obj => obj.id == item.id) !=
+                          -1 && !item.readStudentSize
+                          ? listNewChat[
+                              listNewChat.findIndex(obj => obj.id == item.id)
+                            ].type == 'text'
+                            ? listNewChat[
+                                listNewChat.findIndex(obj => obj.id == item.id)
+                              ].msg
+                            : 'Bạn có tin nhắn mới'
+                          : item.lastMessage}
                       </Text>
                     </View>
                   </Pressable>

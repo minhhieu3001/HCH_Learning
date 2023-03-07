@@ -4,6 +4,7 @@ import {WIDTH, HEIGHT} from '../../constant/dimentions';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Rate from './Rate';
 import {Avatar} from '@rneui/themed';
+import {TEACHER_OFFLINE, TEACHER_ONLINE} from '../../constant/constants';
 
 export default function Item({teacher, press}) {
   let lastName = '';
@@ -25,32 +26,27 @@ export default function Item({teacher, press}) {
         paddingTop: 5,
         marginBottom: 10,
       }}>
-      {/* <Image
-        source={require('../../assets/images/images.png')}
-        style={{width: 100, height: 100, borderRadius: 50}}
-        resizeMode="contain"
-      /> */}
       <Avatar
-        size={100}
+        size={90}
         rounded
         title={`${firstName[0]}${lastName[0]}`}
-        containerStyle={{backgroundColor: '#3d4db7'}}
+        containerStyle={{backgroundColor: '#3d4db7', alignSelf: 'center'}}
       />
       <View style={{paddingLeft: 10, paddingTop: 10}}>
         <Text style={{fontSize: 18, color: 'black'}}>{teacher.realName}</Text>
         <View style={{flexDirection: 'row', paddingTop: 3}}>
           <Icon
             name={
-              teacher.status === 0
+              teacher.status === TEACHER_ONLINE
                 ? 'check-circle'
-                : teacher.status === 1
+                : teacher.status === TEACHER_OFFLINE
                 ? 'timer-off'
                 : 'clock'
             }
             color={
-              teacher.status === 0
+              teacher.status === TEACHER_ONLINE
                 ? 'green'
-                : teacher.status === 1
+                : teacher.status === TEACHER_OFFLINE
                 ? 'red'
                 : '#ff6600'
             }
@@ -61,15 +57,15 @@ export default function Item({teacher, press}) {
               fontSize: 14,
               paddingLeft: 5,
               color:
-                teacher.status === 0
+                teacher.status === TEACHER_ONLINE
                   ? 'green'
-                  : teacher.status === 1
+                  : teacher.status === TEACHER_OFFLINE
                   ? 'red'
                   : '#ff6600',
             }}>
-            {teacher.status === 0
+            {teacher.status === TEACHER_ONLINE
               ? 'Trực tuyến'
-              : teacher.status === 1
+              : teacher.status === TEACHER_OFFLINE
               ? 'Ngoại tuyến'
               : 'Đang trong cuộc gọi'}
           </Text>

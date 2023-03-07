@@ -20,6 +20,50 @@ export default function HomeScreen({navigation}) {
   const dispatch = useDispatch();
 
   const [allTeachers, setAllTeachers] = useState([]);
+  const [favoriteTeachers, setFavoriteTeachers] = useState([]);
+  const [recommendTeachers, setRecommendTeachers] = useState([]);
+
+  const getFavoriteTeachers = async () => {
+    const token = await AsyncStorage.getItem('token');
+    const config = {
+      headers: {
+        Authorization: token,
+      },
+    };
+    axios
+      .get(
+        `${BASE_URL}/ums/getTeachers/getTeacher?page=0&size=15&tab=2`,
+        config,
+      )
+      .then(res => {
+        if (res.data.code == 0) {
+          setFavoriteTeachers(res.data.object);
+        } else {
+          Alert.alert('Thông báo', 'Lỗi mạng!');
+        }
+      });
+  };
+
+  const getRecommendTeachers = async () => {
+    const token = await AsyncStorage.getItem('token');
+    const config = {
+      headers: {
+        Authorization: token,
+      },
+    };
+    axios
+      .get(
+        `${BASE_URL}/ums/getTeachers/getTeacher?page=0&size=15&tab=1`,
+        config,
+      )
+      .then(res => {
+        if (res.data.code == 0) {
+          setRecommendTeachers(res.data.object);
+        } else {
+          Alert.alert('Thông báo', 'Lỗi mạng!');
+        }
+      });
+  };
 
   const getAllTeacher = async () => {
     const token = await AsyncStorage.getItem('token');
@@ -54,12 +98,16 @@ export default function HomeScreen({navigation}) {
 
   useEffect(() => {
     getAllTeacher();
+    getFavoriteTeachers();
+    getRecommendTeachers();
   }, []);
 
   useFocusEffect(
     React.useCallback(() => {
       dispatch(showTabNav());
       getAllTeacher();
+      getFavoriteTeachers();
+      getRecommendTeachers();
     }, []),
   );
 
@@ -70,7 +118,7 @@ export default function HomeScreen({navigation}) {
         navigation={navigation}
       />
       <HomeTop navigation={navigation} />
-      {!allTeachers ? (
+      {!allTeachers || !favoriteTeachers || !recommendTeachers ? (
         <Loading />
       ) : (
         <ScrollView
@@ -79,7 +127,19 @@ export default function HomeScreen({navigation}) {
           }}
           showsVerticalScrollIndicator={false}
           showsHorizontalScrollIndicator={false}>
-          <ListFavorite navigation={navigation} />
+          <ListFavorite
+            navigation={navigation}
+            teachers={
+              !favoriteTeachers || favoriteTeachers.length == 0
+                ? recommendTeachers
+                : favoriteTeachers
+            }
+            type={
+              !favoriteTeachers || favoriteTeachers.length == 0
+                ? 'recommend'
+                : 'favorite'
+            }
+          />
           <AllTeachers navigation={navigation} allTeachers={allTeachers} />
           <Rank navigation={navigation} />
           <Question navigation={navigation} />

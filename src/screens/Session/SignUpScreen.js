@@ -19,7 +19,7 @@ import RadioForm, {
   RadioButtonLabel,
 } from 'react-native-simple-radio-button';
 import axios from 'axios';
-import {BASE_URL} from '../../constant/constants';
+import {BASE_URL, USER_OFFLINE} from '../../constant/constants';
 
 const Item = ({item, choose, addSubject, removeSubject}) => {
   const [toggleCheckBox, setToggleCheckBox] = useState(choose);
@@ -391,7 +391,7 @@ export default function SignUpScreen({navigation}) {
                 dateOfBirth: `${date}-${month}-${year}`,
                 phoneNumber: phone,
                 gender: gender,
-                status: 3,
+                status: USER_OFFLINE,
                 point: 1000,
                 course: grade,
                 subjects: subject,
@@ -410,7 +410,7 @@ export default function SignUpScreen({navigation}) {
                   dateOfBirth: `${date}-${month}-${year}`,
                   phoneNumber: phone,
                   gender: gender,
-                  status: 3,
+                  status: USER_OFFLINE,
                   point: 1000,
                   course: grade,
                   subjects: subject,

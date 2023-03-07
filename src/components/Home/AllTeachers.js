@@ -31,7 +31,7 @@ export default function AllTeachers({navigation, allTeachers}) {
         <Pressable
           style={{alignSelf: 'flex-end', flexDirection: 'row'}}
           onPress={() => {
-            navigation.navigate('list-teacher');
+            navigation.navigate('list-teacher', {tab: 3});
           }}>
           <Text style={{color: '#018ABE', fontSize: 16}}>Xem thêm</Text>
           <Icon

@@ -2,10 +2,9 @@ import {Easing} from 'react-native';
 import React from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import AccountScreen from '../screens/Account/AccountScreen';
-import SettingScreen from '../screens/Common/SettingScreen';
-import ListTeacherScreen from '../screens/Home/ListTeacherScreen';
-import QuestionTabNav from '../navigations/Question/QuestionTabNav';
 import EditProfileScreen from '../screens/Account/EditProfileScreen';
+import HistoryCall from '../screens/Account/HistoryCall';
+import NotificationScreen from '../screens/Common/NotificationScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -49,8 +48,8 @@ export default function AccountNav({setIsLogin}) {
         {props => <AccountScreen {...props} setIsLogin={setIsLogin} />}
       </Stack.Screen>
       <Stack.Screen
-        name="setting-screen"
-        component={SettingScreen}
+        name="noti-screen"
+        component={NotificationScreen}
         options={{
           gestureDirection: 'vertical',
           transitionSpec: {
@@ -62,6 +61,17 @@ export default function AccountNav({setIsLogin}) {
       <Stack.Screen
         name="edit-screen"
         component={EditProfileScreen}
+        options={{
+          gestureDirection: 'vertical',
+          transitionSpec: {
+            open: config,
+            close: closeConfig,
+          },
+        }}
+      />
+      <Stack.Screen
+        name="history-call-screen"
+        component={HistoryCall}
         options={{
           gestureDirection: 'vertical',
           transitionSpec: {

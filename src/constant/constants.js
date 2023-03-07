@@ -1,7 +1,8 @@
-import {io} from 'socket.io-client';
-
-export const socket = io('http://34.92.207.101:5000');
-
-// export const BASE_URL = 'http://192.168.56.1:8080';
-
 export const BASE_URL = 'http://learning-application.online';
+
+export const TEACHER_ONLINE = 0;
+export const TEACHER_OFFLINE = 1;
+export const TEACHER_CALLING = 2;
+
+export const USER_ONLINE = 0;
+export const USER_OFFLINE = 1;

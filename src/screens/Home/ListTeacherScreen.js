@@ -7,8 +7,9 @@ import {showTabNav, hideTabNav} from '../../actions/visibleTabNavAction';
 import QuickSearch from '../../components/Home/QuickSearch';
 import Point from '../../components/Common/Point';
 
-export default function ListTeacherScreen({navigation}) {
+export default function ListTeacherScreen({navigation, route}) {
   const dispatch = useDispatch();
+  const {tab} = route.params;
 
   useEffect(() => {
     dispatch(hideTabNav());
@@ -28,7 +29,7 @@ export default function ListTeacherScreen({navigation}) {
         />
         <Point />
       </View>
-      <QuickSearch navigation={navigation} />
+      <QuickSearch navigation={navigation} type={tab} />
     </View>
   );
 }

@@ -3,10 +3,10 @@ import React from 'react';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {WIDTH} from '../../constant/dimentions';
 
-import * as data from '../../data/teacher';
 import {useDispatch} from 'react-redux';
 import {hideTabNav} from '../../actions/visibleTabNavAction';
 import LinearGradient from 'react-native-linear-gradient';
+import {TEACHER_OFFLINE, TEACHER_ONLINE} from '../../constant/constants';
 
 const Item = ({teacher, press}) => {
   return (
@@ -29,20 +29,20 @@ const Item = ({teacher, press}) => {
         resizeMode="contain"
       />
       <View style={{paddingLeft: 10}}>
-        <Text style={{fontSize: 18, color: 'black'}}>{teacher.name}</Text>
+        <Text style={{fontSize: 18, color: 'black'}}>{teacher.realName}</Text>
         <View style={{flexDirection: 'row', paddingTop: 3}}>
           <Icon
             name={
-              teacher.status === 0
+              teacher.status === TEACHER_ONLINE
                 ? 'check-circle'
-                : teacher.status === 1
+                : teacher.status === TEACHER_OFFLINE
                 ? 'timer-off'
                 : 'clock'
             }
             color={
-              teacher.status === 0
+              teacher.status === TEACHER_ONLINE
                 ? 'green'
-                : teacher.status === 1
+                : teacher.status === TEACHER_OFFLINE
                 ? 'red'
                 : '#ff6600'
             }
@@ -53,15 +53,15 @@ const Item = ({teacher, press}) => {
               fontSize: 14,
               paddingLeft: 5,
               color:
-                teacher.status === 0
+                teacher.status === TEACHER_ONLINE
                   ? 'green'
-                  : teacher.status === 1
+                  : teacher.status === TEACHER_OFFLINE
                   ? 'red'
                   : '#ff6600',
             }}>
-            {teacher.status === 0
+            {teacher.status === TEACHER_ONLINE
               ? 'Trực tuyến'
-              : teacher.status === 1
+              : teacher.status === TEACHER_OFFLINE
               ? 'Ngoại tuyến'
               : 'Đang trong cuộc gọi'}
           </Text>
@@ -71,9 +71,12 @@ const Item = ({teacher, press}) => {
   );
 };
 
-const Header = () => {
+const Header = ({navigation, type}) => {
   return (
     <Icon
+      onPress={() =>
+        navigation.navigate('list-teacher', {tab: type == 'favorite' ? 2 : 1})
+      }
       name="plus-circle-outline"
       size={70}
       style={{paddingLeft: 10, paddingRight: 10, color: 'white'}}
@@ -81,7 +84,7 @@ const Header = () => {
   );
 };
 
-export default function ListFavorite({navigation}) {
+export default function ListFavorite({navigation, teachers, type}) {
   const dispatch = useDispatch();
 
   const navigateToDetailScreen = () => {
@@ -102,13 +105,15 @@ export default function ListFavorite({navigation}) {
           paddingTop: 10,
         }}>
         <Text style={{fontSize: 20, color: 'white', fontWeight: '800'}}>
-          Giáo viên đề xuất
+          {type == 'favorite' ? 'Giáo viên yêu thích' : 'Giáo viên đề xuất'}
         </Text>
         <Pressable
           style={{alignSelf: 'center', flexDirection: 'row'}}
           onPress={() => {
             dispatch(hideTabNav());
-            navigation.navigate('list-teacher');
+            navigation.navigate('list-teacher', {
+              tab: type == 'favorite' ? 2 : 1,
+            });
           }}>
           <Text
             style={{
@@ -128,12 +133,14 @@ export default function ListFavorite({navigation}) {
       </View>
 
       <FlatList
-        data={data.teachers}
+        data={teachers}
         renderItem={({item}) => (
           <Item teacher={item} press={navigateToDetailScreen} />
         )}
         keyExtractor={item => item.id}
-        ListHeaderComponent={Header}
+        ListHeaderComponent={() => (
+          <Header navigation={navigation} type={type} />
+        )}
         horizontal={true}
         showsHorizontalScrollIndicator={false}
         style={{paddingTop: 15, paddingBottom: 15}}

@@ -15,7 +15,7 @@ export default function CustomAvatar({text, size, url}) {
         size={size}
         rounded
         title={!text ? 'NA' : `${firstName[0]}${lastName[0]}`}
-        containerStyle={{backgroundColor: '#3d4db7', alignSelf: 'center'}}
+        containerStyle={{backgroundColor: '#018ABE', alignSelf: 'center'}}
       />
     );
   } else {

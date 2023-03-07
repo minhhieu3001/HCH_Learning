@@ -18,7 +18,7 @@ export default function MenuPopup({show, navigation}) {
           <Text style={{color: 'white', fontSize: 18}}>DS Giáo viên</Text>
           <Pressable
             onPress={() => {
-              navigation.navigate('list-teacher');
+              navigation.navigate('list-teacher', {tab: 3});
             }}>
             <Icon
               name="clipboard-list-outline"

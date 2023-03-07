@@ -13,6 +13,7 @@ export default function ChatTop({navigation}) {
         height: 55,
         justifyContent: 'space-between',
         backgroundColor: 'white',
+        paddingEnd: 10,
       }}>
       <Text
         style={{
@@ -23,20 +24,7 @@ export default function ChatTop({navigation}) {
         }}>
         Tin nhắn
       </Text>
-      <View style={{flexDirection: 'row'}}>
-        <Point />
-        <Icon
-          name="trash-can-outline"
-          size={30}
-          style={{
-            color: '#018ABE',
-            alignSelf: 'center',
-            marginRight: 10,
-            marginLeft: 10,
-          }}
-          onPress={() => {}}
-        />
-      </View>
+      <Point />
     </View>
   );
 }

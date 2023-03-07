@@ -9,6 +9,8 @@ import DetailScreen from '../screens/Home/DetailScreen';
 import CallScreen from '../screens/Home/CallScreen';
 import QuestionTabNav from '../navigations/Question/QuestionTabNav';
 import ChatDetailScreen from '../screens/Chat/ChatDetailScreen';
+import FavoriteTeacheres from '../screens/Home/FavoriteTeacheres';
+import NotificationScreen from '../screens/Common/NotificationScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -109,6 +111,28 @@ export default function HomeNav() {
       <Stack.Screen
         name="chat-detail-screen"
         component={ChatDetailScreen}
+        options={{
+          gestureDirection: 'vertical',
+          transitionSpec: {
+            open: config,
+            close: closeConfig,
+          },
+        }}
+      />
+      <Stack.Screen
+        name="teachers-favorite"
+        component={FavoriteTeacheres}
+        options={{
+          gestureDirection: 'vertical',
+          transitionSpec: {
+            open: config,
+            close: closeConfig,
+          },
+        }}
+      />
+      <Stack.Screen
+        name="noti-screen"
+        component={NotificationScreen}
         options={{
           gestureDirection: 'vertical',
           transitionSpec: {

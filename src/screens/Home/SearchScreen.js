@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import React, {useState, useEffect} from 'react';
 import {HEIGHT, WIDTH} from '../../constant/dimentions';
-import Icon from 'react-native-vector-icons/Ionicons';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const Button = ({leftText, rightText}) => {
   return (
@@ -30,6 +30,11 @@ export default function SearchScreen({navigation}) {
   const [visibleClose, setVisibleClose] = useState(false);
   const [filterOnline, setFilterOnline] = useState(false);
 
+  const [name, setName] = useState(null);
+  const [subjects, setSubjects] = useState([]);
+  const [classes, setClasses] = useState([]);
+  const [gender, setGender] = useState(null);
+
   const handleBack = navigation => {
     if (visibleClose) {
       keyboardEventEmitter.dismiss();
@@ -44,9 +49,9 @@ export default function SearchScreen({navigation}) {
     <View style={styles.container}>
       <View style={styles.top}>
         <Icon
-          name="arrow-back-outline"
+          name="keyboard-backspace"
           size={35}
-          style={{color: '#82dc', left: 10, alignSelf: 'center'}}
+          style={{color: '#018ABE', left: 10, alignSelf: 'center'}}
           onPress={() => handleBack(navigation)}
         />
         <View style={{justifyContent: 'center', flexDirection: 'row'}}>
@@ -56,7 +61,7 @@ export default function SearchScreen({navigation}) {
             }}
             onBlur={() => setVisibleClose(false)}
             style={styles.input}
-            cursorColor="#82cd"
+            cursorColor="#018ABE"
             enterKeyHint="search"
             inlineImageLeft="search_icon"
             placeholder="Tìm kiếm theo tên"
@@ -74,9 +79,9 @@ export default function SearchScreen({navigation}) {
           />
         </View>
         <Icon
-          name="md-trash-outline"
-          size={24}
-          style={{color: '#82c9', alignSelf: 'center', right: 10}}
+          name="trash-can-outline"
+          size={26}
+          style={{color: '#018ABE', alignSelf: 'center', right: 10}}
         />
       </View>
       <View style={styles.filter}>
@@ -90,7 +95,7 @@ export default function SearchScreen({navigation}) {
           <Text style={styles.left}>Đang trực tuyến</Text>
 
           <Switch
-            trackColor={{false: '#767577', true: '#81b0ff'}}
+            trackColor={{false: '#767577', true: '#018ABE'}}
             thumbColor={filterOnline ? '#f5dd4b' : '#f4f3f4'}
             onValueChange={() => setFilterOnline(!filterOnline)}
             value={filterOnline}
@@ -119,7 +124,7 @@ export default function SearchScreen({navigation}) {
 const styles = StyleSheet.create({
   container: {
     height: HEIGHT,
-    backgroundColor: '#9876',
+    backgroundColor: '#D6E8EE',
   },
   top: {
     flexDirection: 'row',
@@ -132,7 +137,7 @@ const styles = StyleSheet.create({
     height: 40,
     alignSelf: 'center',
     borderBottomWidth: 1,
-    borderBottomColor: '#82cd',
+    borderBottomColor: '#018ABE',
   },
   filter: {marginTop: 10},
   button: {

@@ -13,20 +13,16 @@ export default function HomeTop({navigation}) {
         height: 55,
         justifyContent: 'space-between',
         backgroundColor: 'white',
+        paddingEnd: 10,
+        paddingStart: 10,
       }}>
       <Icon
+        onPress={() => navigation.navigate('noti-screen')}
         name="bell-outline"
         size={30}
-        style={{color: '#018ABE', alignSelf: 'center', paddingLeft: 10}}
-        onPress={() => {}}
+        style={{color: '#018ABE', alignSelf: 'center'}}
       />
       <Point />
-      <Icon
-        name="dots-vertical"
-        size={30}
-        style={{color: '#018ABE', alignSelf: 'center', paddingRight: 10}}
-        onPress={() => {}}
-      />
     </View>
   );
 }
