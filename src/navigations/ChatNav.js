@@ -9,6 +9,7 @@ import QuestionTabNav from '../navigations/Question/QuestionTabNav';
 import ListTeacherScreen from '../screens/Home/ListTeacherScreen';
 import {useFocusEffect} from '@react-navigation/native';
 import {io} from 'socket.io-client';
+import PaymentScreen from '../screens/Common/PaymentScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -65,6 +66,17 @@ export default function ChatNav() {
       <Stack.Screen
         name="detail-screen"
         component={DetailScreen}
+        options={{
+          gestureDirection: 'vertical',
+          transitionSpec: {
+            open: config,
+            close: closeConfig,
+          },
+        }}
+      />
+      <Stack.Screen
+        name="payment-screen"
+        component={PaymentScreen}
         options={{
           gestureDirection: 'vertical',
           transitionSpec: {

@@ -1,10 +1,10 @@
 import {View, Text} from 'react-native';
 import React from 'react';
 
-export default function FavoriteTeacheres() {
+export default function ResultSearchScreen() {
   return (
     <View>
-      <Text>FavoriteTeacheres</Text>
+      <Text>ResultSearchScreen</Text>
     </View>
   );
 }

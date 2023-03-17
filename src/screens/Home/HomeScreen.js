@@ -1,4 +1,4 @@
-import {View, StyleSheet, ScrollView, Text, Pressable} from 'react-native';
+import {View, StyleSheet, ScrollView, Alert} from 'react-native';
 import React, {useEffect, useState} from 'react';
 
 import HomeTop from '../../components/Home/HomeTop';
@@ -8,13 +8,15 @@ import Rank from '../../components/Home/RankTop3';
 import Question from '../../components/Home/Question';
 import {WIDTH, HEIGHT} from '../../constant/dimentions';
 import {useDispatch, useSelector} from 'react-redux';
-import {hideTabNav, showTabNav} from '../../actions/visibleTabNavAction';
 import MenuPopup from '../../components/Common/MenuPopup';
 import axios from 'axios';
 import {BASE_URL} from '../../constant/constants';
 import Loading from '../../components/Common/Loading';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useFocusEffect} from '@react-navigation/native';
+import {setData} from '../../redux/slice/pointSlice';
+import {hideTabNav, showTabNav} from '../../redux/slice/tabNavSlice';
+import {setCount} from '../../redux/slice/notificationSlice';
 
 export default function HomeScreen({navigation}) {
   const dispatch = useDispatch();
@@ -37,9 +39,9 @@ export default function HomeScreen({navigation}) {
       )
       .then(res => {
         if (res.data.code == 0) {
-          setFavoriteTeachers(res.data.object);
+          setFavoriteTeachers(res.data.object.teacherResponses);
         } else {
-          Alert.alert('Thông báo', 'Lỗi mạng!');
+          Alert.alert('Thông báo', 'Lỗi mạng favorite!');
         }
       });
   };
@@ -53,14 +55,14 @@ export default function HomeScreen({navigation}) {
     };
     axios
       .get(
-        `${BASE_URL}/ums/getTeachers/getTeacher?page=0&size=15&tab=1`,
+        `${BASE_URL}/ums/getTeachers/getTeacher?page=0&size=10&searchByClasses=&searchBySubjects=&tab=1`,
         config,
       )
       .then(res => {
         if (res.data.code == 0) {
-          setRecommendTeachers(res.data.object);
+          setRecommendTeachers(res.data.object.teacherResponses);
         } else {
-          Alert.alert('Thông báo', 'Lỗi mạng!');
+          Alert.alert('Thông báo', 'Lỗi mạng recommend!');
         }
       });
   };
@@ -73,10 +75,13 @@ export default function HomeScreen({navigation}) {
       },
     };
     await axios
-      .get(`${BASE_URL}/ums/getTeachers?page=0&size=8&sort=time_login`, config)
+      .get(
+        `${BASE_URL}/ums/getTeachers/getTeacher?page=0&size=12&tab=3`,
+        config,
+      )
       .then(res => {
         if (res.data.code === 0) {
-          setAllTeachers(res.data.object);
+          setAllTeachers(res.data.object.teacherResponses);
         }
       });
   };
@@ -85,18 +90,33 @@ export default function HomeScreen({navigation}) {
     const currentOffset = event.nativeEvent.contentOffset.y;
     const dif = currentOffset - (this.offset || 0);
     if (dif < 0 || currentOffset == 0) {
-      dispatch(showTabNav());
+      dispatch(showTabNav(true));
     } else {
-      dispatch(hideTabNav());
+      dispatch(hideTabNav(false));
     }
     this.offset = currentOffset;
   };
 
   const visibleMenuPopup = useSelector(state => {
-    return state.visibleMenuPopup;
+    return state.menuPopUp.visibleMenuPopup;
   });
 
+  const getPoint = async () => {
+    const data = await AsyncStorage.getItem('user');
+    const point = JSON.parse(data).point;
+    dispatch(setData(point));
+  };
+
+  const getNotiCount = async () => {
+    const data = await AsyncStorage.getItem('notiCount');
+    const notiCount = JSON.parse(data);
+    dispatch(setCount(notiCount));
+  };
+
   useEffect(() => {
+    console.log('aaaaaaaaaaaaaaaaa', visibleMenuPopup);
+    getPoint();
+    getNotiCount();
     getAllTeacher();
     getFavoriteTeachers();
     getRecommendTeachers();
@@ -104,7 +124,9 @@ export default function HomeScreen({navigation}) {
 
   useFocusEffect(
     React.useCallback(() => {
-      dispatch(showTabNav());
+      getPoint();
+      getNotiCount();
+      dispatch(showTabNav(true));
       getAllTeacher();
       getFavoriteTeachers();
       getRecommendTeachers();
@@ -113,10 +135,7 @@ export default function HomeScreen({navigation}) {
 
   return (
     <View style={styles.container}>
-      <MenuPopup
-        show={visibleMenuPopup.visibleMenuPopup}
-        navigation={navigation}
-      />
+      <MenuPopup show={visibleMenuPopup} navigation={navigation} />
       <HomeTop navigation={navigation} />
       {!allTeachers || !favoriteTeachers || !recommendTeachers ? (
         <Loading />

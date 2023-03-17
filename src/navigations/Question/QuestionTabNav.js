@@ -2,11 +2,11 @@ import {View, Text} from 'react-native';
 import React, {useEffect} from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {useDispatch} from 'react-redux';
-import {hideTabNav} from '../../actions/visibleTabNavAction';
 import AllQuestionNav from './AllQuestionNav';
 import MyQuestionNav from './MyQuestionNav';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useSelector} from 'react-redux';
+import {hideTabNav} from '../../redux/slice/tabNavSlice';
 
 const BottomTab = createBottomTabNavigator();
 
@@ -14,7 +14,7 @@ export default function QuestionTabNav({navigation}) {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(hideTabNav());
+    dispatch(hideTabNav(false));
   }, []);
 
   return (

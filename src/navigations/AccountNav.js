@@ -5,6 +5,7 @@ import AccountScreen from '../screens/Account/AccountScreen';
 import EditProfileScreen from '../screens/Account/EditProfileScreen';
 import HistoryCall from '../screens/Account/HistoryCall';
 import NotificationScreen from '../screens/Common/NotificationScreen';
+import PaymentScreen from '../screens/Common/PaymentScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -72,6 +73,17 @@ export default function AccountNav({setIsLogin}) {
       <Stack.Screen
         name="history-call-screen"
         component={HistoryCall}
+        options={{
+          gestureDirection: 'vertical',
+          transitionSpec: {
+            open: config,
+            close: closeConfig,
+          },
+        }}
+      />
+      <Stack.Screen
+        name="payment-screen"
+        component={PaymentScreen}
         options={{
           gestureDirection: 'vertical',
           transitionSpec: {

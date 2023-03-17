@@ -7,8 +7,6 @@ import {useFocusEffect} from '@react-navigation/native';
 import axios from 'axios';
 import {BASE_URL} from '../../constant/constants';
 
-const WIDTH = Dimensions.get('window').width;
-
 export default function Profile({navigation}) {
   const [user, setUser] = useState(null);
 
@@ -84,7 +82,7 @@ const styles = StyleSheet.create({
   container: {
     marginTop: 5,
     backgroundColor: 'white',
-    width: WIDTH - 10,
+    width: '96%',
     alignSelf: 'center',
     borderRadius: 15,
     marginBottom: 5,

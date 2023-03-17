@@ -12,7 +12,6 @@ import {WIDTH, HEIGHT} from '../../constant/dimentions';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import LinearGradient from 'react-native-linear-gradient';
 import {useDispatch, useSelector} from 'react-redux';
-import {hideTabNav, showTabNav} from '../../actions/visibleTabNavAction';
 import Loading from '../../components/Common/Loading';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -20,6 +19,8 @@ import {BASE_URL, TEACHER_ONLINE} from '../../constant/constants';
 import {useFocusEffect} from '@react-navigation/native';
 import CustomAvatar from '../../components/Common/CustomAvatar';
 import Sound from 'react-native-sound';
+import {hideTabNav, showTabNav} from '../../redux/slice/tabNavSlice';
+import socket from '../../service/socket';
 
 Sound.setCategory('Playback');
 const newMsgSound = new Sound('new_msg.mp3', Sound.MAIN_BUNDLE, error => {
@@ -60,10 +61,6 @@ export default function ChatScreen({navigation}) {
       }
     });
   };
-
-  const socket = useSelector(state => {
-    return state.socket;
-  });
 
   const handleNewMessage = async () => {
     console.log('newMsg', newMsg);
@@ -125,8 +122,8 @@ export default function ChatScreen({navigation}) {
   useEffect(() => {
     getUser();
     getConversations();
-    if (socket.socket) {
-      socket.socket.on('msg-receive', data => {
+    if (socket) {
+      socket.on('msg-receive', data => {
         console.log('useEffect', data);
         setNewMsg(data);
       });
@@ -139,7 +136,7 @@ export default function ChatScreen({navigation}) {
 
   useFocusEffect(
     React.useCallback(() => {
-      dispatch(showTabNav());
+      dispatch(showTabNav(true));
       getUser();
       getConversations();
 
@@ -154,7 +151,7 @@ export default function ChatScreen({navigation}) {
 
   useEffect(() => {
     if (user) {
-      socket.socket.emit('add-user', user.id);
+      socket.emit('add-user', user.id);
     }
   }, [user]);
 
@@ -162,15 +159,15 @@ export default function ChatScreen({navigation}) {
     const currentOffset = event.nativeEvent.contentOffset.y;
     const dif = currentOffset - (this.offset || 0);
     if (dif < 0 || currentOffset == 0) {
-      dispatch(showTabNav());
+      dispatch(showTabNav(true));
     } else {
-      dispatch(hideTabNav());
+      dispatch(hideTabNav(false));
     }
     this.offset = currentOffset;
   };
   return (
     <View style={styles.container}>
-      <ChatTop />
+      <ChatTop navigation={navigation} />
       <View>
         {!conversations ? (
           <Loading />

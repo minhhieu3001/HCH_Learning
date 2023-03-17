@@ -10,24 +10,18 @@ import RankNav from './RankNav';
 import AccountNav from './AccountNav';
 import {useSelector} from 'react-redux';
 import {useDispatch} from 'react-redux';
-import {showMenuPopup} from '../actions/visibleMenuPopupAction';
 import MenuPopup from '../components/Common/MenuPopup';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {initSocket} from '../actions/socketAction';
+import {showMenuPopup} from '../redux/slice/menuPopUpSlice';
 
 const BottomTab = createBottomTabNavigator();
 
 export default function AppNav({setIsLogin}) {
   const visibleTabNav = useSelector(state => {
-    return state.visibleTabNav;
+    return state.tabNav.visibleTabNav;
   });
 
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    dispatch(initSocket());
-    // socket.on('message', msg => console.log(msg));
-  }, []);
 
   return (
     <BottomTab.Navigator
@@ -40,7 +34,7 @@ export default function AppNav({setIsLogin}) {
           backgroundColor: 'white',
           height: 55,
           bottom: 0,
-          display: visibleTabNav.visibleTabNav == false ? 'none' : 'flex',
+          display: visibleTabNav == false ? 'none' : 'flex',
         },
       }}>
       <BottomTab.Screen
@@ -120,7 +114,7 @@ export default function AppNav({setIsLogin}) {
         listeners={({navigation}) => ({
           tabPress: event => {
             event.preventDefault();
-            dispatch(showMenuPopup());
+            dispatch(showMenuPopup(true));
           },
         })}
       />

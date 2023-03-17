@@ -9,13 +9,17 @@ import {
   Platform,
   NativeEventEmitter,
 } from 'react-native';
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import {HEIGHT, WIDTH} from '../../constant/dimentions';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import ModalPopup from '../../components/Common/ModalPopup';
+import {subjects} from '../../data/subjects';
+import CheckBox from '@react-native-community/checkbox';
+import {classes} from '../../data/classes';
 
-const Button = ({leftText, rightText}) => {
+const Button = ({leftText, rightText, press}) => {
   return (
-    <Pressable style={styles.button}>
+    <Pressable style={styles.button} onPress={() => press(leftText)}>
       <Text style={styles.left}>{leftText}</Text>
 
       <Text style={styles.right}>{rightText}</Text>
@@ -23,16 +27,97 @@ const Button = ({leftText, rightText}) => {
   );
 };
 
+const ItemSubject = ({item, choose, addSubject, removeSubject}) => {
+  const [toggleCheckBox, setToggleCheckBox] = useState(choose);
+
+  return (
+    <View
+      key={item.id}
+      style={{
+        height: 45,
+        borderBottomWidth: 1,
+        borderBottomColor: 'gray',
+        justifyContent: 'space-between',
+        flexDirection: 'row',
+      }}>
+      <Text
+        style={{
+          fontSize: 16,
+          color: 'black',
+          alignSelf: 'center',
+          marginLeft: 10,
+        }}>
+        {item.name}
+      </Text>
+      <CheckBox
+        style={{
+          alignSelf: 'center',
+          marginRight: 10,
+        }}
+        disabled={false}
+        value={toggleCheckBox}
+        onValueChange={() => {
+          setToggleCheckBox(!toggleCheckBox);
+          !toggleCheckBox ? addSubject(item.name) : removeSubject(item.name);
+        }}
+      />
+    </View>
+  );
+};
+
+const ItemClass = ({item, choose, addClass, removeClass}) => {
+  const [toggleCheckBox, setToggleCheckBox] = useState(choose);
+  return (
+    <View
+      key={item.id}
+      style={{
+        height: 45,
+        borderBottomWidth: 1,
+        borderBottomColor: 'gray',
+        justifyContent: 'space-between',
+        flexDirection: 'row',
+      }}>
+      <Text
+        style={{
+          fontSize: 16,
+          color: 'black',
+          alignSelf: 'center',
+          marginLeft: 10,
+        }}>
+        {item.value}
+      </Text>
+      <CheckBox
+        style={{
+          alignSelf: 'center',
+          marginRight: 10,
+        }}
+        disabled={false}
+        value={toggleCheckBox}
+        onValueChange={() => {
+          setToggleCheckBox(!toggleCheckBox);
+          !toggleCheckBox ? addClass(item.name) : removeClass(item.name);
+        }}
+      />
+    </View>
+  );
+};
+
 export default function SearchScreen({navigation}) {
   const keyboardEventEmitter =
     Platform.OS === 'ios' ? new NativeEventEmitter(Keyboard) : Keyboard;
 
+  const input = useRef(null);
+
   const [visibleClose, setVisibleClose] = useState(false);
   const [filterOnline, setFilterOnline] = useState(false);
+  const [position, setPosition] = useState(0);
+  const [showEditSubject, setShowEditSubject] = useState(false);
+  const [showEditClass, setShowEditClass] = useState(false);
+  const [showEditGender, setShowEditGender] = useState(false);
 
   const [name, setName] = useState(null);
-  const [subjects, setSubjects] = useState([]);
-  const [classes, setClasses] = useState([]);
+  const [subject, setSubject] = useState([]);
+  const [grade, setGrade] = useState([]);
   const [gender, setGender] = useState(null);
 
   const handleBack = navigation => {
@@ -44,7 +129,37 @@ export default function SearchScreen({navigation}) {
     }
   };
 
-  useEffect(() => {}, []);
+  const addSubject = name => {
+    subject.push(name);
+    setSubject(subject);
+  };
+
+  const removeSubject = async name => {
+    const newList = subject.filter(function (value, index, arr) {
+      return value != name;
+    });
+    setSubject(newList);
+  };
+
+  const handlePress = text => {
+    if (text == 'Môn học') {
+      setShowEditSubject(true);
+    } else if (text == 'Dạy lớp') {
+      setShowEditClass(true);
+    }
+  };
+
+  useEffect(() => {
+    if (visibleClose == true) {
+      setPosition(280);
+    } else {
+      setPosition(0);
+    }
+  }, [visibleClose]);
+
+  useEffect(() => {
+    console.log(name, subject, grade, gender, filterOnline);
+  }, [name, subject, grade, gender, filterOnline]);
   return (
     <View style={styles.container}>
       <View style={styles.top}>
@@ -56,6 +171,7 @@ export default function SearchScreen({navigation}) {
         />
         <View style={{justifyContent: 'center', flexDirection: 'row'}}>
           <TextInput
+            ref={input}
             onFocus={() => {
               setVisibleClose(true);
             }}
@@ -66,8 +182,10 @@ export default function SearchScreen({navigation}) {
             inlineImageLeft="search_icon"
             placeholder="Tìm kiếm theo tên"
             inlineImagePadding={10}
+            onChangeText={text => setName(text)}
           />
           <Icon
+            onPress={() => input.current.clear()}
             name="close"
             size={24}
             style={{
@@ -79,18 +197,142 @@ export default function SearchScreen({navigation}) {
           />
         </View>
         <Icon
+          onPress={() => {
+            input.current.clear();
+            subject.current.clear();
+            grade.current.clear();
+            genders.current.clear();
+          }}
           name="trash-can-outline"
           size={26}
           style={{color: '#018ABE', alignSelf: 'center', right: 10}}
         />
       </View>
+      <ModalPopup visible={showEditSubject}>
+        <View
+          style={{
+            backgroundColor: 'white',
+            width: WIDTH - 60,
+            alignSelf: 'center',
+            top: 100,
+            borderRadius: 5,
+            padding: 10,
+          }}>
+          <Text
+            style={{
+              borderBottomWidth: 1,
+              height: 50,
+              fontSize: 20,
+              textAlign: 'center',
+              paddingTop: 5,
+              color: 'black',
+            }}>
+            Môn học
+          </Text>
+          <View>
+            {subjects.map((item, index) => {
+              return (
+                <ItemSubject
+                  key={index}
+                  item={item}
+                  choose={subject.includes(item.name)}
+                  addSubject={addSubject}
+                  removeSubject={removeSubject}
+                />
+              );
+            })}
+          </View>
+          <View
+            style={{
+              height: 45,
+              flexDirection: 'row',
+              justifyContent: 'flex-end',
+            }}>
+            <Pressable
+              style={{width: 100, alignSelf: 'center'}}
+              onPress={() => {
+                setShowEditSubject(false);
+                setSubject([]);
+              }}>
+              <Text style={{fontSize: 16}}>Hủy</Text>
+            </Pressable>
+            <Pressable
+              style={{width: 100, alignSelf: 'center'}}
+              onPress={() => setShowEditSubject(false)}>
+              <Text style={{fontSize: 16, color: 'black'}}>Xác nhận</Text>
+            </Pressable>
+          </View>
+        </View>
+      </ModalPopup>
+      <ModalPopup visible={showEditClass}>
+        <View
+          style={{
+            backgroundColor: 'white',
+            width: WIDTH - 60,
+            alignSelf: 'center',
+            top: 100,
+            borderRadius: 5,
+            padding: 10,
+          }}>
+          <Text
+            style={{
+              borderBottomWidth: 1,
+              height: 50,
+              fontSize: 20,
+              textAlign: 'center',
+              paddingTop: 5,
+              color: 'black',
+            }}>
+            Lớp học
+          </Text>
+          <View>
+            {classes.map((item, index) => {
+              return (
+                <ItemClass
+                  key={index}
+                  item={item}
+                  choose={grade.includes(item.name)}
+                  addSubject={addSubject}
+                  removeSubject={removeSubject}
+                />
+              );
+            })}
+          </View>
+          <View
+            style={{
+              height: 45,
+              flexDirection: 'row',
+              justifyContent: 'flex-end',
+            }}>
+            <Pressable
+              style={{width: 100, alignSelf: 'center'}}
+              onPress={() => {
+                setShowEditClass(false);
+                setSubject([]);
+              }}>
+              <Text style={{fontSize: 16}}>Hủy</Text>
+            </Pressable>
+            <Pressable
+              style={{width: 100, alignSelf: 'center'}}
+              onPress={() => setShowEditClass(false)}>
+              <Text style={{fontSize: 16, color: 'black'}}>Xác nhận</Text>
+            </Pressable>
+          </View>
+        </View>
+      </ModalPopup>
+      <ModalPopup visible={showEditGender}></ModalPopup>
       <View style={styles.filter}>
         <Button
           leftText="Môn học"
           rightText="Toán học, Ngoại ngữ, Sinh học, ..."
+          press={handlePress}
         />
-        <Button leftText="Lớp" rightText="Lớp 6, Lớp 7, Lớp 8,..." />
-        <Button leftText="Giới tính" rightText="Nam" />
+        <Button
+          leftText="Dạy lớp"
+          rightText="Lớp 6, Lớp 7, Lớp 8,..."
+          press={handlePress}
+        />
+        <Button leftText="Giới tính" rightText="Nam" press={handlePress} />
         <Pressable style={styles.button}>
           <Text style={styles.left}>Đang trực tuyến</Text>
 
@@ -102,8 +344,20 @@ export default function SearchScreen({navigation}) {
           />
         </Pressable>
       </View>
-      <View style={styles.viewSearch}>
-        <Pressable style={styles.buttonSearch}>
+      <View
+        style={{
+          height: 80,
+          backgroundColor: 'white',
+          position: 'absolute',
+          bottom: position,
+          width: WIDTH,
+          justifyContent: 'center',
+        }}>
+        <Pressable
+          style={styles.buttonSearch}
+          onPress={() =>
+            navigation.navigate('result-screen', {searchName: 'a'})
+          }>
           <Text
             style={{
               textAlign: 'center',
@@ -157,14 +411,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     alignSelf: 'center',
     right: 15,
-  },
-  viewSearch: {
-    height: 80,
-    backgroundColor: 'white',
-    position: 'absolute',
-    bottom: 0,
-    width: WIDTH,
-    justifyContent: 'center',
   },
   buttonSearch: {
     height: 55,

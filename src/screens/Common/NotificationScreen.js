@@ -2,14 +2,14 @@ import {View, Text, StyleSheet} from 'react-native';
 import React, {useEffect} from 'react';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useDispatch} from 'react-redux';
-import {hideTabNav, showTabNav} from '../../actions/visibleTabNavAction';
 import Point from '../../components/Common/Point';
+import {hideTabNav} from '../../redux/slice/tabNavSlice';
 
 export default function NotificationScreen({navigation}) {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(hideTabNav());
+    dispatch(hideTabNav(false));
   }, []);
 
   return (
@@ -19,9 +19,8 @@ export default function NotificationScreen({navigation}) {
           <Icon
             name="keyboard-backspace"
             size={30}
-            style={{color: '#82cd', alignSelf: 'center', paddingLeft: 10}}
+            style={{color: '#018ABE', alignSelf: 'center', paddingLeft: 10}}
             onPress={() => {
-              dispatch(showTabNav());
               navigation.goBack();
             }}
           />
@@ -35,7 +34,7 @@ export default function NotificationScreen({navigation}) {
             Thông báo
           </Text>
         </View>
-        <Point />
+        <Point navigation={navigation} />
       </View>
     </View>
   );

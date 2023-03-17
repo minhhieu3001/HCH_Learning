@@ -4,14 +4,14 @@ import {WIDTH} from '../../constant/dimentions';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Rate from '../Common/Rate';
 import {useDispatch} from 'react-redux';
-import {hideTabNav} from '../../actions/visibleTabNavAction';
 import Item from '../Common/Item';
+import {hideTabNav} from '../../redux/slice/tabNavSlice';
 
 export default function AllTeachers({navigation, allTeachers}) {
   const dispatch = useDispatch();
 
   const navigateToDetailScreen = id => {
-    dispatch(hideTabNav());
+    dispatch(hideTabNav(false));
     navigation.navigate('detail-screen', {teacherId: id});
   };
   return (

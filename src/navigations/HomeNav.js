@@ -9,8 +9,10 @@ import DetailScreen from '../screens/Home/DetailScreen';
 import CallScreen from '../screens/Home/CallScreen';
 import QuestionTabNav from '../navigations/Question/QuestionTabNav';
 import ChatDetailScreen from '../screens/Chat/ChatDetailScreen';
-import FavoriteTeacheres from '../screens/Home/FavoriteTeacheres';
 import NotificationScreen from '../screens/Common/NotificationScreen';
+import Reviews from '../screens/Home/Reviews';
+import PaymentScreen from '../screens/Common/PaymentScreen';
+import ResultSearchScreen from '../screens/Home/ResultSearchScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -120,8 +122,8 @@ export default function HomeNav() {
         }}
       />
       <Stack.Screen
-        name="teachers-favorite"
-        component={FavoriteTeacheres}
+        name="noti-screen"
+        component={NotificationScreen}
         options={{
           gestureDirection: 'vertical',
           transitionSpec: {
@@ -131,8 +133,30 @@ export default function HomeNav() {
         }}
       />
       <Stack.Screen
-        name="noti-screen"
-        component={NotificationScreen}
+        name="reviews-screen"
+        component={Reviews}
+        options={{
+          gestureDirection: 'vertical',
+          transitionSpec: {
+            open: config,
+            close: closeConfig,
+          },
+        }}
+      />
+      <Stack.Screen
+        name="payment-screen"
+        component={PaymentScreen}
+        options={{
+          gestureDirection: 'vertical',
+          transitionSpec: {
+            open: config,
+            close: closeConfig,
+          },
+        }}
+      />
+      <Stack.Screen
+        name="result-screen"
+        component={ResultSearchScreen}
         options={{
           gestureDirection: 'vertical',
           transitionSpec: {

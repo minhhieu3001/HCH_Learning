@@ -3,16 +3,16 @@ import React, {useEffect} from 'react';
 import {WIDTH, HEIGHT} from '../../constant/dimentions';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useDispatch} from 'react-redux';
-import {showTabNav, hideTabNav} from '../../actions/visibleTabNavAction';
 import QuickSearch from '../../components/Home/QuickSearch';
 import Point from '../../components/Common/Point';
+import {hideTabNav} from '../../redux/slice/tabNavSlice';
 
 export default function ListTeacherScreen({navigation, route}) {
   const dispatch = useDispatch();
   const {tab} = route.params;
 
   useEffect(() => {
-    dispatch(hideTabNav());
+    dispatch(hideTabNav(false));
   }, []);
   return (
     <View style={styles.container}>
@@ -23,11 +23,10 @@ export default function ListTeacherScreen({navigation, route}) {
           color="#018ABE"
           style={{alignSelf: 'center', left: 10}}
           onPress={() => {
-            dispatch(showTabNav());
             navigation.goBack();
           }}
         />
-        <Point />
+        <Point navigation={navigation} />
       </View>
       <QuickSearch navigation={navigation} type={tab} />
     </View>

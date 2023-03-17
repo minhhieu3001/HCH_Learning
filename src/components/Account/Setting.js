@@ -4,8 +4,8 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useDispatch} from 'react-redux';
 import ModalPopup from '../Common/ModalPopup';
-import {HEIGHT, WIDTH} from '../../constant/dimentions';
-import {hideTabNav} from '../../actions/visibleTabNavAction';
+import {hideTabNav} from '../../redux/slice/tabNavSlice';
+import {HEIGHT} from '../../constant/dimentions';
 
 const Button = ({iconName, text, press}) => {
   return (
@@ -43,10 +43,10 @@ export default function Setting({navigation, setIsLogin}) {
     } else if (buttonName === 'key-change') {
       setShowChangePass(true);
     } else if (buttonName === 'history') {
-      dispatch(hideTabNav());
+      dispatch(hideTabNav(false));
       navigation.navigate('history-call-screen');
     } else if (buttonName === 'bell') {
-      dispatch(hideTabNav());
+      dispatch(hideTabNav(false));
       navigation.navigate('noti-screen');
     }
   };
@@ -56,10 +56,10 @@ export default function Setting({navigation, setIsLogin}) {
       <ModalPopup visible={showChangePass}>
         <View
           style={{
-            width: WIDTH - 40,
+            width: '92%',
             backgroundColor: 'white',
             alignSelf: 'center',
-            top: HEIGHT / 2 - 200,
+            top: HEIGHT / 2 - 100,
             borderRadius: 20,
           }}>
           <View
@@ -74,9 +74,12 @@ export default function Setting({navigation, setIsLogin}) {
               <Text style={styles.left}>Xác nhận</Text>
             </View>
             <View>
-              <TextInput style={styles.right} />
-              <TextInput style={styles.right} />
-              <TextInput style={styles.right} />
+              <TextInput style={styles.right} placeholder="Mật khẩu cũ" />
+              <TextInput style={styles.right} placeholder="Mật khẩu mới" />
+              <TextInput
+                style={styles.right}
+                placeholder="Xác nhận mật khẩu mới"
+              />
             </View>
           </View>
           <View
@@ -97,19 +100,19 @@ export default function Setting({navigation, setIsLogin}) {
                 setShowChangePass(false);
               }}>
               <Text
-                style={{alignSelf: 'center', marginLeft: '40%', fontSize: 16}}>
+                style={{alignSelf: 'center', marginLeft: '35%', fontSize: 16}}>
                 Hủy bỏ
               </Text>
             </Pressable>
             <Pressable
-              style={{width: '50%'}}
+              style={{width: '50%', flexDirection: 'row'}}
               onPress={() => {
                 setShowChangePass(false);
               }}>
               <Text
                 style={{
                   alignSelf: 'center',
-                  marginLeft: '40%',
+                  marginLeft: '35%',
                   fontSize: 16,
                   color: '#02457A',
                 }}>
@@ -131,7 +134,7 @@ export default function Setting({navigation, setIsLogin}) {
 const styles = StyleSheet.create({
   container: {
     marginTop: 5,
-    width: WIDTH,
+    width: '100%',
     alignSelf: 'center',
   },
   left: {
@@ -146,5 +149,6 @@ const styles = StyleSheet.create({
     height: 45,
     marginBottom: 5,
     borderRadius: 15,
+    paddingStart: 10,
   },
 });

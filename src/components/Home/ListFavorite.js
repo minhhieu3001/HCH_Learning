@@ -4,14 +4,15 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {WIDTH} from '../../constant/dimentions';
 
 import {useDispatch} from 'react-redux';
-import {hideTabNav} from '../../actions/visibleTabNavAction';
 import LinearGradient from 'react-native-linear-gradient';
 import {TEACHER_OFFLINE, TEACHER_ONLINE} from '../../constant/constants';
+import CustomAvatar from '../Common/CustomAvatar';
+import {hideTabNav} from '../../redux/slice/tabNavSlice';
 
 const Item = ({teacher, press}) => {
   return (
     <Pressable
-      onPress={() => press()}
+      onPress={() => press(teacher.id)}
       style={{
         flexDirection: 'row',
         backgroundColor: 'white',
@@ -20,14 +21,10 @@ const Item = ({teacher, press}) => {
         height: 70,
         padding: 5,
         marginRight: 10,
-        elevation: 20,
+        elevation: 2,
         shadowColor: 'gray',
       }}>
-      <Image
-        source={require('../../assets/images/images.png')}
-        style={{width: 60, height: 60, borderRadius: 30}}
-        resizeMode="contain"
-      />
+      <CustomAvatar text={teacher.realName} size={60} url={teacher.avaPath} />
       <View style={{paddingLeft: 10}}>
         <Text style={{fontSize: 18, color: 'black'}}>{teacher.realName}</Text>
         <View style={{flexDirection: 'row', paddingTop: 3}}>
@@ -87,9 +84,9 @@ const Header = ({navigation, type}) => {
 export default function ListFavorite({navigation, teachers, type}) {
   const dispatch = useDispatch();
 
-  const navigateToDetailScreen = () => {
-    dispatch(hideTabNav());
-    navigation.navigate('detail-screen');
+  const navigateToDetailScreen = id => {
+    dispatch(hideTabNav(false));
+    navigation.navigate('detail-screen', {teacherId: id});
   };
   return (
     <LinearGradient
@@ -110,7 +107,7 @@ export default function ListFavorite({navigation, teachers, type}) {
         <Pressable
           style={{alignSelf: 'center', flexDirection: 'row'}}
           onPress={() => {
-            dispatch(hideTabNav());
+            dispatch(hideTabNav(false));
             navigation.navigate('list-teacher', {
               tab: type == 'favorite' ? 2 : 1,
             });

@@ -1,10 +1,23 @@
 import {View, Text, Pressable} from 'react-native';
 import React from 'react';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import {useDispatch, useSelector} from 'react-redux';
+import {hideTabNav} from '../../redux/slice/tabNavSlice';
 
-export default function Point() {
+export default function Point({navigation}) {
+  const dispatch = useDispatch();
+  const point = useSelector(state => {
+    return state.pointSlice;
+  });
+
+  console.log(point);
+
   return (
     <Pressable
+      onPress={() => {
+        dispatch(hideTabNav(false));
+        navigation.navigate('payment-screen');
+      }}
       style={{
         flexDirection: 'row',
         borderWidth: 1,
@@ -15,7 +28,7 @@ export default function Point() {
         borderRadius: 20,
         alignSelf: 'center',
       }}>
-      <Text style={{alignSelf: 'center'}}>1234P</Text>
+      <Text style={{alignSelf: 'center'}}>{point.data}P</Text>
 
       <Icon
         name="plus-circle"

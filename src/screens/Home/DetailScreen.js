@@ -6,6 +6,9 @@ import {
   StyleSheet,
   Pressable,
   ScrollView,
+  Alert,
+  TouchableOpacity,
+  TextInput,
 } from 'react-native';
 import {WIDTH, HEIGHT} from '../../constant/dimentions';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -20,6 +23,10 @@ import {
 import Loading from '../../components/Common/Loading';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ModalPopup from '../../components/Common/ModalPopup';
+import {Avatar} from '@rneui/themed';
+import CustomAvatar from '../../components/Common/CustomAvatar';
+import messaging from '@react-native-firebase/messaging';
+import Point from '../../components/Common/Point';
 
 const Item = ({text}) => {
   return (
@@ -72,6 +79,9 @@ const DetailScreen = ({route, navigation}) => {
   const [showRequestCall, setShowRequestCall] = useState(false);
   const [counting, setCounting] = useState(false);
 
+  const [rtcToken, setRtcToken] = useState(null);
+  const [channel, setChanel] = useState(null);
+
   const getDetailTeacher = async () => {
     const token = await AsyncStorage.getItem('token');
     const config = {
@@ -88,7 +98,7 @@ const DetailScreen = ({route, navigation}) => {
         console.log(res.data.object);
         if (res.data.code === 0) {
           setTeacher(res.data.object);
-          if (!res.data.object.isFavorite) {
+          if (res.data.object.favTeacher == false) {
             setFavorite(false);
           } else setFavorite(true);
         }
@@ -118,17 +128,59 @@ const DetailScreen = ({route, navigation}) => {
   };
 
   const deleteFavoriteTeacher = async () => {
-    setFavorite(false);
+    const token = await AsyncStorage.getItem('token');
+    const config = {
+      headers: {
+        Authorization: token,
+      },
+    };
+    axios
+      .put(
+        `${BASE_URL}/ums/session/student/unFavTeacher?teacherId=${teacherId}`,
+        null,
+        config,
+      )
+      .then(res => {
+        setFavorite(false);
+      });
   };
 
-  const requestCall = async () => {
+  const requestCall = async navigation => {
     setTime(90);
     setShowRequestCall(true);
     setCounting(true);
+    const token = await AsyncStorage.getItem('token');
+    const config = {
+      headers: {
+        Authorization: token,
+      },
+    };
+    const data = {
+      toId: teacherId,
+      callOption: 1,
+    };
+    axios.post(`${BASE_URL}/call`, data, config).then(res => {
+      if (res.data.code == 0) {
+        setChanel(res.data.object.chanel);
+        setRtcToken(res.data.object.token);
+      }
+    });
+    if (time != 0 && time != null) {
+    }
   };
 
   useEffect(() => {
-    console.log(time, counting);
+    const unsubscribe = messaging().onMessage(async remoteMessage => {
+      console.log('fcm message call', remoteMessage);
+      // if (remoteMessage.data.type == 1) {
+      //   MessageNotification();
+      // }
+    });
+
+    return unsubscribe;
+  }, []);
+
+  useEffect(() => {
     let timer;
     if (counting && time > 0) {
       timer = setInterval(() => {
@@ -136,6 +188,7 @@ const DetailScreen = ({route, navigation}) => {
       }, 1000);
     } else if (counting && time === 0) {
       setCounting(false);
+      setShowRequestCall(false);
     }
     return () => clearInterval(timer);
   }, [counting, time]);
@@ -146,18 +199,59 @@ const DetailScreen = ({route, navigation}) => {
 
   return (
     <View style={styles.container}>
-      <ModalPopup visible={showRequestCall}>
+      {!teacher ? (
+        <></>
+      ) : (
         <View>
-          <Text style={{fontSize: 30, color: 'white'}}>{time}</Text>
-          <Pressable
-            onPress={() => {
-              setShowRequestCall(false);
-              setCounting(false);
-            }}>
-            <Text>Hủy bỏ</Text>
-          </Pressable>
+          <ModalPopup visible={showRequestCall}>
+            <View
+              style={{
+                borderWidth: 1,
+                height: 200,
+                backgroundColor: 'white',
+                width: '80%',
+                top: HEIGHT / 2 - 120,
+                alignSelf: 'center',
+                justifyContent: 'center',
+                borderColor: 'gray',
+                borderRadius: 20,
+              }}>
+              {teacher.avaPath ? (
+                <Avatar
+                  rounded
+                  size={50}
+                  source={{uri: teacher.avaPath}}
+                  containerStyle={{alignSelf: 'center'}}
+                />
+              ) : (
+                <Avatar
+                  rounded
+                  size={50}
+                  source={require('../../assets/images/images.png')}
+                  containerStyle={{alignSelf: 'center'}}
+                />
+              )}
+              <Text
+                style={{
+                  fontSize: 16,
+                  color: 'black',
+                  alignSelf: 'center',
+                }}>{`Đang chờ giáo viên ${teacher.realName} phản hồi`}</Text>
+              <Text style={{fontSize: 30, color: 'red', alignSelf: 'center'}}>
+                {time}
+              </Text>
+              <Pressable
+                style={{alignSelf: 'center', marginTop: 10}}
+                onPress={() => {
+                  setShowRequestCall(false);
+                  setCounting(false);
+                }}>
+                <Text style={{fontSize: 18}}>Hủy bỏ</Text>
+              </Pressable>
+            </View>
+          </ModalPopup>
         </View>
-      </ModalPopup>
+      )}
       <View style={styles.header}>
         <Icon
           name="keyboard-backspace"
@@ -167,34 +261,7 @@ const DetailScreen = ({route, navigation}) => {
             navigation.goBack();
           }}
         />
-        <View style={{flexDirection: 'row'}}>
-          <View
-            style={{
-              flexDirection: 'row',
-              borderWidth: 0.5,
-              height: 30,
-              paddingStart: 10,
-              paddingEnd: 10,
-              alignSelf: 'center',
-              borderRadius: 20,
-              alignItems: 'center',
-              marginEnd: 10,
-            }}>
-            <Text>1234P</Text>
-            <Icon
-              name="plus-circle-outline"
-              size={20}
-              style={{marginLeft: 5, color: '#82dc'}}
-            />
-          </View>
-
-          <Icon
-            name="dots-vertical"
-            size={30}
-            style={{color: '#82cd', paddingTop: 10, paddingRight: 10}}
-            onPress={() => {}}
-          />
-        </View>
+        <Point navigation={navigation} />
       </View>
       {!teacher ? (
         <Loading />
@@ -206,14 +273,21 @@ const DetailScreen = ({route, navigation}) => {
               style={styles.background}
               resizeMode="cover"
             />
-            <Image
+            {/* <Image
               // source={require('../../assets/images/images.png')}
               source={{
                 uri: 'https://bookstoreimages.s3.amazonaws.com/avatar/e6ca763a56cba495bb76ae4df7bed3f3.jpg',
               }}
               style={styles.avatar}
               resizeMode="cover"
-            />
+              /> */}
+            <View style={styles.avatar}>
+              <CustomAvatar
+                text={teacher.realName}
+                size={150}
+                url={teacher.avaPath}
+              />
+            </View>
             {favorite ? (
               <Pressable
                 style={styles.addFavorite}
@@ -421,10 +495,17 @@ const DetailScreen = ({route, navigation}) => {
                     style={{fontSize: 18, fontWeight: 'bold', color: 'black'}}>
                     Đánh giá
                   </Text>
-                  <Pressable>
+                  <Pressable
+                    onPress={() => navigation.navigate('reviews-screen')}
+                    style={{flexDirection: 'row'}}>
                     <Text style={{color: '#018ABE', fontSize: 14}}>
                       Xem tất cả
                     </Text>
+                    <Icon
+                      name="chevron-right"
+                      size={16}
+                      style={{color: '#018ABE', alignSelf: 'center'}}
+                    />
                   </Pressable>
                 </View>
                 <View
@@ -624,7 +705,16 @@ const DetailScreen = ({route, navigation}) => {
           </Pressable>
           <Pressable
             onPress={() => {
-              requestCall();
+              if (teacher.status == TEACHER_ONLINE) {
+                // requestCall(navigation);
+                navigation.navigate('call-screen');
+              } else if (teacher.status == TEACHER_OFFLINE) {
+                Alert.alert(
+                  'Thông báo',
+                  'Giáo viên đang ngoại tuyến không thể thực hiện cuộc gọi',
+                );
+              } else
+                Alert.alert('Thông báo', 'Giáo viên đang có cuộc gọi khác');
             }}
             style={{
               flexDirection: 'row',
@@ -677,6 +767,7 @@ const styles = StyleSheet.create({
     height: 55,
     justifyContent: 'space-between',
     backgroundColor: 'white',
+    paddingEnd: 10,
   },
   profileImageContainer: {
     height: 180,

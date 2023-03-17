@@ -4,9 +4,9 @@ import {useDispatch, useSelector} from 'react-redux';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import ModalPopup from './ModalPopup';
-import {hideMenuPopup} from '../../actions/visibleMenuPopupAction';
 import {HEIGHT, WIDTH} from '../../constant/dimentions';
-import {hideTabNav} from '../../actions/visibleTabNavAction';
+import {hideTabNav} from '../../redux/slice/tabNavSlice';
+import {hideMenuPopup} from '../../redux/slice/menuPopUpSlice';
 
 export default function MenuPopup({show, navigation}) {
   const dispatch = useDispatch();
@@ -32,7 +32,7 @@ export default function MenuPopup({show, navigation}) {
           <Text style={{color: 'white', fontSize: 18}}>Câu hỏi</Text>
           <Pressable
             onPress={() => {
-              dispatch(hideTabNav());
+              dispatch(hideTabNav(false));
               navigation.navigate('question-screen');
             }}>
             <Icon
@@ -43,20 +43,9 @@ export default function MenuPopup({show, navigation}) {
             />
           </Pressable>
         </View>
-        <View style={styles.openPosts}>
-          <Text style={{color: 'white', fontSize: 18}}>Bài đăng</Text>
-          <Pressable onPress={() => {}}>
-            <Icon
-              name="newspaper-variant-outline"
-              size={40}
-              color="#8cd"
-              style={styles.icon}
-            />
-          </Pressable>
-        </View>
         <Pressable
           onPress={() => {
-            dispatch(hideMenuPopup());
+            dispatch(hideMenuPopup(false));
           }}
           style={styles.close}>
           <Icon name="close-circle" size={48} color="#8cd" />
@@ -94,10 +83,5 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: HEIGHT / 2 + 30,
     right: 40,
-  },
-  openPosts: {
-    position: 'absolute',
-    top: HEIGHT / 2 + 160,
-    left: WIDTH / 2 - 38,
   },
 });

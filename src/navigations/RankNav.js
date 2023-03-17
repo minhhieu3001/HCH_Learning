@@ -5,6 +5,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import RankScreen from '../screens/Rank/RankScreen';
 import ListTeacherScreen from '../screens/Home/ListTeacherScreen';
 import QuestionTabNav from '../navigations/Question/QuestionTabNav';
+import PaymentScreen from '../screens/Common/PaymentScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -39,6 +40,17 @@ export default function RankNav() {
       <Stack.Screen
         name="rank-screen"
         component={RankScreen}
+        options={{
+          gestureDirection: 'vertical',
+          transitionSpec: {
+            open: config,
+            close: closeConfig,
+          },
+        }}
+      />
+      <Stack.Screen
+        name="payment-screen"
+        component={PaymentScreen}
         options={{
           gestureDirection: 'vertical',
           transitionSpec: {

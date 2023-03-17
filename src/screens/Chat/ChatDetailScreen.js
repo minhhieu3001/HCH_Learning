@@ -14,7 +14,6 @@ import {
 import React, {useEffect, useState, useRef, useLayoutEffect} from 'react';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useDispatch, useSelector} from 'react-redux';
-import {hideTabNav, showTabNav} from '../../actions/visibleTabNavAction';
 import {WIDTH, HEIGHT} from '../../constant/dimentions';
 import TeacherMessage from '../../components/Chat/TeacherMessage';
 import UserMessage from '../../components/Chat/UserMessage';
@@ -28,6 +27,8 @@ import {launchImageLibrary} from 'react-native-image-picker';
 import Sound from 'react-native-sound';
 import {RNS3} from 'react-native-aws3';
 import {accessKey, secretKey} from '../../constant/awsKey';
+import {hideTabNav} from '../../redux/slice/tabNavSlice';
+import socket from '../../service/socket';
 
 Sound.setCategory('Playback');
 const newMsgSound = new Sound('new_msg.mp3', Sound.MAIN_BUNDLE, error => {
@@ -45,10 +46,6 @@ export default function ChatDetailScreen({navigation}) {
 
   const input = useRef(null);
   const scrollRef = useRef(null);
-
-  const socket = useSelector(state => {
-    return state.socket;
-  });
 
   const dispatch = useDispatch();
   const keyboardEventEmitter =
@@ -109,7 +106,7 @@ export default function ChatDetailScreen({navigation}) {
   const handleSendMsg = async msg => {
     if (msg != '' && msg != null) {
       setInputHeight(50);
-      socket.socket.emit('send-msg', {
+      socket.emit('send-msg', {
         to: teacherId,
         senderId: user.id,
         senderName: user.realName,
@@ -193,7 +190,7 @@ export default function ChatDetailScreen({navigation}) {
           };
           RNS3.put(file, config);
 
-          socket.socket.emit('send-msg', {
+          socket.emit('send-msg', {
             to: teacherId,
             senderId: user.id,
             senderName: user.realName,
@@ -234,7 +231,7 @@ export default function ChatDetailScreen({navigation}) {
 
   //ban phim
   useEffect(() => {
-    dispatch(hideTabNav());
+    dispatch(hideTabNav(false));
     getUser();
     if (scrollRef) scrollRef.current.scrollToEnd();
     const keyboardDidShowListener = keyboardEventEmitter.addListener(
@@ -254,8 +251,8 @@ export default function ChatDetailScreen({navigation}) {
 
   //socket
   useEffect(() => {
-    if (socket.socket) {
-      socket.socket.on('msg-receive', data => {
+    if (socket) {
+      socket.on('msg-receive', data => {
         console.log('msg-receive', data);
         if (data.senderId == teacherId) {
           newMsgSound.play();
@@ -284,7 +281,6 @@ export default function ChatDetailScreen({navigation}) {
 
   //load more
   useEffect(() => {
-    setFirst(false);
     if (user) {
       getMessages();
     }

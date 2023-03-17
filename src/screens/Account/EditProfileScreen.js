@@ -9,7 +9,6 @@ import {
 } from 'react-native';
 import React, {useEffect, useState, useRef} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
-import {showTabNav, hideTabNav} from '../../actions/visibleTabNavAction';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {HEIGHT, WIDTH} from '../../constant/dimentions';
 import ModalPopup from '../../components/Common/ModalPopup';
@@ -24,6 +23,7 @@ import {launchImageLibrary} from 'react-native-image-picker';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {BASE_URL} from '../../constant/constants';
+import {hideTabNav} from '../../redux/slice/tabNavSlice';
 
 export default function EditProfileScreen({navigation, route}) {
   const dispatch = useDispatch();
@@ -77,24 +77,24 @@ export default function EditProfileScreen({navigation, route}) {
       subjects: subject.length == 0 ? user.subjects : subject,
     };
 
-    // const config = {
-    //   keyPrefix: 'avatar/',
-    //   bucket: 'bookstoreimages',
-    //   region: 'us-east-1',
-    //   accessKey: Aws.access_key,
-    //   secretKey: Aws.secret_key,
-    //   successActionStatus: 201,
-    // };
-    // RNS3.put(file, config);
+    const config = {
+      keyPrefix: 'avatar/',
+      bucket: 'bookstoreimages',
+      region: 'us-east-1',
+      accessKey: Aws.access_key,
+      secretKey: Aws.secret_key,
+      successActionStatus: 201,
+    };
+    RNS3.put(file, config);
 
     const token = await AsyncStorage.getItem('token');
-    const config = {
+    const configHeader = {
       headers: {
         Authorization: token,
       },
     };
     axios
-      .post(`${BASE_URL}/ums/session/student/update`, newUser, config)
+      .post(`${BASE_URL}/ums/session/student/update`, newUser, configHeader)
       .then(res => navigation.goBack())
       .catch(err => console.log(err));
   };
@@ -128,7 +128,7 @@ export default function EditProfileScreen({navigation, route}) {
   };
 
   useEffect(() => {
-    dispatch(hideTabNav());
+    dispatch(hideTabNav(false));
   }, []);
 
   return (
@@ -284,7 +284,6 @@ export default function EditProfileScreen({navigation, route}) {
         <View style={{flexDirection: 'row'}}>
           <Icon
             onPress={() => {
-              dispatch(showTabNav());
               navigation.goBack();
             }}
             name="window-close"

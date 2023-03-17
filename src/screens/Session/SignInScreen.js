@@ -22,7 +22,7 @@ export default function SignInScreen(props) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const {setIsLogin, navigation} = props;
+  const {setIsLogin, navigation, deviceToken} = props;
 
   const login = () => {
     axios({
@@ -31,6 +31,7 @@ export default function SignInScreen(props) {
       data: {
         email: email,
         password: password,
+        tokenDevice: deviceToken,
       },
     })
       .then(function (response) {
@@ -39,6 +40,8 @@ export default function SignInScreen(props) {
           AsyncStorage.setItem('isLogin', 'true');
           AsyncStorage.setItem('user', user);
           AsyncStorage.setItem('token', response.data.object.token);
+          const notiCount = JSON.stringify(0);
+          AsyncStorage.setItem('notiCount', notiCount);
           setIsLogin(true);
           console.log(response.data.object.token);
         } else {

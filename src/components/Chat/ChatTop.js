@@ -1,7 +1,5 @@
 import {View, Text} from 'react-native';
 import React from 'react';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import {WIDTH} from '../../constant/dimentions';
 import Point from '../Common/Point';
 
 export default function ChatTop({navigation}) {
@@ -9,7 +7,7 @@ export default function ChatTop({navigation}) {
     <View
       style={{
         flexDirection: 'row',
-        width: WIDTH,
+        width: '100%',
         height: 55,
         justifyContent: 'space-between',
         backgroundColor: 'white',
@@ -24,7 +22,7 @@ export default function ChatTop({navigation}) {
         }}>
         Tin nhắn
       </Text>
-      <Point />
+      <Point navigation={navigation} />
     </View>
   );
 }

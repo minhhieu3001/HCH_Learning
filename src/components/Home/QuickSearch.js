@@ -98,6 +98,7 @@ export default function QuickSearch({navigation, type}) {
   ];
 
   const getTeachers = async () => {
+    setTeachers(null);
     const token = await AsyncStorage.getItem('token');
     const config = {
       headers: {
@@ -113,7 +114,7 @@ export default function QuickSearch({navigation, type}) {
       )
       .then(res => {
         if (res.data.code === 0) {
-          setTeachers(res.data.object);
+          setTeachers(res.data.object.teacherResponses);
         }
       });
   };
@@ -250,6 +251,7 @@ export default function QuickSearch({navigation, type}) {
             teachers.map((item, index) => {
               return (
                 <Item
+                  key={item.id}
                   teacher={item}
                   press={() => navigateToDetailScreen(item.id)}
                 />
@@ -290,7 +292,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     alignSelf: 'center',
     paddingVertical: 5,
-    backgroundColor: '#82cd',
+    backgroundColor: '#cc3300',
     borderRadius: 20,
   },
   textActive: {

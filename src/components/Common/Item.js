@@ -5,6 +5,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Rate from './Rate';
 import {Avatar} from '@rneui/themed';
 import {TEACHER_OFFLINE, TEACHER_ONLINE} from '../../constant/constants';
+import CustomAvatar from './CustomAvatar';
 
 export default function Item({teacher, press}) {
   let lastName = '';
@@ -26,12 +27,7 @@ export default function Item({teacher, press}) {
         paddingTop: 5,
         marginBottom: 10,
       }}>
-      <Avatar
-        size={90}
-        rounded
-        title={`${firstName[0]}${lastName[0]}`}
-        containerStyle={{backgroundColor: '#3d4db7', alignSelf: 'center'}}
-      />
+      <CustomAvatar text={teacher.realName} size={90} url={teacher.avaPath} />
       <View style={{paddingLeft: 10, paddingTop: 10}}>
         <Text style={{fontSize: 18, color: 'black'}}>{teacher.realName}</Text>
         <View style={{flexDirection: 'row', paddingTop: 3}}>
@@ -82,13 +78,13 @@ export default function Item({teacher, press}) {
         <View style={{flexDirection: 'row'}}>
           <View style={{paddingTop: 3, flexDirection: 'row'}}>
             <Text style={{fontSize: 14, fontWeight: '600'}}>
-              {teacher.pointOfCharacter}p{' '}
+              {teacher.priceChat}p{' '}
             </Text>
             <Text>/1 kí tự</Text>
           </View>
           <View style={{paddingTop: 3, flexDirection: 'row', marginLeft: 20}}>
             <Text style={{fontSize: 14, fontWeight: '600'}}>
-              {teacher.pointOfCall}p{' '}
+              {teacher.priceCall}p{' '}
             </Text>
             <Text>/1 phút gọi </Text>
           </View>

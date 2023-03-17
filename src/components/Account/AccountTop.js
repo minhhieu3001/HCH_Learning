@@ -1,16 +1,13 @@
 import {View, Text, Dimensions} from 'react-native';
 import React from 'react';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Point from '../Common/Point';
 
-const WIDTH = Dimensions.get('window').width;
-
-export default function AccountTop() {
+export default function AccountTop({navigation}) {
   return (
     <View
       style={{
         flexDirection: 'row',
-        width: WIDTH,
+        width: '100%',
         height: 55,
         justifyContent: 'space-between',
         backgroundColor: 'white',
@@ -20,7 +17,7 @@ export default function AccountTop() {
         style={{color: 'black', fontSize: 25, left: 10, alignSelf: 'center'}}>
         Tài khoản
       </Text>
-      <Point />
+      <Point navigation={navigation} />
     </View>
   );
 }

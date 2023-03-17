@@ -2,7 +2,7 @@ import {View, Text, StyleSheet} from 'react-native';
 import React from 'react';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useDispatch} from 'react-redux';
-import {showTabNav} from '../../actions/visibleTabNavAction';
+import Point from '../Common/Point';
 
 export default function QuestionTop({navigation}) {
   const dispatch = useDispatch();
@@ -11,7 +11,6 @@ export default function QuestionTop({navigation}) {
       <View style={{flexDirection: 'row'}}>
         <Icon
           onPress={() => {
-            dispatch(showTabNav());
             navigation.goBack();
           }}
           name="close"
@@ -29,26 +28,7 @@ export default function QuestionTop({navigation}) {
           Hỏi & đáp
         </Text>
       </View>
-      <View
-        style={{
-          flexDirection: 'row',
-          borderWidth: 0.5,
-          height: 30,
-          top: 10,
-          right: 10,
-          paddingTop: 5,
-          paddingLeft: 10,
-          paddingRight: 10,
-          borderRadius: 20,
-        }}>
-        <Text>1234P</Text>
-
-        <Icon
-          name="plus-circle-outline"
-          size={20}
-          style={{marginLeft: 5, color: '#82dc'}}
-        />
-      </View>
+      <Point navigation={navigation} />
     </View>
   );
 }
@@ -59,5 +39,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     flexDirection: 'row',
     justifyContent: 'space-between',
+    paddingEnd: 10,
   },
 });

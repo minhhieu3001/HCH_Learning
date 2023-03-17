@@ -26,7 +26,7 @@ export default function CustomAvatar({text, size, url}) {
         source={{
           uri: url,
         }}
-        containerStyle={{backgroundColor: '#3d4db7', alignSelf: 'center'}}
+        containerStyle={{alignSelf: 'center'}}
       />
     );
   }
