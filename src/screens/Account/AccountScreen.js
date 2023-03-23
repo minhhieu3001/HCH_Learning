@@ -16,7 +16,7 @@ export default function AccountScreen(props) {
     return state.menuPopUp.visibleMenuPopup;
   });
 
-  const {navigation, setIsLogin} = props;
+  const {navigation} = props;
 
   useFocusEffect(
     React.useCallback(() => {
@@ -28,7 +28,7 @@ export default function AccountScreen(props) {
     <View style={styles.container}>
       <AccountTop navigation={navigation} />
       <Profile navigation={navigation} />
-      <Setting navigation={navigation} setIsLogin={setIsLogin} />
+      <Setting navigation={navigation} />
     </View>
   );
 }

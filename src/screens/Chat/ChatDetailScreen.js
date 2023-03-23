@@ -9,7 +9,6 @@ import {
   Keyboard,
   Platform,
   NativeEventEmitter,
-  NativeModules,
 } from 'react-native';
 import React, {useEffect, useState, useRef, useLayoutEffect} from 'react';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -17,7 +16,6 @@ import {useDispatch, useSelector} from 'react-redux';
 import {WIDTH, HEIGHT} from '../../constant/dimentions';
 import TeacherMessage from '../../components/Chat/TeacherMessage';
 import UserMessage from '../../components/Chat/UserMessage';
-import {Avatar} from '@rneui/themed';
 import {useRoute} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
@@ -29,6 +27,7 @@ import {RNS3} from 'react-native-aws3';
 import {accessKey, secretKey} from '../../constant/awsKey';
 import {hideTabNav} from '../../redux/slice/tabNavSlice';
 import socket from '../../service/socket';
+import {minusPoint} from '../../redux/slice/pointSlice';
 
 Sound.setCategory('Playback');
 const newMsgSound = new Sound('new_msg.mp3', Sound.MAIN_BUNDLE, error => {
@@ -113,6 +112,17 @@ export default function ChatDetailScreen({navigation}) {
         senderAvatar: user.avaPath,
         msg: msg,
         imgUrl: '',
+        msg_length: msg.length,
+      });
+
+      socket.emit('typing', {
+        to: teacherId,
+        senderId: user.id,
+        senderName: user.realName,
+        senderAvatar: user.avaPath,
+        msg: msg,
+        imgUrl: '',
+        msg_length: msg.length,
       });
 
       const token = await AsyncStorage.getItem('token');
@@ -131,9 +141,15 @@ export default function ChatDetailScreen({navigation}) {
           },
           config,
         )
-        .then(res => {
+        .then(async res => {
           if (res.data.code === 0) {
             setChatId(res.data.object.chatId);
+            dispatch(minusPoint(res.data.object.price));
+            const data = await AsyncStorage.getItem('user');
+            const user = JSON.parse(data);
+            user.point -= res.data.object.price;
+            const new_user = JSON.stringify(user);
+            AsyncStorage.setItem('user', new_user);
           }
         });
       const msgs = [
@@ -197,6 +213,17 @@ export default function ChatDetailScreen({navigation}) {
             senderAvatar: user.avaPath,
             msg: null,
             imgUrl: `https://bookstoreimages.s3.us-east-1.amazonaws.com/chat_images/${file.name}`,
+            msg_length: 10,
+          });
+
+          socket.emit('typing', {
+            to: teacherId,
+            senderId: user.id,
+            senderName: user.realName,
+            senderAvatar: user.avaPath,
+            msg: null,
+            imgUrl: `https://bookstoreimages.s3.us-east-1.amazonaws.com/chat_images/${file.name}`,
+            msg_length: 10,
           });
 
           const token = await AsyncStorage.getItem('token');
@@ -231,6 +258,7 @@ export default function ChatDetailScreen({navigation}) {
 
   //ban phim
   useEffect(() => {
+    console.log('a');
     dispatch(hideTabNav(false));
     getUser();
     if (scrollRef) scrollRef.current.scrollToEnd();

@@ -25,48 +25,6 @@ export default function HomeScreen({navigation}) {
   const [favoriteTeachers, setFavoriteTeachers] = useState([]);
   const [recommendTeachers, setRecommendTeachers] = useState([]);
 
-  const getFavoriteTeachers = async () => {
-    const token = await AsyncStorage.getItem('token');
-    const config = {
-      headers: {
-        Authorization: token,
-      },
-    };
-    axios
-      .get(
-        `${BASE_URL}/ums/getTeachers/getTeacher?page=0&size=15&tab=2`,
-        config,
-      )
-      .then(res => {
-        if (res.data.code == 0) {
-          setFavoriteTeachers(res.data.object.teacherResponses);
-        } else {
-          Alert.alert('Thông báo', 'Lỗi mạng favorite!');
-        }
-      });
-  };
-
-  const getRecommendTeachers = async () => {
-    const token = await AsyncStorage.getItem('token');
-    const config = {
-      headers: {
-        Authorization: token,
-      },
-    };
-    axios
-      .get(
-        `${BASE_URL}/ums/getTeachers/getTeacher?page=0&size=10&searchByClasses=&searchBySubjects=&tab=1`,
-        config,
-      )
-      .then(res => {
-        if (res.data.code == 0) {
-          setRecommendTeachers(res.data.object.teacherResponses);
-        } else {
-          Alert.alert('Thông báo', 'Lỗi mạng recommend!');
-        }
-      });
-  };
-
   const getAllTeacher = async () => {
     const token = await AsyncStorage.getItem('token');
     const config = {
@@ -114,22 +72,16 @@ export default function HomeScreen({navigation}) {
   };
 
   useEffect(() => {
-    console.log('aaaaaaaaaaaaaaaaa', visibleMenuPopup);
     getPoint();
     getNotiCount();
     getAllTeacher();
-    getFavoriteTeachers();
-    getRecommendTeachers();
   }, []);
 
   useFocusEffect(
     React.useCallback(() => {
-      getPoint();
       getNotiCount();
       dispatch(showTabNav(true));
       getAllTeacher();
-      getFavoriteTeachers();
-      getRecommendTeachers();
     }, []),
   );
 
@@ -146,19 +98,7 @@ export default function HomeScreen({navigation}) {
           }}
           showsVerticalScrollIndicator={false}
           showsHorizontalScrollIndicator={false}>
-          <ListFavorite
-            navigation={navigation}
-            teachers={
-              !favoriteTeachers || favoriteTeachers.length == 0
-                ? recommendTeachers
-                : favoriteTeachers
-            }
-            type={
-              !favoriteTeachers || favoriteTeachers.length == 0
-                ? 'recommend'
-                : 'favorite'
-            }
-          />
+          <ListFavorite navigation={navigation} />
           <AllTeachers navigation={navigation} allTeachers={allTeachers} />
           <Rank navigation={navigation} />
           <Question navigation={navigation} />

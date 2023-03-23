@@ -13,8 +13,12 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import axios from 'axios';
 import {BASE_URL} from '../../constant/constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import socket from '../../service/socket';
+import {useDispatch} from 'react-redux';
+import {setLogin} from '../../redux/slice/loginSlice';
 
 export default function SignInScreen(props) {
+  const dispatch = useDispatch();
   const [activeEmail, setActiveEmail] = useState(false);
   const [activePass, setActivePass] = useState(false);
   const [showPass, setShowPass] = useState(false);
@@ -22,7 +26,7 @@ export default function SignInScreen(props) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const {setIsLogin, navigation, deviceToken} = props;
+  const {navigation, deviceToken} = props;
 
   const login = () => {
     axios({
@@ -42,7 +46,8 @@ export default function SignInScreen(props) {
           AsyncStorage.setItem('token', response.data.object.token);
           const notiCount = JSON.stringify(0);
           AsyncStorage.setItem('notiCount', notiCount);
-          setIsLogin(true);
+          dispatch(setLogin(true));
+          socket.emit('add-user', response.data.object.id);
           console.log(response.data.object.token);
         } else {
           Alert.alert('Thông báo', 'Email hoặc mật khẩu không đúng!');

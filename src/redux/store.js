@@ -3,6 +3,8 @@ import pointSlice from './slice/pointSlice';
 import tabNavSlice from './slice/tabNavSlice';
 import menuPopUpSlice from './slice/menuPopUpSlice';
 import notificationSlice from './slice/notificationSlice';
+import questionTabSlice from './slice/questionTabSlice';
+import loginSlice from './slice/loginSlice';
 
 export const store = configureStore({
   reducer: {
@@ -10,5 +12,7 @@ export const store = configureStore({
     notification: notificationSlice,
     tabNav: tabNavSlice,
     menuPopUp: menuPopUpSlice,
+    questionTab: questionTabSlice,
+    login: loginSlice,
   },
 });

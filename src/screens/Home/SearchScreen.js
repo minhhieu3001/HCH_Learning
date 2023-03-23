@@ -69,7 +69,7 @@ const ItemClass = ({item, choose, addClass, removeClass}) => {
   const [toggleCheckBox, setToggleCheckBox] = useState(choose);
   return (
     <View
-      key={item.id}
+      key={item.name}
       style={{
         height: 45,
         borderBottomWidth: 1,
@@ -95,7 +95,7 @@ const ItemClass = ({item, choose, addClass, removeClass}) => {
         value={toggleCheckBox}
         onValueChange={() => {
           setToggleCheckBox(!toggleCheckBox);
-          !toggleCheckBox ? addClass(item.name) : removeClass(item.name);
+          !toggleCheckBox ? addClass(item.value) : removeClass(item.value);
         }}
       />
     </View>
@@ -109,7 +109,6 @@ export default function SearchScreen({navigation}) {
   const input = useRef(null);
 
   const [visibleClose, setVisibleClose] = useState(false);
-  const [filterOnline, setFilterOnline] = useState(false);
   const [position, setPosition] = useState(0);
   const [showEditSubject, setShowEditSubject] = useState(false);
   const [showEditClass, setShowEditClass] = useState(false);
@@ -118,7 +117,7 @@ export default function SearchScreen({navigation}) {
   const [name, setName] = useState(null);
   const [subject, setSubject] = useState([]);
   const [grade, setGrade] = useState([]);
-  const [gender, setGender] = useState(null);
+  const [gender, setGender] = useState(1);
 
   const handleBack = navigation => {
     if (visibleClose) {
@@ -141,11 +140,25 @@ export default function SearchScreen({navigation}) {
     setSubject(newList);
   };
 
+  const addClass = name => {
+    grade.push(name);
+    setGrade(grade);
+  };
+
+  const removeClass = async name => {
+    const newList = grade.filter(function (value, index, arr) {
+      return value != name;
+    });
+    setGrade(newList);
+  };
+
   const handlePress = text => {
     if (text == 'Môn học') {
       setShowEditSubject(true);
     } else if (text == 'Dạy lớp') {
       setShowEditClass(true);
+    } else if (text == 'Giới tính') {
+      setShowEditGender(true);
     }
   };
 
@@ -157,9 +170,6 @@ export default function SearchScreen({navigation}) {
     }
   }, [visibleClose]);
 
-  useEffect(() => {
-    console.log(name, subject, grade, gender, filterOnline);
-  }, [name, subject, grade, gender, filterOnline]);
   return (
     <View style={styles.container}>
       <View style={styles.top}>
@@ -169,7 +179,12 @@ export default function SearchScreen({navigation}) {
           style={{color: '#018ABE', left: 10, alignSelf: 'center'}}
           onPress={() => handleBack(navigation)}
         />
-        <View style={{justifyContent: 'center', flexDirection: 'row'}}>
+        <View
+          style={{
+            justifyContent: 'center',
+            flexDirection: 'row',
+            marginEnd: '20%',
+          }}>
           <TextInput
             ref={input}
             onFocus={() => {
@@ -196,17 +211,6 @@ export default function SearchScreen({navigation}) {
             }}
           />
         </View>
-        <Icon
-          onPress={() => {
-            input.current.clear();
-            subject.current.clear();
-            grade.current.clear();
-            genders.current.clear();
-          }}
-          name="trash-can-outline"
-          size={26}
-          style={{color: '#018ABE', alignSelf: 'center', right: 10}}
-        />
       </View>
       <ModalPopup visible={showEditSubject}>
         <View
@@ -268,9 +272,9 @@ export default function SearchScreen({navigation}) {
         <View
           style={{
             backgroundColor: 'white',
-            width: WIDTH - 60,
+            width: WIDTH - 150,
             alignSelf: 'center',
-            top: 100,
+            top: 50,
             borderRadius: 5,
             padding: 10,
           }}>
@@ -283,7 +287,7 @@ export default function SearchScreen({navigation}) {
               paddingTop: 5,
               color: 'black',
             }}>
-            Lớp học
+            Lớp
           </Text>
           <View>
             {classes.map((item, index) => {
@@ -291,9 +295,9 @@ export default function SearchScreen({navigation}) {
                 <ItemClass
                   key={index}
                   item={item}
-                  choose={grade.includes(item.name)}
-                  addSubject={addSubject}
-                  removeSubject={removeSubject}
+                  choose={grade.includes(item.value)}
+                  addClass={addClass}
+                  removeClass={removeClass}
                 />
               );
             })}
@@ -308,7 +312,7 @@ export default function SearchScreen({navigation}) {
               style={{width: 100, alignSelf: 'center'}}
               onPress={() => {
                 setShowEditClass(false);
-                setSubject([]);
+                setGrade([]);
               }}>
               <Text style={{fontSize: 16}}>Hủy</Text>
             </Pressable>
@@ -320,29 +324,95 @@ export default function SearchScreen({navigation}) {
           </View>
         </View>
       </ModalPopup>
-      <ModalPopup visible={showEditGender}></ModalPopup>
+      <ModalPopup visible={showEditGender}>
+        <View
+          style={{
+            backgroundColor: 'white',
+            width: WIDTH - 150,
+            alignSelf: 'center',
+            top: 150,
+            borderRadius: 5,
+            padding: 10,
+          }}>
+          <View>
+            <Pressable
+              onPress={() => {
+                setGender(1);
+                setShowEditGender(false);
+              }}
+              style={{
+                height: 45,
+                justifyContent: 'center',
+                paddingBottom: 2,
+                borderBottomWidth: 0.5,
+                borderBottomColor: 'gray',
+              }}>
+              <Text style={{fontSize: 16, color: 'black', textAlign: 'center'}}>
+                Nam
+              </Text>
+            </Pressable>
+            <Pressable
+              onPress={() => {
+                setGender(2);
+                setShowEditGender(false);
+              }}
+              style={{
+                height: 45,
+                justifyContent: 'center',
+                paddingBottom: 2,
+              }}>
+              <Text style={{fontSize: 16, color: 'black', textAlign: 'center'}}>
+                Nữ
+              </Text>
+            </Pressable>
+          </View>
+          <View
+            style={{
+              height: 45,
+              flexDirection: 'row',
+              justifyContent: 'center',
+              borderTopWidth: 1,
+              borderTopColor: 'gray',
+            }}>
+            <Pressable
+              style={{alignSelf: 'center'}}
+              onPress={() => {
+                setShowEditGender(false);
+                setGender(1);
+              }}>
+              <Text style={{fontSize: 16}}>Hủy</Text>
+            </Pressable>
+          </View>
+        </View>
+      </ModalPopup>
       <View style={styles.filter}>
         <Button
           leftText="Môn học"
-          rightText="Toán học, Ngoại ngữ, Sinh học, ..."
+          rightText={
+            !subject || subject.length == 0
+              ? ''
+              : subject.length > 3
+              ? `${subject[0]}, ${subject[1]}, ${subject[2]}, ...`
+              : subject.join(', ')
+          }
           press={handlePress}
         />
         <Button
           leftText="Dạy lớp"
-          rightText="Lớp 6, Lớp 7, Lớp 8,..."
+          rightText={
+            !grade || grade.length == 0
+              ? ''
+              : grade.length > 3
+              ? `${grade[0]}, ${grade[1]}, ${grade[2]}, ...`
+              : grade.join(', ')
+          }
           press={handlePress}
         />
-        <Button leftText="Giới tính" rightText="Nam" press={handlePress} />
-        <Pressable style={styles.button}>
-          <Text style={styles.left}>Đang trực tuyến</Text>
-
-          <Switch
-            trackColor={{false: '#767577', true: '#018ABE'}}
-            thumbColor={filterOnline ? '#f5dd4b' : '#f4f3f4'}
-            onValueChange={() => setFilterOnline(!filterOnline)}
-            value={filterOnline}
-          />
-        </Pressable>
+        <Button
+          leftText="Giới tính"
+          rightText={gender == 1 ? 'Nam' : 'Nữ'}
+          press={handlePress}
+        />
       </View>
       <View
         style={{
@@ -356,7 +426,12 @@ export default function SearchScreen({navigation}) {
         <Pressable
           style={styles.buttonSearch}
           onPress={() =>
-            navigation.navigate('result-screen', {searchName: 'a'})
+            navigation.navigate('result-screen', {
+              searchName: name,
+              subjects: subject,
+              classes: grade,
+              gender: gender,
+            })
           }>
           <Text
             style={{

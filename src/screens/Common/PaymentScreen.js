@@ -3,11 +3,11 @@ import React from 'react';
 import {WebView} from 'react-native-webview';
 
 export default function PaymentScreen() {
-  const vnp_Version = '2.0.1';
+  const vnp_Version = ' 2.0.1';
   const vnp_TmnCode = 'QP8WT05F';
-  const vnp_Amount = '10000';
-  const vnp_CreateDate = '20230315140000';
-  const vnp_IpAddr = '192.168.56.1';
+  const vnp_Amount = 1000000;
+  const vnp_CreateDate = '20230320133200';
+  const vnp_IpAddr = '210.245.113.71';
   const vnp_OrderInfo = 'naptien';
   const vnp_ReturnUrl = 'http://127.0.0.1:3000';
   const vnp_TxnRef = '1234';

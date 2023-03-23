@@ -6,6 +6,7 @@ import {useDispatch} from 'react-redux';
 import QuickSearch from '../../components/Home/QuickSearch';
 import Point from '../../components/Common/Point';
 import {hideTabNav} from '../../redux/slice/tabNavSlice';
+import {hideMenuPopup} from '../../redux/slice/menuPopUpSlice';
 
 export default function ListTeacherScreen({navigation, route}) {
   const dispatch = useDispatch();
@@ -24,6 +25,7 @@ export default function ListTeacherScreen({navigation, route}) {
           style={{alignSelf: 'center', left: 10}}
           onPress={() => {
             navigation.goBack();
+            dispatch(hideMenuPopup(false));
           }}
         />
         <Point navigation={navigation} />

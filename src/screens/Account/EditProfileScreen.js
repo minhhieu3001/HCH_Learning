@@ -24,6 +24,8 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {BASE_URL} from '../../constant/constants';
 import {hideTabNav} from '../../redux/slice/tabNavSlice';
+import {accessKey, secretKey} from '../../constant/awsKey';
+import {RNS3} from 'react-native-aws3';
 
 export default function EditProfileScreen({navigation, route}) {
   const dispatch = useDispatch();
@@ -64,8 +66,8 @@ export default function EditProfileScreen({navigation, route}) {
       realName: inputName ? inputName : user.realName,
 
       username: user.userName,
-      // avaPath: newAvaPath ? newAvaPath : user.avaPath,
-      avaPath: user.avaPath,
+      avaPath: newAvaPath ? newAvaPath : user.avaPath,
+      // avaPath: user.avaPath,
       dateOfBirth:
         !date || !month || !year
           ? user.dateOfBirth
@@ -81,8 +83,8 @@ export default function EditProfileScreen({navigation, route}) {
       keyPrefix: 'avatar/',
       bucket: 'bookstoreimages',
       region: 'us-east-1',
-      accessKey: Aws.access_key,
-      secretKey: Aws.secret_key,
+      accessKey: accessKey,
+      secretKey: secretKey,
       successActionStatus: 201,
     };
     RNS3.put(file, config);
@@ -95,7 +97,10 @@ export default function EditProfileScreen({navigation, route}) {
     };
     axios
       .post(`${BASE_URL}/ums/session/student/update`, newUser, configHeader)
-      .then(res => navigation.goBack())
+      .then(res => {
+        navigation.goBack();
+        console.log(res.data);
+      })
       .catch(err => console.log(err));
   };
 
@@ -107,6 +112,7 @@ export default function EditProfileScreen({navigation, route}) {
         maxWidth: 200,
         maxHeight: 200,
         allowsEditing: true,
+        selectionLimit: 1,
       },
       response => {
         if (response.didCancel) {
@@ -115,7 +121,10 @@ export default function EditProfileScreen({navigation, route}) {
         } else if (response.error) {
           Alert.alert('Thông báo', 'Có lỗi xảy ra. Vui lòng thử lại');
         } else {
-          setNewAvaPath(response.assets[0].uri);
+          console.log(response);
+          setNewAvaPath(
+            `https://bookstoreimages.s3.amazonaws.com/avatar/${response.assets[0].fileName}`,
+          );
           const file = {
             uri: response.assets[0].uri,
             name: response.assets[0].fileName,
@@ -322,11 +331,7 @@ export default function EditProfileScreen({navigation, route}) {
           <Avatar
             size={100}
             rounded
-            source={
-              newAvaPath
-                ? {uri: newAvaPath}
-                : require('../../assets/images/images.png')
-            }
+            source={file ? {uri: file.uri} : {uri: user.avaPath}}
           />
           <Pressable
             onPress={() => pickImage()}

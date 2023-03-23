@@ -27,6 +27,8 @@ import {Avatar} from '@rneui/themed';
 import CustomAvatar from '../../components/Common/CustomAvatar';
 import messaging from '@react-native-firebase/messaging';
 import Point from '../../components/Common/Point';
+import socket from '../../service/socket';
+import {useFocusEffect} from '@react-navigation/native';
 
 const Item = ({text}) => {
   return (
@@ -78,9 +80,10 @@ const DetailScreen = ({route, navigation}) => {
   const [time, setTime] = useState(null);
   const [showRequestCall, setShowRequestCall] = useState(false);
   const [counting, setCounting] = useState(false);
-
-  const [rtcToken, setRtcToken] = useState(null);
-  const [channel, setChanel] = useState(null);
+  const [cancel, setCancel] = useState(false);
+  const [showReview, setShowReview] = useState(false);
+  const [inputReview, setInputReview] = useState(null);
+  const [starReview, setStarReview] = useState(0);
 
   const getDetailTeacher = async () => {
     const token = await AsyncStorage.getItem('token');
@@ -145,7 +148,7 @@ const DetailScreen = ({route, navigation}) => {
       });
   };
 
-  const requestCall = async navigation => {
+  const requestCall = async () => {
     setTime(90);
     setShowRequestCall(true);
     setCounting(true);
@@ -159,22 +162,46 @@ const DetailScreen = ({route, navigation}) => {
       toId: teacherId,
       callOption: 1,
     };
+    const data_user = await AsyncStorage.getItem('user');
+    const user = JSON.parse(data_user);
     axios.post(`${BASE_URL}/call`, data, config).then(res => {
+      console.log(res.data);
       if (res.data.code == 0) {
-        setChanel(res.data.object.chanel);
-        setRtcToken(res.data.object.token);
+        AsyncStorage.setItem('cname', res.data.object.chanel);
+        const rtcToken = JSON.stringify(res.data.object.token);
+        AsyncStorage.setItem('rtcToken', rtcToken);
+        const time = JSON.stringify(res.data.object.timeLimit);
+        AsyncStorage.setItem('timeCall', time);
+        socket.emit('seen', {
+          to: teacherId,
+          senderId: user.id,
+          senderName: user.realName,
+          senderAvatar: user.avaPath,
+          type: '2',
+        });
+      } else {
+        Alert.alert('Thông báo', 'Bạn không đủ point để thực hiện cuộc gọi');
       }
     });
-    if (time != 0 && time != null) {
-    }
+  };
+
+  const getShowReview = async () => {
+    const data = await AsyncStorage.getItem('review');
+    if (data != null) {
+      if (data == 'true') {
+        setShowReview(true);
+      } else setShowReview(false);
+    } else setShowReview(false);
   };
 
   useEffect(() => {
     const unsubscribe = messaging().onMessage(async remoteMessage => {
       console.log('fcm message call', remoteMessage);
-      // if (remoteMessage.data.type == 1) {
-      //   MessageNotification();
-      // }
+      if (remoteMessage.data.type == '5') {
+        setCounting(false);
+        setShowRequestCall(false);
+        navigation.navigate('call-screen', {teacherId: teacherId});
+      }
     });
 
     return unsubscribe;
@@ -194,8 +221,31 @@ const DetailScreen = ({route, navigation}) => {
   }, [counting, time]);
 
   useEffect(() => {
+    getShowReview();
     getDetailTeacher();
   }, []);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      getShowReview();
+    }, []),
+  );
+
+  useEffect(() => {
+    socket.on('receiveCancelCall', data => {
+      console.log(data);
+      setCounting(false);
+      setShowRequestCall(false);
+      setCancel(true);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (cancel) {
+      Alert.alert('Thông báo', 'Giáo viên đã từ chối cuộc gọi');
+      setCancel(false);
+    }
+  }, [cancel]);
 
   return (
     <View style={styles.container}>
@@ -243,10 +293,92 @@ const DetailScreen = ({route, navigation}) => {
               <Pressable
                 style={{alignSelf: 'center', marginTop: 10}}
                 onPress={() => {
+                  socket.emit('cancelCall', {
+                    to: teacherId,
+                  });
                   setShowRequestCall(false);
                   setCounting(false);
                 }}>
                 <Text style={{fontSize: 18}}>Hủy bỏ</Text>
+              </Pressable>
+            </View>
+          </ModalPopup>
+          <ModalPopup visible={showReview}>
+            <View
+              style={{
+                width: '80%',
+                backgroundColor: 'white',
+                top: 200,
+                left: '10%',
+                padding: 10,
+              }}>
+              <View style={{}}>
+                <View style={{flexDirection: 'row'}}>
+                  <Icon
+                    onPress={() => setShowReview(false)}
+                    name="close"
+                    size={30}
+                    style={{alignSelf: 'center', color: 'red'}}
+                  />
+                </View>
+              </View>
+              <View style={{}}>
+                <View
+                  style={{
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    marginBottom: 10,
+                  }}>
+                  <Rate
+                    numberStar={0}
+                    isChoose={true}
+                    size={24}
+                    setData={setStarReview}
+                  />
+                </View>
+
+                <TextInput
+                  placeholder="Viết nhận xét về giáo viên"
+                  multiline={true}
+                  style={{
+                    borderWidth: 1,
+                    marginTop: 5,
+                    borderRadius: 15,
+                    padding: 10,
+                  }}
+                  onChangeText={text => setInputReview(text)}
+                  numberOfLines={4}
+                />
+              </View>
+
+              <Pressable
+                onPress={() => {
+                  // setShowReview(false);
+                  const newReview = {
+                    teacherId: teacher.id,
+                    star: starReview,
+                    content: inputReview,
+                  };
+                  console.log(newReview);
+                  // pushReview(newReview);
+                }}
+                style={{
+                  marginTop: 30,
+                  textAlign: 'center',
+                  alignItems: 'center',
+                  borderRadius: 10,
+                  height: 40,
+                  backgroundColor: '#82C6D0',
+                }}>
+                <Text
+                  style={{
+                    fontSize: 20,
+                    fontWeight: 'bold',
+                    color: 'white',
+                    top: '10%',
+                  }}>
+                  Xác nhận
+                </Text>
               </Pressable>
             </View>
           </ModalPopup>
@@ -706,8 +838,7 @@ const DetailScreen = ({route, navigation}) => {
           <Pressable
             onPress={() => {
               if (teacher.status == TEACHER_ONLINE) {
-                // requestCall(navigation);
-                navigation.navigate('call-screen');
+                requestCall();
               } else if (teacher.status == TEACHER_OFFLINE) {
                 Alert.alert(
                   'Thông báo',
