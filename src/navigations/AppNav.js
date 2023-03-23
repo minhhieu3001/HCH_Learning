@@ -16,7 +16,7 @@ import {showMenuPopup} from '../redux/slice/menuPopUpSlice';
 
 const BottomTab = createBottomTabNavigator();
 
-export default function AppNav({setIsLogin}) {
+export default function AppNav() {
   const visibleTabNav = useSelector(state => {
     return state.tabNav.visibleTabNav;
   });
@@ -162,7 +162,7 @@ export default function AppNav({setIsLogin}) {
             </View>
           ),
         }}>
-        {props => <AccountNav {...props} setIsLogin={setIsLogin} />}
+        {props => <AccountNav {...props} />}
       </BottomTab.Screen>
     </BottomTab.Navigator>
   );

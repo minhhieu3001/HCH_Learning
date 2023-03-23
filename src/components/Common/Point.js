@@ -1,5 +1,5 @@
 import {View, Text, Pressable} from 'react-native';
-import React from 'react';
+import React, {useEffect} from 'react';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useDispatch, useSelector} from 'react-redux';
 import {hideTabNav} from '../../redux/slice/tabNavSlice';
@@ -10,7 +10,9 @@ export default function Point({navigation}) {
     return state.pointSlice;
   });
 
-  console.log(point);
+  useEffect(() => {
+    console.log(point);
+  });
 
   return (
     <Pressable

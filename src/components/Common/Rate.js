@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {TouchableOpacity, View, Image} from 'react-native';
 
-const Rate = ({starNumber, isChoose, size}) => {
+const Rate = ({starNumber, isChoose, size, setData}) => {
   const [maxRating, setMaxRating] = useState([1, 2, 3, 4, 5]);
   const [defaultRating, setDefaultRating] = useState(starNumber);
   const [change, setChange] = useState(isChoose ? true : false);
@@ -20,6 +20,7 @@ const Rate = ({starNumber, isChoose, size}) => {
                 if (!change) {
                 } else {
                   setDefaultRating(item);
+                  setData(item);
                 }
               }}>
               <Image
@@ -41,6 +42,7 @@ const Rate = ({starNumber, isChoose, size}) => {
                 if (!change) {
                 } else {
                   setDefaultRating(item);
+                  setData(item);
                 }
               }}>
               <Image

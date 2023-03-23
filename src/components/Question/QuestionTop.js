@@ -3,6 +3,7 @@ import React from 'react';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useDispatch} from 'react-redux';
 import Point from '../Common/Point';
+import {hideMenuPopup} from '../../redux/slice/menuPopUpSlice';
 
 export default function QuestionTop({navigation}) {
   const dispatch = useDispatch();
@@ -12,6 +13,7 @@ export default function QuestionTop({navigation}) {
         <Icon
           onPress={() => {
             navigation.goBack();
+            dispatch(hideMenuPopup(false));
           }}
           name="close"
           size={30}

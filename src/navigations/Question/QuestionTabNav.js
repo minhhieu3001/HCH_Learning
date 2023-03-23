@@ -13,8 +13,13 @@ const BottomTab = createBottomTabNavigator();
 export default function QuestionTabNav({navigation}) {
   const dispatch = useDispatch();
 
+  const visible = useSelector(state => {
+    return state.questionTab.visible;
+  });
+
   useEffect(() => {
     dispatch(hideTabNav(false));
+    console.log(visible);
   }, []);
 
   return (
@@ -26,7 +31,9 @@ export default function QuestionTabNav({navigation}) {
           position: 'absolute',
           backgroundColor: 'white',
           height: 55,
-          // display: 'none',
+          display: visible ? 'flex' : 'none',
+          borderTopColor: 'gray',
+          borderTopWidth: 1,
         },
       }}>
       <BottomTab.Screen
@@ -39,14 +46,12 @@ export default function QuestionTabNav({navigation}) {
                 justifyContent: 'center',
                 textAlign: 'center',
                 alignItems: 'center',
+                backgroundColor: focused ? '#018ABE' : 'white',
+                width: '100%',
+                height: '100%',
               }}>
-              {/* <Icon
-                name="home-outline"
-                size={20}
-                color={focused ? '#82C6D0' : '#748c94'}
-              /> */}
               <Text
-                style={{color: focused ? '#82C6D0' : '#748c94', fontSize: 12}}>
+                style={{color: focused ? 'white' : '#748c94', fontSize: 20}}>
                 Tất cả
               </Text>
             </View>
@@ -63,14 +68,12 @@ export default function QuestionTabNav({navigation}) {
                 justifyContent: 'center',
                 textAlign: 'center',
                 alignItems: 'center',
+                backgroundColor: focused ? '#018ABE' : 'white',
+                width: '100%',
+                height: '100%',
               }}>
-              {/* <Icon
-                name="home-outline"
-                size={20}
-                color={focused ? '#82C6D0' : '#748c94'}
-              /> */}
               <Text
-                style={{color: focused ? '#82C6D0' : '#748c94', fontSize: 12}}>
+                style={{color: focused ? 'white' : '#748c94', fontSize: 20}}>
                 Của tôi
               </Text>
             </View>

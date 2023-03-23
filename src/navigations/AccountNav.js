@@ -6,6 +6,7 @@ import EditProfileScreen from '../screens/Account/EditProfileScreen';
 import HistoryCall from '../screens/Account/HistoryCall';
 import NotificationScreen from '../screens/Common/NotificationScreen';
 import PaymentScreen from '../screens/Common/PaymentScreen';
+import DetailCall from '../screens/Account/DetailCall';
 
 const Stack = createNativeStackNavigator();
 
@@ -29,7 +30,7 @@ const closeConfig = {
   },
 };
 
-export default function AccountNav({setIsLogin}) {
+export default function AccountNav() {
   return (
     <Stack.Navigator
       screenOptions={{
@@ -46,7 +47,7 @@ export default function AccountNav({setIsLogin}) {
             close: closeConfig,
           },
         }}>
-        {props => <AccountScreen {...props} setIsLogin={setIsLogin} />}
+        {props => <AccountScreen {...props} />}
       </Stack.Screen>
       <Stack.Screen
         name="noti-screen"
@@ -84,6 +85,17 @@ export default function AccountNav({setIsLogin}) {
       <Stack.Screen
         name="payment-screen"
         component={PaymentScreen}
+        options={{
+          gestureDirection: 'vertical',
+          transitionSpec: {
+            open: config,
+            close: closeConfig,
+          },
+        }}
+      />
+      <Stack.Screen
+        name="detail-call-screen"
+        component={DetailCall}
         options={{
           gestureDirection: 'vertical',
           transitionSpec: {

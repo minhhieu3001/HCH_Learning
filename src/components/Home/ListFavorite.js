@@ -1,5 +1,5 @@
 import {View, Text, Dimensions, Pressable, FlatList, Image} from 'react-native';
-import React from 'react';
+import React, {useEffect, useLayoutEffect, useState} from 'react';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {WIDTH} from '../../constant/dimentions';
 
@@ -8,6 +8,9 @@ import LinearGradient from 'react-native-linear-gradient';
 import {TEACHER_OFFLINE, TEACHER_ONLINE} from '../../constant/constants';
 import CustomAvatar from '../Common/CustomAvatar';
 import {hideTabNav} from '../../redux/slice/tabNavSlice';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+import {BASE_URL} from '../../constant/constants';
 
 const Item = ({teacher, press}) => {
   return (
@@ -68,11 +71,11 @@ const Item = ({teacher, press}) => {
   );
 };
 
-const Header = ({navigation, type}) => {
+const Header = ({navigation, fav}) => {
   return (
     <Icon
       onPress={() =>
-        navigation.navigate('list-teacher', {tab: type == 'favorite' ? 2 : 1})
+        navigation.navigate('list-teacher', {tab: fav == true ? 2 : 1})
       }
       name="plus-circle-outline"
       size={70}
@@ -81,13 +84,71 @@ const Header = ({navigation, type}) => {
   );
 };
 
-export default function ListFavorite({navigation, teachers, type}) {
+export default function ListFavorite({navigation}) {
   const dispatch = useDispatch();
+
+  const [teachers, setTeachers] = useState(null);
+  const [fav, setFav] = useState(null);
+
+  const getFavoriteTeachers = async () => {
+    const token = await AsyncStorage.getItem('token');
+    const config = {
+      headers: {
+        Authorization: token,
+      },
+    };
+    axios
+      .get(
+        `${BASE_URL}/ums/getTeachers/getTeacher?page=0&size=15&tab=2`,
+        config,
+      )
+      .then(res => {
+        console.log(res.data);
+        if (res.data.code == 0) {
+          if (res.data.object.teacherResponses.length == 0) {
+            getRecommendTeachers();
+            setFav(false);
+          } else {
+            setTeachers(res.data.object.teacherResponses);
+            setFav(true);
+          }
+        } else {
+          Alert.alert('Thông báo', 'Lỗi mạng favorite!');
+        }
+      });
+  };
+
+  const getRecommendTeachers = async () => {
+    const token = await AsyncStorage.getItem('token');
+    const config = {
+      headers: {
+        Authorization: token,
+      },
+    };
+    axios
+      .get(
+        `${BASE_URL}/ums/getTeachers/getTeacher?page=0&size=10&searchByClasses=&searchBySubjects=&tab=1`,
+        config,
+      )
+      .then(res => {
+        if (res.data.code == 0) {
+          setTeachers(res.data.object.teacherResponses);
+        } else {
+          Alert.alert('Thông báo', 'Lỗi mạng recommend!');
+        }
+      });
+  };
 
   const navigateToDetailScreen = id => {
     dispatch(hideTabNav(false));
     navigation.navigate('detail-screen', {teacherId: id});
   };
+
+  useEffect(() => {
+    getFavoriteTeachers();
+    console.log('a');
+  }, []);
+
   return (
     <LinearGradient
       style={{width: WIDTH}}
@@ -102,14 +163,14 @@ export default function ListFavorite({navigation, teachers, type}) {
           paddingTop: 10,
         }}>
         <Text style={{fontSize: 20, color: 'white', fontWeight: '800'}}>
-          {type == 'favorite' ? 'Giáo viên yêu thích' : 'Giáo viên đề xuất'}
+          {fav == true ? 'Giáo viên yêu thích' : 'Giáo viên đề xuất'}
         </Text>
         <Pressable
           style={{alignSelf: 'center', flexDirection: 'row'}}
           onPress={() => {
             dispatch(hideTabNav(false));
             navigation.navigate('list-teacher', {
-              tab: type == 'favorite' ? 2 : 1,
+              tab: fav == true ? 2 : 1,
             });
           }}>
           <Text
@@ -135,9 +196,7 @@ export default function ListFavorite({navigation, teachers, type}) {
           <Item teacher={item} press={navigateToDetailScreen} />
         )}
         keyExtractor={item => item.id}
-        ListHeaderComponent={() => (
-          <Header navigation={navigation} type={type} />
-        )}
+        ListHeaderComponent={() => <Header navigation={navigation} fav={fav} />}
         horizontal={true}
         showsHorizontalScrollIndicator={false}
         style={{paddingTop: 15, paddingBottom: 15}}

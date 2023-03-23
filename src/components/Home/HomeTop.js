@@ -1,4 +1,4 @@
-import {View, Text} from 'react-native';
+import {View, Text, Pressable} from 'react-native';
 import React, {useState, useEffect} from 'react';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {WIDTH} from '../../constant/dimentions';
@@ -32,12 +32,13 @@ export default function HomeTop({navigation}) {
         paddingEnd: 10,
         paddingStart: 10,
       }}>
-      <View style={{alignSelf: 'center'}}>
+      <Pressable
+        style={{alignSelf: 'center'}}
+        onPress={() => {
+          navigation.navigate('noti-screen');
+          handleClick();
+        }}>
         <Icon
-          onPress={() => {
-            navigation.navigate('noti-screen');
-            handleClick();
-          }}
           name="bell-outline"
           size={30}
           style={{color: '#018ABE', alignSelf: 'center'}}
@@ -51,7 +52,7 @@ export default function HomeTop({navigation}) {
             value={count <= 10 ? count : '10+'}
           />
         )}
-      </View>
+      </Pressable>
       <Point navigation={navigation} />
     </View>
   );

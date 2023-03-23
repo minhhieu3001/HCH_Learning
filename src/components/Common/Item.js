@@ -10,7 +10,7 @@ import CustomAvatar from './CustomAvatar';
 export default function Item({teacher, press}) {
   let lastName = '';
   let firstName = '';
-  if (!teacher.avaPath) {
+  if (!teacher.avaPath || teacher.avaPath == 'null') {
     firstName = teacher.realName.split(' ').slice(0, -1).join(' ');
     lastName = teacher.realName.split(' ').slice(-1).join(' ');
   }

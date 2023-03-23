@@ -27,7 +27,7 @@ const closeConfig = {
   },
 };
 
-export default function SessionNav({setIsLogin, deviceToken}) {
+export default function SessionNav({deviceToken}) {
   return (
     <Stack.Navigator
       screenOptions={{
@@ -47,13 +47,7 @@ export default function SessionNav({setIsLogin, deviceToken}) {
             close: closeConfig,
           },
         }}>
-        {props => (
-          <SignInScreen
-            setIsLogin={setIsLogin}
-            deviceToken={deviceToken}
-            {...props}
-          />
-        )}
+        {props => <SignInScreen deviceToken={deviceToken} {...props} />}
       </Stack.Screen>
       <Stack.Screen
         name="sign-up-screen"

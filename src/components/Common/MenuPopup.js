@@ -1,12 +1,12 @@
 import {View, Text, StyleSheet, Pressable} from 'react-native';
 import React from 'react';
-import {useDispatch, useSelector} from 'react-redux';
+import {useDispatch} from 'react-redux';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import ModalPopup from './ModalPopup';
 import {HEIGHT, WIDTH} from '../../constant/dimentions';
 import {hideTabNav} from '../../redux/slice/tabNavSlice';
-import {hideMenuPopup} from '../../redux/slice/menuPopUpSlice';
+import {hideMenuPopup, showMenuPopup} from '../../redux/slice/menuPopUpSlice';
 
 export default function MenuPopup({show, navigation}) {
   const dispatch = useDispatch();
@@ -19,6 +19,7 @@ export default function MenuPopup({show, navigation}) {
           <Pressable
             onPress={() => {
               navigation.navigate('list-teacher', {tab: 3});
+              dispatch(hideMenuPopup(false));
             }}>
             <Icon
               name="clipboard-list-outline"
@@ -33,6 +34,7 @@ export default function MenuPopup({show, navigation}) {
           <Pressable
             onPress={() => {
               dispatch(hideTabNav(false));
+              dispatch(hideMenuPopup(false));
               navigation.navigate('question-screen');
             }}>
             <Icon

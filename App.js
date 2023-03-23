@@ -9,13 +9,18 @@ import axios from 'axios';
 import Loading from './src/components/Common/Loading';
 import {MessageNotification} from './src/service/PushNotification';
 import messaging from '@react-native-firebase/messaging';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {setCount} from './src/redux/slice/notificationSlice';
+import {setData} from './src/redux/slice/pointSlice';
+import {setLogin} from './src/redux/slice/loginSlice';
 
 const App = () => {
   const dispatch = useDispatch();
-  const [isLogin, setIsLogin] = useState(null);
   const [deviceToken, setDeviceToken] = useState(null);
+
+  const isLogin = useSelector(state => {
+    return state.login.isLogin;
+  });
 
   messaging()
     .getToken()
@@ -27,8 +32,8 @@ const App = () => {
   const checkLogin = async () => {
     const data = await AsyncStorage.getItem('isLogin');
     if (data == 'true') {
-      setIsLogin(true);
-    } else setIsLogin(false);
+      dispatch(setLogin(true));
+    } else dispatch(setLogin(false));
   };
 
   useEffect(() => {
@@ -50,14 +55,15 @@ const App = () => {
     checkLogin();
     SplashScreen.hide();
   }, []);
+
   return (
     <NavigationContainer>
       {isLogin == null ? (
         <Loading />
       ) : isLogin ? (
-        <AppNav setIsLogin={setIsLogin} />
+        <AppNav />
       ) : (
-        <SessionNav setIsLogin={setIsLogin} deviceToken={deviceToken} />
+        <SessionNav deviceToken={deviceToken} />
       )}
     </NavigationContainer>
   );

@@ -6,6 +6,7 @@ import {useDispatch} from 'react-redux';
 import ModalPopup from '../Common/ModalPopup';
 import {hideTabNav} from '../../redux/slice/tabNavSlice';
 import {HEIGHT} from '../../constant/dimentions';
+import {setLogin} from '../../redux/slice/loginSlice';
 
 const Button = ({iconName, text, press}) => {
   return (
@@ -39,7 +40,7 @@ export default function Setting({navigation, setIsLogin}) {
       await AsyncStorage.setItem('token', '');
       await AsyncStorage.setItem('isLogin', 'false');
       await AsyncStorage.setItem('user', '');
-      setIsLogin(false);
+      dispatch(setLogin(false));
     } else if (buttonName === 'key-change') {
       setShowChangePass(true);
     } else if (buttonName === 'history') {
