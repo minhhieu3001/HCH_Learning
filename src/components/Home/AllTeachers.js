@@ -1,4 +1,4 @@
-import {View, Text, FlatList, Image, ScrollView, Pressable} from 'react-native';
+import {View, Text, Image, ScrollView, Pressable} from 'react-native';
 import React from 'react';
 import {WIDTH} from '../../constant/dimentions';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';

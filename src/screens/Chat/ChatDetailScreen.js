@@ -41,7 +41,7 @@ newMsgSound.setVolume(1);
 
 export default function ChatDetailScreen({navigation}) {
   const route = useRoute();
-  const {teacherId, teacherName, teacherStatus} = route.params;
+  const {teacherId, teacherName, teacherStatus, chatId} = route.params;
 
   const input = useRef(null);
   const scrollRef = useRef(null);
@@ -61,8 +61,6 @@ export default function ChatDetailScreen({navigation}) {
   const [page, setPage] = useState(0);
   const [loadMore, setLoadMore] = useState(false);
   const [file, setFile] = useState(null);
-
-  const [chatId, setChatId] = useState(null);
 
   const handleContentSizeChange = event => {
     setInputHeight(event.nativeEvent.contentSize.height);
@@ -143,7 +141,6 @@ export default function ChatDetailScreen({navigation}) {
         )
         .then(async res => {
           if (res.data.code === 0) {
-            setChatId(res.data.object.chatId);
             dispatch(minusPoint(res.data.object.price));
             const data = await AsyncStorage.getItem('user');
             const user = JSON.parse(data);

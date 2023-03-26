@@ -189,6 +189,7 @@ export default function ChatScreen({navigation}) {
                             teacherId: item.teacher.id,
                             teacherName: item.teacher.realName,
                             teacherStatus: item.teacher.status,
+                            chatId: item.id,
                           });
                           handleReadMessage(item.id);
                         }}
@@ -247,6 +248,7 @@ export default function ChatScreen({navigation}) {
                         teacherId: item.teacher.id,
                         teacherName: item.teacher.realName,
                         teacherStatus: item.teacher.status,
+                        chatId: item.id,
                       });
                       handleReadMessage(item.id);
                     }}

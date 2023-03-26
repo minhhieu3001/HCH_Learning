@@ -7,11 +7,15 @@ import {
   FlatList,
   Image,
 } from 'react-native';
-import React from 'react';
+import React, {useState} from 'react';
 import {WIDTH, HEIGHT} from '../../constant/dimentions';
 import * as data from '../../data/rank';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import LinearGradient from 'react-native-linear-gradient';
+import CustomAvatar from '../Common/CustomAvatar';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+import {BASE_URL} from '../../constant/constants';
 
 const Item = ({teacher, index}) => {
   return (
@@ -47,6 +51,8 @@ const Item = ({teacher, index}) => {
         style={{width: 70, height: 70, borderRadius: 35}}
         resizeMode="cover"
       />
+      {/* <CustomAvatar text={teacher.} size={70} /> */}
+
       <View style={{marginLeft: 10, alignSelf: 'center'}}>
         <Text style={{fontSize: 18, color: 'black'}}>{teacher.name}</Text>
       </View>
@@ -81,7 +87,21 @@ const Header = ({id}) => {
   );
 };
 
-export default function Rank() {
+export default function Rank({navigation}) {
+  const [rankDay, setRankDay] = useState(null);
+  const [rankWeek, setRankWeek] = useState(null);
+  const [rankMonth, setRankMonth] = useState(null);
+
+  const getRankDay = async () => {
+    const token = await AsyncStorage.getItem('token');
+    const config = {
+      headers: {
+        Authorization: token,
+      },
+    };
+    axios.get(`${BASE_URL}`);
+  };
+
   const to_map = [1, 2, 3];
   return (
     <View style={{width: WIDTH}}>
@@ -96,7 +116,11 @@ export default function Rank() {
         <Text style={{fontSize: 20, color: '#02457A', fontWeight: '500'}}>
           Xếp hạng
         </Text>
-        <Pressable style={{alignSelf: 'flex-end', flexDirection: 'row'}}>
+        <Pressable
+          style={{alignSelf: 'flex-end', flexDirection: 'row'}}
+          onPress={() => {
+            navigation.jumpTo('Rank');
+          }}>
           <Text style={{color: '#018ABE', fontSize: 16}}>Xem thêm</Text>
           <Icon
             name="chevron-right"

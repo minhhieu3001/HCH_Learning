@@ -13,6 +13,8 @@ import NotificationScreen from '../screens/Common/NotificationScreen';
 import Reviews from '../screens/Home/Reviews';
 import PaymentScreen from '../screens/Common/PaymentScreen';
 import ResultSearchScreen from '../screens/Home/ResultSearchScreen';
+import ChoosePayment from '../screens/Common/ChoosePayment';
+import DetailQuestion from '../screens/Question/DetailQuestion';
 
 const Stack = createNativeStackNavigator();
 
@@ -146,6 +148,29 @@ export default function HomeNav() {
       <Stack.Screen
         name="payment-screen"
         component={PaymentScreen}
+        options={{
+          gestureDirection: 'vertical',
+          transitionSpec: {
+            open: config,
+            close: closeConfig,
+          },
+        }}
+      />
+      <Stack.Screen
+        name="choose-payment-screen"
+        component={ChoosePayment}
+        options={{
+          gestureDirection: 'vertical',
+          transitionSpec: {
+            open: config,
+            close: closeConfig,
+          },
+        }}
+      />
+
+      <Stack.Screen
+        name="detail-question-screen"
+        component={DetailQuestion}
         options={{
           gestureDirection: 'vertical',
           transitionSpec: {

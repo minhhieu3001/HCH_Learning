@@ -10,6 +10,7 @@ import ListTeacherScreen from '../screens/Home/ListTeacherScreen';
 import {useFocusEffect} from '@react-navigation/native';
 import {io} from 'socket.io-client';
 import PaymentScreen from '../screens/Common/PaymentScreen';
+import ChoosePayment from '../screens/Common/ChoosePayment';
 
 const Stack = createNativeStackNavigator();
 
@@ -77,6 +78,17 @@ export default function ChatNav() {
       <Stack.Screen
         name="payment-screen"
         component={PaymentScreen}
+        options={{
+          gestureDirection: 'vertical',
+          transitionSpec: {
+            open: config,
+            close: closeConfig,
+          },
+        }}
+      />
+      <Stack.Screen
+        name="choose-payment-screen"
+        component={ChoosePayment}
         options={{
           gestureDirection: 'vertical',
           transitionSpec: {

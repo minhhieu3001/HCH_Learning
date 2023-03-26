@@ -23,7 +23,6 @@ import {
 import Loading from '../../components/Common/Loading';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ModalPopup from '../../components/Common/ModalPopup';
-import {Avatar} from '@rneui/themed';
 import CustomAvatar from '../../components/Common/CustomAvatar';
 import messaging from '@react-native-firebase/messaging';
 import Point from '../../components/Common/Point';
@@ -53,29 +52,9 @@ const Item = ({text}) => {
 const DetailScreen = ({route, navigation}) => {
   const {teacherId} = route.params;
 
-  const reviews = [
-    {
-      star: 5,
-      userName: 'Hieu',
-      time: '2022/12/12',
-      content: 'Aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
-    },
-    {
-      star: 4,
-      userName: 'Hien',
-      time: '2022/11/11',
-      content: 'Aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
-    },
-    {
-      star: 3,
-      userName: 'Cuong',
-      time: '2023/02/03',
-      content: '',
-    },
-  ];
-
   const [teacher, setTeacher] = useState();
   const [favorite, setFavorite] = useState(null);
+  const [reviews, setReviews] = useState(null);
 
   const [time, setTime] = useState(null);
   const [showRequestCall, setShowRequestCall] = useState(false);
@@ -98,7 +77,6 @@ const DetailScreen = ({route, navigation}) => {
         config,
       )
       .then(res => {
-        console.log(res.data.object);
         if (res.data.code === 0) {
           setTeacher(res.data.object);
           if (res.data.object.favTeacher == false) {
@@ -125,7 +103,6 @@ const DetailScreen = ({route, navigation}) => {
         config,
       )
       .then(res => {
-        console.log(res.data);
         setFavorite(true);
       });
   };
@@ -165,7 +142,6 @@ const DetailScreen = ({route, navigation}) => {
     const data_user = await AsyncStorage.getItem('user');
     const user = JSON.parse(data_user);
     axios.post(`${BASE_URL}/call`, data, config).then(res => {
-      console.log(res.data);
       if (res.data.code == 0) {
         AsyncStorage.setItem('cname', res.data.object.chanel);
         const rtcToken = JSON.stringify(res.data.object.token);
@@ -192,6 +168,56 @@ const DetailScreen = ({route, navigation}) => {
         setShowReview(true);
       } else setShowReview(false);
     } else setShowReview(false);
+  };
+
+  const pushReview = async review => {
+    const token = await AsyncStorage.getItem('token');
+    const config = {
+      headers: {
+        Authorization: token,
+      },
+    };
+    axios
+      .post(`${BASE_URL}/ums/reviewTeacher/createReviews`, review, config)
+      .then(res => {
+        if (res.data.code == 0) {
+          AsyncStorage.setItem('review', 'false');
+        }
+      });
+  };
+
+  const getReview = async () => {
+    const token = await AsyncStorage.getItem('token');
+    const config = {
+      headers: {
+        Authorization: token,
+      },
+    };
+    axios
+      .get(
+        `${BASE_URL}/ums/reviewTeacher/getReviews?teacherId=${teacherId}&page=0&size=5`,
+        config,
+      )
+      .then(res => {
+        if (res.data.code == 0) {
+          setReviews(res.data.object.reviewResponses);
+        }
+      });
+  };
+
+  const filterStar = star => {
+    if (reviews) {
+      if (reviews.length == 0) return 0;
+      return (
+        reviews.filter(item => item.reviewTeacher.star == star).length /
+        reviews.length
+      );
+    }
+  };
+
+  const convertTime = longTime => {
+    const time = new Date(longTime);
+    return `${time.getHours()}:${time.getMinutes()}:${time.getSeconds()}  ${time.getDate()}/${time.getMonth()}/${time.getFullYear()}`;
   };
 
   useEffect(() => {
@@ -223,6 +249,7 @@ const DetailScreen = ({route, navigation}) => {
   useEffect(() => {
     getShowReview();
     getDetailTeacher();
+    getReview();
   }, []);
 
   useFocusEffect(
@@ -266,26 +293,18 @@ const DetailScreen = ({route, navigation}) => {
                 borderColor: 'gray',
                 borderRadius: 20,
               }}>
-              {teacher.avaPath ? (
-                <Avatar
-                  rounded
-                  size={50}
-                  source={{uri: teacher.avaPath}}
-                  containerStyle={{alignSelf: 'center'}}
-                />
-              ) : (
-                <Avatar
-                  rounded
-                  size={50}
-                  source={require('../../assets/images/images.png')}
-                  containerStyle={{alignSelf: 'center'}}
-                />
-              )}
+              <CustomAvatar
+                text={teacher.realName}
+                url={teacher.avaPath}
+                size={50}
+              />
               <Text
                 style={{
                   fontSize: 16,
                   color: 'black',
                   alignSelf: 'center',
+                  padding: 10,
+                  textAlign: 'center',
                 }}>{`Đang chờ giáo viên ${teacher.realName} phản hồi`}</Text>
               <Text style={{fontSize: 30, color: 'red', alignSelf: 'center'}}>
                 {time}
@@ -353,14 +372,13 @@ const DetailScreen = ({route, navigation}) => {
 
               <Pressable
                 onPress={() => {
-                  // setShowReview(false);
+                  setShowReview(false);
                   const newReview = {
                     teacherId: teacher.id,
                     star: starReview,
                     content: inputReview,
                   };
-                  console.log(newReview);
-                  // pushReview(newReview);
+                  pushReview(newReview);
                 }}
                 style={{
                   marginTop: 30,
@@ -405,14 +423,6 @@ const DetailScreen = ({route, navigation}) => {
               style={styles.background}
               resizeMode="cover"
             />
-            {/* <Image
-              // source={require('../../assets/images/images.png')}
-              source={{
-                uri: 'https://bookstoreimages.s3.amazonaws.com/avatar/e6ca763a56cba495bb76ae4df7bed3f3.jpg',
-              }}
-              style={styles.avatar}
-              resizeMode="cover"
-              /> */}
             <View style={styles.avatar}>
               <CustomAvatar
                 text={teacher.realName}
@@ -495,10 +505,12 @@ const DetailScreen = ({route, navigation}) => {
                 alignItems: 'center',
                 justifyContent: 'center',
                 height: 24,
+                margin: 5,
               }}>
-              <Rate starNumber={teacher.reviewAvg} isChoose={false} size={14} />
-              <Text style={{fontSize: 14, color: '#e68a00', paddingStart: 5}}>
-                {teacher.reviewAvg}
+              <Rate starNumber={teacher.star} isChoose={false} size={20} />
+
+              <Text style={{fontSize: 20, color: '#e68a00', paddingStart: 5}}>
+                {teacher.star}
               </Text>
             </View>
             <View
@@ -628,7 +640,12 @@ const DetailScreen = ({route, navigation}) => {
                     Đánh giá
                   </Text>
                   <Pressable
-                    onPress={() => navigation.navigate('reviews-screen')}
+                    onPress={() =>
+                      navigation.navigate('reviews-screen', {
+                        star: teacher.star,
+                        teacherId: teacherId,
+                      })
+                    }
                     style={{flexDirection: 'row'}}>
                     <Text style={{color: '#018ABE', fontSize: 14}}>
                       Xem tất cả
@@ -648,8 +665,10 @@ const DetailScreen = ({route, navigation}) => {
                     borderBottomWidth: 0.5,
                     borderBottomColor: 'gray',
                   }}>
-                  <View>
-                    <Text style={{fontSize: 50, color: 'black'}}>4.8</Text>
+                  <View style={{paddingLeft: 20}}>
+                    <Text style={{fontSize: 50, color: 'black'}}>
+                      {!teacher.star ? 0 : teacher.star}
+                    </Text>
                     <Text
                       style={{
                         color: 'black',
@@ -709,86 +728,123 @@ const DetailScreen = ({route, navigation}) => {
                     </View>
                     <View>
                       <Progress.Bar
-                        progress={0.9}
-                        width={150}
+                        progress={filterStar(1)}
+                        width={120}
                         height={6}
                         color="#cccc00"
                         style={{marginTop: 6, marginLeft: 5, marginRight: 5}}
                       />
                       <Progress.Bar
-                        progress={0.9}
-                        width={150}
+                        progress={filterStar(2)}
+                        width={120}
                         height={6}
                         color="#cccc00"
                         style={{marginTop: 11, marginLeft: 5, marginRight: 5}}
                       />
                       <Progress.Bar
-                        progress={0.9}
-                        width={150}
+                        progress={filterStar(3)}
+                        width={120}
                         height={6}
                         color="#cccc00"
                         style={{marginTop: 11, marginLeft: 5, marginRight: 5}}
                       />
                       <Progress.Bar
-                        progress={0.9}
-                        width={150}
+                        progress={filterStar(4)}
+                        width={120}
                         height={6}
                         color="#cccc00"
                         style={{marginTop: 11, marginLeft: 5, marginRight: 5}}
                       />
                       <Progress.Bar
-                        progress={0.9}
-                        width={150}
+                        progress={filterStar(5)}
+                        width={120}
                         height={6}
                         color="#cccc00"
                         style={{marginTop: 11, marginLeft: 5, marginRight: 5}}
                       />
                     </View>
+                    {!reviews ? (
+                      <></>
+                    ) : (
+                      <View>
+                        <Text style={{marginLeft: 'auto'}}>
+                          {filterStar(1) * 100} %
+                        </Text>
+                        <Text style={{marginLeft: 'auto'}}>
+                          {filterStar(2) * 100} %
+                        </Text>
+                        <Text style={{marginLeft: 'auto'}}>
+                          {filterStar(3) * 100} %
+                        </Text>
+                        <Text style={{marginLeft: 'auto'}}>
+                          {filterStar(4) * 100} %
+                        </Text>
+                        <Text style={{marginLeft: 'auto'}}>
+                          {filterStar(5) * 100} %
+                        </Text>
+                      </View>
+                    )}
                   </View>
                 </View>
                 <View>
-                  {reviews.map((item, index) => {
-                    return (
-                      <View
-                        key={index}
-                        style={{
-                          marginVertical: 3,
-                          paddingBottom: 5,
-                          paddingLeft: 5,
-                          paddingRight: 5,
-                          borderRadius: 10,
-                          paddingTop: 5,
-                        }}>
-                        <Rate
-                          starNumber={item.star}
-                          isChoose={false}
-                          size={14}
-                        />
-                        <Text style={{fontSize: 16, color: 'black'}}>
-                          {item.content}
-                        </Text>
-
+                  {!reviews ? (
+                    <></>
+                  ) : reviews.length == 0 ? (
+                    <></>
+                  ) : (
+                    reviews.map((item, index) => {
+                      return (
                         <View
+                          key={item.reviewTeacher.id}
                           style={{
-                            flexDirection: 'row',
-                            justifyContent: 'space-between',
+                            marginVertical: 3,
+                            paddingBottom: 5,
+                            paddingLeft: 5,
+                            paddingRight: 5,
+                            borderRadius: 10,
                             paddingTop: 5,
                           }}>
-                          <Text style={{fontSize: 16, color: 'black'}}>
-                            {item.userName}
+                          <View style={{marginBottom: 5}}>
+                            <Rate
+                              starNumber={item.reviewTeacher.star}
+                              isChoose={false}
+                              size={16}
+                            />
+                          </View>
+                          <Text
+                            style={{
+                              fontSize: 18,
+                              color: 'black',
+                              marginBottom: 5,
+                            }}>
+                            {item.reviewTeacher.content}
                           </Text>
-                          <Text>{item.time}</Text>
+
+                          <View
+                            style={{
+                              flexDirection: 'row',
+                              justifyContent: 'space-between',
+                              paddingTop: 5,
+                            }}>
+                            <Text style={{fontSize: 16}}>
+                              {item.studentDTO.realName}
+                            </Text>
+                            <Text>
+                              {convertTime(item.reviewTeacher.createTime)}
+                            </Text>
+                          </View>
+                          <View
+                            style={{
+                              borderBottomWidth:
+                                index == reviews.length - 1 ? 0 : 0.3,
+                              borderBottomColor: 'gray',
+                              height: 10,
+                            }}
+                          />
                         </View>
-                        <View
-                          style={{
-                            borderBottomWidth: 0.3,
-                            borderBottomColor: 'gray',
-                            height: 10,
-                          }}
-                        />
-                      </View>
-                    );
-                  })}
+                      );
+                    })
+                  )}
                 </View>
               </View>
             </View>

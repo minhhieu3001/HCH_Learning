@@ -3,7 +3,6 @@ import React from 'react';
 import {WIDTH, HEIGHT} from '../../constant/dimentions';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Rate from './Rate';
-import {Avatar} from '@rneui/themed';
 import {TEACHER_OFFLINE, TEACHER_ONLINE} from '../../constant/constants';
 import CustomAvatar from './CustomAvatar';
 
@@ -14,6 +13,7 @@ export default function Item({teacher, press}) {
     firstName = teacher.realName.split(' ').slice(0, -1).join(' ');
     lastName = teacher.realName.split(' ').slice(-1).join(' ');
   }
+
   return (
     <Pressable
       onPress={() => press(teacher.id)}
@@ -68,11 +68,14 @@ export default function Item({teacher, press}) {
         </View>
         <View style={{flexDirection: 'row'}}>
           <View style={{marginLeft: 8, marginTop: 3, marginRight: 5}}>
-            <Rate starNumber={teacher.reviewAvg} isChoose={false} size={14} />
+            <Rate
+              starNumber={!teacher.star ? 0.0 : teacher.star}
+              isChoose={false}
+              size={16}
+            />
           </View>
-          <Text>{teacher.reviewAvg}</Text>
-          <Text style={{fontSize: 14, marginLeft: 10}}>
-            {teacher.totalReview}
+          <Text style={{marginLeft: 10, fontSize: 16, color: '#ff6600'}}>
+            {!teacher.star ? 0 : teacher.star}
           </Text>
         </View>
         <View style={{flexDirection: 'row'}}>

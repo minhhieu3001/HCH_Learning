@@ -150,7 +150,6 @@ export default function DetailQuestion({route, navigation}) {
 
   useEffect(() => {
     getQuestion();
-    console.log(answers);
   }, []);
   return (
     <View style={{backgroundColor: '#D6E8EE', height: '100%'}}>
@@ -240,7 +239,9 @@ export default function DetailQuestion({route, navigation}) {
                 numberOfLines={5}>
                 {question.content}
               </Text>
-              <ScrollView horizontal={true}>
+              <ScrollView
+                horizontal={true}
+                showsVerticalScrollIndicator={false}>
                 {!question.imgUrls ? (
                   <> </>
                 ) : (

@@ -80,22 +80,24 @@ export default function QuestionItem({item, press}) {
           <Text style={{fontSize: 15, marginRight: 15, alignSelf: 'center'}}>
             {!item.student ? '' : item.student.realName}
           </Text>
-          <Text style={{fontSize: 13, alignSelf: 'center'}}>
+        </View>
+        <View style={{flexDirection: 'row'}}>
+          <Text style={{fontSize: 13, alignSelf: 'center', marginRight: 20}}>
             {convertTime(item.createTime)}
           </Text>
-        </View>
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            marginRight: 5,
-          }}>
-          <Icon
-            name="comment-text-outline"
-            size={18}
-            style={{marginRight: 5, alignSelf: 'center', color: '#018ABE'}}
-          />
-          <Text style={{color: 'black'}}>{item.totalAnswer}</Text>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              marginRight: 5,
+            }}>
+            <Icon
+              name="comment-text-outline"
+              size={18}
+              style={{marginRight: 5, alignSelf: 'center', color: '#018ABE'}}
+            />
+            <Text style={{color: 'black'}}>{item.totalAnswer}</Text>
+          </View>
         </View>
       </View>
     </Pressable>

@@ -18,7 +18,7 @@ export default function Point({navigation}) {
     <Pressable
       onPress={() => {
         dispatch(hideTabNav(false));
-        navigation.navigate('payment-screen');
+        navigation.navigate('choose-payment-screen');
       }}
       style={{
         flexDirection: 'row',

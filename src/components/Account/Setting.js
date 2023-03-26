@@ -1,4 +1,11 @@
-import {View, Text, Pressable, StyleSheet, TextInput} from 'react-native';
+import {
+  View,
+  Text,
+  Pressable,
+  StyleSheet,
+  TextInput,
+  Alert,
+} from 'react-native';
 import React, {useState, useEffect} from 'react';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -7,6 +14,8 @@ import ModalPopup from '../Common/ModalPopup';
 import {hideTabNav} from '../../redux/slice/tabNavSlice';
 import {HEIGHT} from '../../constant/dimentions';
 import {setLogin} from '../../redux/slice/loginSlice';
+import axios from 'axios';
+import {BASE_URL} from '../../constant/constants';
 
 const Button = ({iconName, text, press}) => {
   return (
@@ -26,14 +35,12 @@ const Button = ({iconName, text, press}) => {
   );
 };
 
-export default function Setting({navigation, setIsLogin}) {
+export default function Setting({navigation}) {
   const dispatch = useDispatch();
 
   const [showChangePass, setShowChangePass] = useState(false);
 
-  const [oldPass, setOldPass] = useState(null);
   const [newPass, setNewPass] = useState(null);
-  const [firmNewPass, setFirmNewPass] = useState(null);
 
   const handlePress = async buttonName => {
     if (buttonName === 'logout') {
@@ -50,6 +57,25 @@ export default function Setting({navigation, setIsLogin}) {
       dispatch(hideTabNav(false));
       navigation.navigate('noti-screen');
     }
+  };
+
+  const handleChangePassWord = async () => {
+    const token = await AsyncStorage.getItem('token');
+    const config = {
+      headers: {
+        Authorization: token,
+      },
+    };
+    const data = {passWord: newPass};
+    axios
+      .post(`${BASE_URL}/ums/session/student/updatePassWord`, data, config)
+      .then(res => {
+        if (res.data.code == 0) {
+          Alert.alert('Thông báo', 'Cập nhật mật khẩu thành công');
+        } else {
+          Alert.alert('Thông báo', 'Cập nhật mật khẩu thất bại');
+        }
+      });
   };
 
   return (
@@ -70,16 +96,13 @@ export default function Setting({navigation, setIsLogin}) {
               padding: 10,
             }}>
             <View>
-              <Text style={styles.left}>Mật khẩu cũ</Text>
               <Text style={styles.left}>Mật khẩu mới</Text>
-              <Text style={styles.left}>Xác nhận</Text>
             </View>
             <View>
-              <TextInput style={styles.right} placeholder="Mật khẩu cũ" />
-              <TextInput style={styles.right} placeholder="Mật khẩu mới" />
               <TextInput
                 style={styles.right}
-                placeholder="Xác nhận mật khẩu mới"
+                placeholder="Mật khẩu mới"
+                onChangeText={text => setNewPass(text)}
               />
             </View>
           </View>
@@ -108,6 +131,7 @@ export default function Setting({navigation, setIsLogin}) {
             <Pressable
               style={{width: '50%', flexDirection: 'row'}}
               onPress={() => {
+                handleChangePassWord();
                 setShowChangePass(false);
               }}>
               <Text
@@ -126,7 +150,6 @@ export default function Setting({navigation, setIsLogin}) {
       <Button iconName="key-change" text="Đổi mật khẩu" press={handlePress} />
       <Button iconName="bell" text="Thông báo" press={handlePress} />
       <Button iconName="history" text="Lịch sử cuộc gọi" press={handlePress} />
-      <Button iconName="help-circle" text="Trợ giúp" press={handlePress} />
       <Button iconName="logout" text="Đăng xuất" press={handlePress} />
     </View>
   );

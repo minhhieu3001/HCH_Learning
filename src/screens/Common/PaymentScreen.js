@@ -1,23 +1,77 @@
-import {View, Text} from 'react-native';
-import React from 'react';
+import {View, Text, Alert} from 'react-native';
+import React, {useEffect, useState} from 'react';
 import {WebView} from 'react-native-webview';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {BASE_URL} from '../../constant/constants';
+import {useDispatch} from 'react-redux';
+import {setData} from '../../redux/slice/pointSlice';
 
-export default function PaymentScreen() {
-  const vnp_Version = ' 2.0.1';
-  const vnp_TmnCode = 'QP8WT05F';
-  const vnp_Amount = 1000000;
-  const vnp_CreateDate = '20230320133200';
-  const vnp_IpAddr = '210.245.113.71';
-  const vnp_OrderInfo = 'naptien';
-  const vnp_ReturnUrl = 'http://127.0.0.1:3000';
-  const vnp_TxnRef = '1234';
-  const vnp_SecureHash = 'HCPOJMPPSGPPZDNAKXXKHZJNPALWGXPL';
+export default function PaymentScreen({navigation, route}) {
+  const dispatch = useDispatch();
+  const {url} = route.params;
+
+  const [oldTitle, setOldTitle] = useState(null);
+
+  const handleWebViewMessage = event => {
+    console.log('event', event);
+  };
+
+  const handleSavePayment = async () => {
+    const token = await AsyncStorage.getItem('token');
+    const config = {
+      headers: {
+        Authorization: token,
+      },
+    };
+    const money_str = await AsyncStorage.getItem('money');
+    const money = JSON.parse(money_str);
+    const data = await AsyncStorage.getItem('user');
+    const user = JSON.parse(data);
+    user.point += money * 100;
+    const new_User = JSON.stringify(user);
+    AsyncStorage.setItem('user', new_User);
+    console.log('point', user.point);
+    dispatch(setData(user.point));
+    const body = {
+      studentId: user.id,
+      money: money / 1000,
+      type: 'addPoint',
+    };
+
+    axios.post(`${BASE_URL}/payment/point/action`, body, config).then(res => {
+      console.log(res.data);
+    });
+  };
+
+  const handleOldTitle = item => {
+    if (item.title == 'Chọn phương thức thanh toán') {
+      setOldTitle(true);
+    } else {
+      setOldTitle(false);
+    }
+  };
 
   return (
     <WebView
       source={{
-        uri: `https://sandbox.vnpayment.vn/paymentv2/vpcpay.html?vnp_Amount=${vnp_Amount}&vnp_Command=pay&vnp_CreateDate=${vnp_CreateDate}&vnp_CurrCode=VND&vnp_IpAddr=${vnp_IpAddr}&vnp_Locale=vn&vnp_OrderInfo=${vnp_OrderInfo}&vnp_ReturnUrl=${vnp_ReturnUrl}&vnp_TmnCode=${vnp_TmnCode}&vnp_TxnRef=${vnp_TxnRef}&vnp_Version=${vnp_Version}&vnp_SecureHash=${vnp_SecureHash}`,
+        uri: url,
       }}
+      onNavigationStateChange={navState => {
+        console.log(navState);
+        handleOldTitle(navState);
+        if (
+          navState.url ==
+          'https://pay.vnpay.vn/Transaction/Error.html?aspxerrorpath=/Transaction/Complete.html'
+        ) {
+          if (!oldTitle) {
+            handleSavePayment();
+            Alert.alert('Thông báo', 'Giao dịch thành công!');
+          }
+          navigation.goBack();
+        }
+      }}
+      onMessage={handleWebViewMessage}
     />
   );
 }

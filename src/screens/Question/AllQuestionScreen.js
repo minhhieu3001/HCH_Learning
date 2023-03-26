@@ -47,7 +47,7 @@ export default function AllQuestionScreen({navigation}) {
     };
     axios
       .get(
-        `${BASE_URL}/post/searchQuestions?page=${page}&size=20&subject=${
+        `${BASE_URL}/post/searchQuestions?page=${page}&size=50&subject=${
           !subject ? '' : subject
         }&resolve=${toggleCheckBox}&course=${!grade ? '' : grade}&keyContent=${
           !content ? '' : content
@@ -221,14 +221,14 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderBottomWidth: 2,
     borderBottomColor: '#02457A',
-    paddingStart: 10,
-    paddingEnd: 10,
+    paddingStart: 12,
+    paddingEnd: 12,
   },
   not_choose: {
     backgroundColor: 'white',
     height: 40,
-    paddingStart: 10,
-    paddingEnd: 10,
+    paddingStart: 12,
+    paddingEnd: 12,
   },
   text_choose: {
     fontSize: 17,
