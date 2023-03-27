@@ -20,6 +20,4 @@ jobs:
         run: npm install
 
       - name: Build APK
-        run: |
-          npm run build
-          cd android && ./gradlew assembleRelease
+        run: cd android && ./gradlew assembleRelease
