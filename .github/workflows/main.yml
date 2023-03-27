@@ -30,15 +30,14 @@ jobs:
           
       - name: Create Release
         id: create_release
-        uses: actions/create-release@v1.0.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: ncipollo/release-action@v1.12.0
         with:
           tag_name: ${{ github.ref }}
           release_name: Release ${{ github.ref }}
           body: release_name
           draft: false
           prerelease: false
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload APK
         id: upload-release-asset 
