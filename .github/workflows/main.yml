@@ -3,7 +3,7 @@ name: Build APK
 on:
   push:
     branches: [ develop ]
-
+permissions: write-all
 jobs:
   build:
     runs-on: ubuntu-latest
