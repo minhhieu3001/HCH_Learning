@@ -26,8 +26,7 @@ jobs:
         id: create_release
         uses: ncipollo/release-action@v1.12.0
         with:
-          tag: ${{ github.ref }}
-          body: release_name
+          tag: ${{ github.sha }}
           draft: false
           prerelease: false
           token: ${{ secrets.GITHUB_TOKEN }}
