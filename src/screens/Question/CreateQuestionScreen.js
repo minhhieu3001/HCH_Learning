@@ -71,6 +71,7 @@ export default function CreateQuestionScreen({navigation}) {
   const pickFile = () => {
     DocumentPicker.pick({
       // allowMultiSelection: true,
+      type: [DocumentPicker.types.pdf, DocumentPicker.types.doc],
     })
       .then(files => {
         console.log(files);
@@ -453,7 +454,7 @@ export default function CreateQuestionScreen({navigation}) {
             marginBottom: 5,
           }}>
           <Text style={{alignSelf: 'center', fontSize: 16, color: 'black'}}>
-            Chọn file (.docx, .pdf, ...)
+            Chọn file (.docx, .doc, .pdf)
           </Text>
           <Text style={{alignSelf: 'center'}}>20p</Text>
         </Pressable>

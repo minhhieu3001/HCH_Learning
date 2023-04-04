@@ -7,6 +7,7 @@ import {
   Image,
   Pressable,
   Alert,
+  Linking,
 } from 'react-native';
 import React, {useState, useEffect} from 'react';
 import {useDispatch} from 'react-redux';
@@ -42,6 +43,7 @@ export default function DetailQuestion({route, navigation}) {
     };
     axios.get(`${BASE_URL}/post/detail?id=${questionId}`, config).then(res => {
       if (res.data.code == 0) {
+        console.log(res.data.object.questionDetail);
         setQuestion(res.data.object.questionDetail);
         setAnswers(res.data.object.teacherAnswerResponses);
         setStudent(res.data.object.studentDTO);
@@ -148,6 +150,10 @@ export default function DetailQuestion({route, navigation}) {
       });
   };
 
+  const handleOpenLink = async url => {
+    await Linking.openURL(url);
+  };
+
   useEffect(() => {
     getQuestion();
   }, []);
@@ -185,7 +191,6 @@ export default function DetailQuestion({route, navigation}) {
           <View
             style={{
               backgroundColor: 'white',
-              //   borderRadius: 10,
               width: '100%',
               padding: 10,
               elevation: 6,
@@ -239,19 +244,19 @@ export default function DetailQuestion({route, navigation}) {
                 numberOfLines={5}>
                 {question.content}
               </Text>
-              <ScrollView
-                horizontal={true}
-                showsVerticalScrollIndicator={false}>
-                {!question.imgUrls ? (
-                  <> </>
-                ) : (
-                  question.imgUrls.map((item, index) => {
-                    return <ImageQuestion url={item} key={item} />;
-                  })
-                )}
-              </ScrollView>
+              {!question.imgUrls ? (
+                <Text>{question.imgUrls}</Text>
+              ) : (
+                <ScrollView
+                  horizontal={true}
+                  showsHorizontalScrollIndicator={false}>
+                  {question.imgUrls.map((item, index) => {
+                    return <ImageQuestion url={item} key={index} />;
+                  })}
+                </ScrollView>
+              )}
 
-              <View>
+              <Pressable onPress={() => handleOpenLink(question.filePaths[0])}>
                 {!question.filePaths ? (
                   <></>
                 ) : (
@@ -269,7 +274,7 @@ export default function DetailQuestion({route, navigation}) {
                     )}
                   </Text>
                 )}
-              </View>
+              </Pressable>
             </View>
             <View
               style={{
@@ -456,9 +461,9 @@ export default function DetailQuestion({route, navigation}) {
                             })
                           )}
                         </ScrollView>
-                        <View>
+                        {/* <View>
                           {!item.filePaths ? <></> : <Text>CÓA FILE</Text>}
-                        </View>
+                        </View> */}
                       </View>
                     );
                   }

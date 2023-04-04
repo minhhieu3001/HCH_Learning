@@ -29,6 +29,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {TEACHER_OFFLINE, TEACHER_ONLINE} from '../../constant/constants';
 import CustomAvatar from '../../components/Common/CustomAvatar';
+import socket from '../../service/socket';
 
 const Item = ({teacher, press}) => {
   return (
@@ -108,6 +109,13 @@ export default function HomeScreen({navigation}) {
   const [allTeachers, setAllTeachers] = useState([]);
   const [favoriteTeachers, setFavoriteTeachers] = useState([]);
   const [recommendTeachers, setRecommendTeachers] = useState([]);
+  const [rankDays, setRankDays] = useState([]);
+  const [rankWeeks, setRankWeeks] = useState([]);
+  const [rankMonths, setRankMonths] = useState([]);
+
+  const visibleMenuPopup = useSelector(state => {
+    return state.menuPopUp.visibleMenuPopup;
+  });
 
   const getAllTeacher = async () => {
     const token = await AsyncStorage.getItem('token');
@@ -185,10 +193,6 @@ export default function HomeScreen({navigation}) {
     this.offset = currentOffset;
   };
 
-  const visibleMenuPopup = useSelector(state => {
-    return state.menuPopUp.visibleMenuPopup;
-  });
-
   const getPoint = async () => {
     const data = await AsyncStorage.getItem('user');
     const point = JSON.parse(data).point;
@@ -206,12 +210,79 @@ export default function HomeScreen({navigation}) {
     navigation.navigate('detail-screen', {teacherId: id});
   };
 
+  const getRankDays = async () => {
+    const token = await AsyncStorage.getItem('token');
+    const config = {
+      headers: {
+        Authorization: token,
+      },
+    };
+    axios
+      .get(
+        `${BASE_URL}/payment/ranking?type=1&sortType=totalPoint&page=0&size=3`,
+        config,
+      )
+      .then(res => {
+        if (res.data.code == 0) {
+          setRankDays(res.data.object);
+        }
+      });
+  };
+
+  const getRankWeeks = async () => {
+    const token = await AsyncStorage.getItem('token');
+    const config = {
+      headers: {
+        Authorization: token,
+      },
+    };
+    axios
+      .get(
+        `${BASE_URL}/payment/ranking?type=2&sortType=totalPoint&page=0&size=3`,
+        config,
+      )
+      .then(res => {
+        if (res.data.code == 0) {
+          setRankWeeks(res.data.object);
+        }
+      });
+  };
+
+  const getRankMonths = async () => {
+    const token = await AsyncStorage.getItem('token');
+    const config = {
+      headers: {
+        Authorization: token,
+      },
+    };
+    axios
+      .get(
+        `${BASE_URL}/payment/ranking?type=3&sortType=totalPoint&page=0&size=3`,
+        config,
+      )
+      .then(res => {
+        if (res.data.code == 0) {
+          setRankMonths(res.data.object);
+        }
+      });
+  };
+
+  const connectSocket = async () => {
+    const data = await AsyncStorage.getItem('user');
+    const user = JSON.parse(data);
+    socket.emit('add-user', user.id);
+  };
+
   useEffect(() => {
     getPoint();
     getNotiCount();
     getAllTeacher();
     getFavoriteTeachers();
     getRecommendTeachers();
+    connectSocket();
+    getRankDays();
+    getRankMonths();
+    getRankWeeks();
   }, []);
 
   useFocusEffect(
@@ -222,7 +293,6 @@ export default function HomeScreen({navigation}) {
       getFavoriteTeachers();
       if (favoriteTeachers.length == 0) {
         getRecommendTeachers();
-        console.log('recommend');
       }
     }, []),
   );
@@ -303,7 +373,12 @@ export default function HomeScreen({navigation}) {
             />
           </LinearGradient>
           <AllTeachers navigation={navigation} allTeachers={allTeachers} />
-          <Rank navigation={navigation} />
+          <Rank
+            navigation={navigation}
+            rankDays={rankDays}
+            rankWeeks={rankWeeks}
+            rankMonths={rankMonths}
+          />
           <Question navigation={navigation} />
         </ScrollView>
       )}

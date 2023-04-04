@@ -253,17 +253,20 @@ export default function SearchScreen({navigation}) {
               justifyContent: 'flex-end',
             }}>
             <Pressable
-              style={{width: 100, alignSelf: 'center'}}
+              style={{width: '50%', alignSelf: 'center'}}
               onPress={() => {
                 setShowEditSubject(false);
                 setSubject([]);
               }}>
-              <Text style={{fontSize: 16}}>Hủy</Text>
+              <Text style={{fontSize: 16, textAlign: 'center'}}>Hủy</Text>
             </Pressable>
             <Pressable
-              style={{width: 100, alignSelf: 'center'}}
+              style={{width: '50%', alignSelf: 'center'}}
               onPress={() => setShowEditSubject(false)}>
-              <Text style={{fontSize: 16, color: 'black'}}>Xác nhận</Text>
+              <Text
+                style={{fontSize: 16, color: '#018ABE', textAlign: 'center'}}>
+                Xác nhận
+              </Text>
             </Pressable>
           </View>
         </View>
@@ -306,20 +309,23 @@ export default function SearchScreen({navigation}) {
             style={{
               height: 45,
               flexDirection: 'row',
-              justifyContent: 'flex-end',
+              justifyContent: 'space-between',
             }}>
             <Pressable
-              style={{width: 100, alignSelf: 'center'}}
+              style={{width: '50%', alignSelf: 'center'}}
               onPress={() => {
                 setShowEditClass(false);
                 setGrade([]);
               }}>
-              <Text style={{fontSize: 16}}>Hủy</Text>
+              <Text style={{fontSize: 16, textAlign: 'center'}}>Hủy</Text>
             </Pressable>
             <Pressable
-              style={{width: 100, alignSelf: 'center'}}
+              style={{width: '50%', alignSelf: 'center'}}
               onPress={() => setShowEditClass(false)}>
-              <Text style={{fontSize: 16, color: 'black'}}>Xác nhận</Text>
+              <Text
+                style={{fontSize: 16, color: '#018ABE', textAlign: 'center'}}>
+                Xác nhận
+              </Text>
             </Pressable>
           </View>
         </View>

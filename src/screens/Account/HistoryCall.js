@@ -20,7 +20,7 @@ import Loading from '../../components/Common/Loading';
 const Video = ({item, navigation}) => {
   const convertTime = time => {
     const data = new Date(time);
-    return `${data.getHours()}:${data.getMinutes()}:${data.getSeconds()} ${data.getDate()}/${
+    return `${data.getHours()}:${data.getMinutes()}:${data.getSeconds()}  ${data.getDate()}/${
       data.getMonth() + 1
     }/${data.getFullYear()}`;
   };
@@ -46,7 +46,7 @@ const Video = ({item, navigation}) => {
       <View
         style={{
           justifyContent: 'space-between',
-          width: 260,
+          width: WIDTH - 40 - 110,
         }}>
         <Text
           style={{
@@ -115,7 +115,7 @@ export default function HistoryCall({navigation}) {
   }, [loading, page]);
 
   return (
-    <View style={{backgroundColor: '#D6E8EE', width: '100%', height: '100%'}}>
+    <View style={{backgroundColor: '#D6E8EE', width: WIDTH, height: '100%'}}>
       <View style={styles.top}>
         <View style={{flexDirection: 'row'}}>
           <Icon
@@ -130,7 +130,7 @@ export default function HistoryCall({navigation}) {
         </View>
         <Point navigation={navigation} />
       </View>
-      <View style={{padding: 10, borderWidth: 1}}>
+      <View style={{padding: 10}}>
         {!records ? (
           <ActivityIndicator size={50} color="#82C6D0" />
         ) : records.length == 0 ? (

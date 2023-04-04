@@ -1,14 +1,10 @@
 import {Easing} from 'react-native';
-import React, {useEffect, useRef} from 'react';
+import React from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
 import ChatScreen from '../screens/Chat/ChatScreen';
 import ChatDetailScreen from '../screens/Chat/ChatDetailScreen';
 import DetailScreen from '../screens/Home/DetailScreen';
-import QuestionTabNav from '../navigations/Question/QuestionTabNav';
-import ListTeacherScreen from '../screens/Home/ListTeacherScreen';
-import {useFocusEffect} from '@react-navigation/native';
-import {io} from 'socket.io-client';
 import PaymentScreen from '../screens/Common/PaymentScreen';
 import ChoosePayment from '../screens/Common/ChoosePayment';
 

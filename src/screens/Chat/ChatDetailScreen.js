@@ -92,7 +92,9 @@ export default function ChatDetailScreen({navigation}) {
         if (res.data.code === 0) {
           const msgs = res.data.object.concat(messages);
           setMessages(msgs);
-          scrollRef.current.scrollTo({y: 900, animated: true});
+          if (res.data.object.length != 0) {
+            scrollRef.current.scrollTo({y: 800});
+          }
         } else {
           setMessages([]);
         }
@@ -256,6 +258,7 @@ export default function ChatDetailScreen({navigation}) {
   //ban phim
   useEffect(() => {
     console.log('a');
+
     dispatch(hideTabNav(false));
     getUser();
     if (scrollRef) scrollRef.current.scrollToEnd();
@@ -272,6 +275,12 @@ export default function ChatDetailScreen({navigation}) {
       keyboardDidShowListener.remove();
       keyboardDidHideListener.remove();
     };
+  }, []);
+
+  useEffect(() => {
+    if (scrollRef) {
+      scrollRef.current.scrollToEnd();
+    }
   }, []);
 
   //socket

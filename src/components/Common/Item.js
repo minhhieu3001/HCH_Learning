@@ -1,5 +1,5 @@
 import {View, Text, Image, Pressable} from 'react-native';
-import React from 'react';
+import React, {useEffect} from 'react';
 import {WIDTH, HEIGHT} from '../../constant/dimentions';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Rate from './Rate';
@@ -7,13 +7,9 @@ import {TEACHER_OFFLINE, TEACHER_ONLINE} from '../../constant/constants';
 import CustomAvatar from './CustomAvatar';
 
 export default function Item({teacher, press}) {
-  let lastName = '';
-  let firstName = '';
-  if (!teacher.avaPath || teacher.avaPath == 'null') {
-    firstName = teacher.realName.split(' ').slice(0, -1).join(' ');
-    lastName = teacher.realName.split(' ').slice(-1).join(' ');
-  }
-
+  useEffect(() => {
+    console.log('aa');
+  }, []);
   return (
     <Pressable
       onPress={() => press(teacher.id)}
@@ -22,12 +18,10 @@ export default function Item({teacher, press}) {
         backgroundColor: 'white',
         borderRadius: 10,
         width: WIDTH - 20,
-        height: 110,
-        paddingLeft: 10,
-        paddingTop: 5,
-        marginBottom: 10,
+        padding: 10,
+        marginBottom: 5,
       }}>
-      <CustomAvatar text={teacher.realName} size={90} url={teacher.avaPath} />
+      <CustomAvatar text={teacher.realName} size={96} url={teacher.avaPath} />
       <View style={{paddingLeft: 10, paddingTop: 10}}>
         <Text style={{fontSize: 18, color: 'black'}}>{teacher.realName}</Text>
         <View style={{flexDirection: 'row', paddingTop: 3}}>
@@ -74,7 +68,7 @@ export default function Item({teacher, press}) {
               size={16}
             />
           </View>
-          <Text style={{marginLeft: 10, fontSize: 16, color: '#ff6600'}}>
+          <Text style={{marginLeft: 5, fontSize: 16, color: '#ff6600'}}>
             {!teacher.star ? 0 : teacher.star}
           </Text>
         </View>

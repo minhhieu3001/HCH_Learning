@@ -25,7 +25,7 @@ const Item = ({teacher, index}) => {
         width: WIDTH - 80,
         height: 80,
         padding: 5,
-        borderBottomWidth: 0.3,
+        borderBottomWidth: index == 2 ? 0 : 0.3,
         borderBottomColor: 'gray',
         marginBottom: 2,
       }}>
@@ -46,15 +46,17 @@ const Item = ({teacher, index}) => {
           {index + 1}
         </Text>
       </View>
-      <Image
-        source={require('../../assets/images/images.png')}
-        style={{width: 70, height: 70, borderRadius: 35}}
-        resizeMode="cover"
+
+      <CustomAvatar
+        text={teacher.teacherDTO.realName}
+        size={70}
+        url={teacher.teacherDTO.avaPath}
       />
-      {/* <CustomAvatar text={teacher.} size={70} /> */}
 
       <View style={{marginLeft: 10, alignSelf: 'center'}}>
-        <Text style={{fontSize: 18, color: 'black'}}>{teacher.name}</Text>
+        <Text style={{fontSize: 18, color: 'black'}}>
+          {teacher.teacherDTO.realName}
+        </Text>
       </View>
     </View>
   );
@@ -87,21 +89,7 @@ const Header = ({id}) => {
   );
 };
 
-export default function Rank({navigation}) {
-  const [rankDay, setRankDay] = useState(null);
-  const [rankWeek, setRankWeek] = useState(null);
-  const [rankMonth, setRankMonth] = useState(null);
-
-  const getRankDay = async () => {
-    const token = await AsyncStorage.getItem('token');
-    const config = {
-      headers: {
-        Authorization: token,
-      },
-    };
-    axios.get(`${BASE_URL}`);
-  };
-
+export default function Rank({navigation, rankDays, rankWeeks, rankMonths}) {
   const to_map = [1, 2, 3];
   return (
     <View style={{width: WIDTH}}>
@@ -139,7 +127,7 @@ export default function Rank({navigation}) {
           return (
             <FlatList
               key={index}
-              data={data.rank}
+              data={index == 1 ? rankDays : index == 2 ? rankWeeks : rankMonths}
               renderItem={({item, index}) => (
                 <Item teacher={item} index={index} />
               )}

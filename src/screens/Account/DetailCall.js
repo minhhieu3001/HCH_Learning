@@ -53,7 +53,8 @@ export default function DetailCall({navigation, route}) {
         {pause || !url ? (
           <Image
             source={require('../../assets/images/play.png')}
-            style={{width: '92%', height: 352, alignSelf: 'center', top: '20%'}}
+            style={{width: '90%', height: 350, alignSelf: 'center', top: '20%'}}
+            resizeMode="contain"
           />
         ) : (
           <Video

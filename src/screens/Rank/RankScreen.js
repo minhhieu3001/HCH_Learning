@@ -12,10 +12,114 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useDispatch, useSelector} from 'react-redux';
 import Point from '../../components/Common/Point';
 import axios from 'axios';
-import {BASE_URL} from '../../constant/constants';
+import {
+  BASE_URL,
+  TEACHER_ONLINE,
+  TEACHER_CALLING,
+  TEACHER_OFFLINE,
+} from '../../constant/constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Item from '../../components/Common/Item';
 import CustomAvatar from '../../components/Common/CustomAvatar';
+import {useFocusEffect} from '@react-navigation/native';
+import Rate from '../../components/Common/Rate';
+import {FlatList} from 'react-native';
+
+const RankItem = ({item, press, index}) => {
+  return (
+    <Pressable
+      onPress={() => press(item.ranking.teacherId)}
+      key={item.ranking.id}
+      style={{
+        flexDirection: 'row',
+        backgroundColor: 'white',
+        borderRadius: 10,
+        marginBottom: 10,
+        padding: 10,
+      }}>
+      <View style={{padding: 10, justifyContent: 'center'}}>
+        <Icon
+          name="crown-outline"
+          size={28}
+          color={'#ffc61a'}
+          style={{alignSelf: 'center'}}
+        />
+        <Text
+          style={{
+            fontSize: 25,
+            textAlign: 'center',
+            fontWeight: '600',
+            color: 'black',
+          }}>
+          {index + 1}
+        </Text>
+      </View>
+      <CustomAvatar
+        text={item.teacherDTO.realName}
+        url={item.teacherDTO.avaPath}
+        size={80}
+      />
+      <View style={{paddingLeft: 15}}>
+        <Text
+          style={{
+            fontSize: 18,
+            color: 'black',
+            marginBottom: 5,
+          }}>
+          {item.teacherDTO.realName}
+        </Text>
+        <View style={{flexDirection: 'row', marginBottom: 5}}>
+          <Icon
+            name={
+              item.teacherDTO.status === TEACHER_ONLINE
+                ? 'check-circle'
+                : item.teacherDTO.status === TEACHER_OFFLINE
+                ? 'timer-off'
+                : 'clock'
+            }
+            color={
+              item.teacherDTO.status === TEACHER_ONLINE
+                ? 'green'
+                : item.teacherDTO.status === TEACHER_OFFLINE
+                ? 'red'
+                : '#ff6600'
+            }
+            size={16}
+          />
+          <Text
+            style={{
+              fontSize: 14,
+              paddingLeft: 5,
+              color:
+                item.teacherDTO.status === TEACHER_ONLINE
+                  ? 'green'
+                  : item.teacherDTO.status === TEACHER_OFFLINE
+                  ? 'red'
+                  : '#ff6600',
+            }}>
+            {item.teacherDTO.status === TEACHER_ONLINE
+              ? 'Trực tuyến'
+              : item.teacherDTO.status === TEACHER_OFFLINE
+              ? 'Ngoại tuyến'
+              : 'Đang trong cuộc gọi'}
+          </Text>
+        </View>
+        <View style={{flexDirection: 'row'}}>
+          <Rate starNumber={item.teacherDTO.star} isChoose={false} size={18} />
+          <Text
+            style={{
+              fontSize: 20,
+              marginLeft: 10,
+              top: -5,
+              color: '#ffc61a',
+            }}>
+            {item.teacherDTO.star}
+          </Text>
+        </View>
+      </View>
+    </Pressable>
+  );
+};
 
 export default function RankScreen({navigation}) {
   const [ranks, setRanks] = useState(null);
@@ -31,14 +135,19 @@ export default function RankScreen({navigation}) {
     };
     axios
       .get(
-        `${BASE_URL}/payment/ranking?type=${type}&sortType=${sortBy}&page=0&size=20`,
+        `${BASE_URL}/payment/ranking?type=${type}&sortType=${sortBy}&page=0&size=10`,
         config,
       )
       .then(res => {
         if (res.data.code == 0) {
+          console.log(res.data.object);
           setRanks(res.data.object);
         }
       });
+  };
+
+  const navigateToDetailScreen = id => {
+    navigation.navigate('detail-screen', {teacherId: id});
   };
 
   useEffect(() => {
@@ -147,30 +256,28 @@ export default function RankScreen({navigation}) {
             </Text>
           </Pressable>
         </View>
-        {!ranks || ranks.length == 0 ? (
-          <ActivityIndicator size="large" />
-        ) : (
-          <ScrollView>
-            {ranks.map((item, index) => {
-              console.log('teacherDTO', item.teacherDTO);
-              return (
-                <Pressable
-                  style={{
-                    flexDirection: 'row',
-                    backgroundColor: 'white',
-                    borderRadius: 10,
-                    marginBottom: 10,
-                  }}>
-                  {/* <CustomAvatar
-                    text={item.teacherDTO.realName}
-                    size={90}
-                    url={item.teacherDTO.avaPath}
-                  /> */}
-                </Pressable>
-              );
-            })}
-          </ScrollView>
-        )}
+        <View>
+          {!ranks ? (
+            <ActivityIndicator size="large" />
+          ) : (
+            <FlatList
+              data={ranks}
+              showsVerticalScrollIndicator={false}
+              renderItem={({item, index}) => {
+                return (
+                  <RankItem
+                    key={item.id}
+                    item={item}
+                    press={navigateToDetailScreen}
+                    index={index}
+                  />
+                );
+              }}
+              keyExtractor={item => item.id}
+              style={{padding: 10, marginBottom: 210}}
+            />
+          )}
+        </View>
       </View>
     </View>
   );
@@ -178,7 +285,7 @@ export default function RankScreen({navigation}) {
 
 const styles = StyleSheet.create({
   container: {
-    height: '100%',
+    height: HEIGHT - 60,
     backgroundColor: '#D6E8EE',
   },
   rankTop: {

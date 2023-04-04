@@ -224,9 +224,11 @@ const DetailScreen = ({route, navigation}) => {
     const unsubscribe = messaging().onMessage(async remoteMessage => {
       console.log('fcm message call', remoteMessage);
       if (remoteMessage.data.type == '5') {
-        setCounting(false);
-        setShowRequestCall(false);
-        navigation.navigate('call-screen', {teacherId: teacherId});
+        setTimeout(() => {
+          setCounting(false);
+          setShowRequestCall(false);
+          navigation.navigate('call-screen', {teacherId: teacherId});
+        }, 2000);
       }
     });
 
@@ -334,7 +336,10 @@ const DetailScreen = ({route, navigation}) => {
               <View style={{}}>
                 <View style={{flexDirection: 'row'}}>
                   <Icon
-                    onPress={() => setShowReview(false)}
+                    onPress={() => {
+                      setShowReview(false);
+                      AsyncStorage.setItem('review', 'false');
+                    }}
                     name="close"
                     size={30}
                     style={{alignSelf: 'center', color: 'red'}}
@@ -509,7 +514,7 @@ const DetailScreen = ({route, navigation}) => {
               }}>
               <Rate starNumber={teacher.star} isChoose={false} size={20} />
 
-              <Text style={{fontSize: 20, color: '#e68a00', paddingStart: 5}}>
+              <Text style={{fontSize: 20, color: '#e68a00', marginLeft: 10}}>
                 {teacher.star}
               </Text>
             </View>

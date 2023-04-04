@@ -9,8 +9,10 @@ import 'react-native-gesture-handler';
 import {Provider} from 'react-redux';
 import messaging from '@react-native-firebase/messaging';
 import PushNotification from 'react-native-push-notification';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import {store} from './src/redux/store';
+import {MessageNotification} from './src/service/PushNotification';
 
 PushNotification.configure({
   onNotification: function (notification) {
@@ -27,14 +29,13 @@ PushNotification.configure({
 
 messaging().setBackgroundMessageHandler(async remoteMessage => {
   console.log('Message handled in the background!', remoteMessage);
-
-  PushNotification.localNotification({
-    /* Android Notification Options */
-    channelId: 'uet_learning',
-    priority: 'high',
-    title: 'THÔNG BÁO',
-    message: `Tin nhắn mới từ ${remoteMessage.data.real_name}`,
-  });
+  if (remoteMessage.data.type == 1) {
+    MessageNotification();
+  } else if (remoteMessage.data.type == 0) {
+    const data = await AsyncStorage.getItem('notiCount');
+    const newCount = JSON.stringify(JSON.parse(data) + 1);
+    AsyncStorage.setItem('notiCount', newCount);
+  }
 });
 
 const RN_App = () => {

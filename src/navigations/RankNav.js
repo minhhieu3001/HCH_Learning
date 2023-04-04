@@ -7,6 +7,7 @@ import ListTeacherScreen from '../screens/Home/ListTeacherScreen';
 import QuestionTabNav from '../navigations/Question/QuestionTabNav';
 import PaymentScreen from '../screens/Common/PaymentScreen';
 import ChoosePayment from '../screens/Common/ChoosePayment';
+import DetailScreen from '../screens/Home/DetailScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -63,6 +64,17 @@ export default function RankNav() {
       <Stack.Screen
         name="choose-payment-screen"
         component={ChoosePayment}
+        options={{
+          gestureDirection: 'vertical',
+          transitionSpec: {
+            open: config,
+            close: closeConfig,
+          },
+        }}
+      />
+      <Stack.Screen
+        name="detail-screen"
+        component={DetailScreen}
         options={{
           gestureDirection: 'vertical',
           transitionSpec: {

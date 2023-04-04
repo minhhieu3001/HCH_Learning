@@ -56,6 +56,7 @@ export default function QuestionItem({item, press}) {
           borderBottomWidth: 0.5,
           borderBottomColor: 'gray',
           marginBottom: 5,
+          minHeight: 100,
         }}>
         <Text
           style={{

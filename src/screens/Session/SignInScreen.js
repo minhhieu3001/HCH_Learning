@@ -13,18 +13,20 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import axios from 'axios';
 import {BASE_URL} from '../../constant/constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import socket from '../../service/socket';
 import {useDispatch} from 'react-redux';
 import {setLogin} from '../../redux/slice/loginSlice';
+import ModalPopup from '../../components/Common/ModalPopup';
 
 export default function SignInScreen(props) {
   const dispatch = useDispatch();
   const [activeEmail, setActiveEmail] = useState(false);
   const [activePass, setActivePass] = useState(false);
   const [showPass, setShowPass] = useState(false);
+  const [showResetPass, setShowResetPass] = useState(false);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [resetPassword, setResetPassword] = useState('');
 
   const {navigation, deviceToken} = props;
 
@@ -47,7 +49,6 @@ export default function SignInScreen(props) {
           const notiCount = JSON.stringify(0);
           AsyncStorage.setItem('notiCount', notiCount);
           dispatch(setLogin(true));
-          socket.emit('add-user', response.data.object.id);
           console.log(response.data.object.token);
         } else {
           Alert.alert('Thông báo', 'Email hoặc mật khẩu không đúng!');
@@ -58,8 +59,77 @@ export default function SignInScreen(props) {
       });
   };
 
+  const handleResetPassword = () => {
+    if (!resetPassword || resetPassword == '') {
+      Alert.alert('Thông báo', 'Bạn cần nhập email!');
+    } else {
+      axios
+        .post(`${BASE_URL}/ums/forgetPassword/student`, {email: resetPassword})
+        .then(res => {
+          console.log(res.data);
+          if (res.data.code != 0) {
+            Alert.alert('Thông báo', 'Email không đúng');
+          } else {
+            setShowResetPass(false);
+            Alert.alert(
+              'Thông báo',
+              'Mật khẩu mới của bạn đã được gửi đến email',
+            );
+          }
+        });
+    }
+  };
+
   return (
     <View style={{width: WIDTH, height: HEIGHT}}>
+      <ModalPopup visible={showResetPass}>
+        <View
+          style={{
+            width: 300,
+            backgroundColor: 'white',
+            padding: 20,
+            alignSelf: 'center',
+            top: 200,
+            borderRadius: 20,
+          }}>
+          <Text style={{alignSelf: 'center', fontSize: 18, color: 'black'}}>
+            Nhập email nhận mật khẩu{' '}
+          </Text>
+          <Text style={{alignSelf: 'center', fontSize: 16, marginBottom: 20}}>
+            ( Phải giống với email đăng ký )
+          </Text>
+          <TextInput
+            style={{height: 50, borderWidth: 1, borderRadius: 15, padding: 10}}
+            placeholder="Nhập email"
+            onChangeText={text => setResetPassword(text)}
+          />
+          <View style={{flexDirection: 'row', marginTop: 20}}>
+            <Pressable
+              onPress={() => setShowResetPass(false)}
+              style={{width: '50%', flexDirection: 'row'}}>
+              <Text
+                style={{alignSelf: 'center', marginLeft: '35%', fontSize: 16}}>
+                Hủy bỏ
+              </Text>
+            </Pressable>
+            <Pressable
+              style={{width: '50%', flexDirection: 'row'}}
+              onPress={() => {
+                handleResetPassword();
+              }}>
+              <Text
+                style={{
+                  alignSelf: 'center',
+                  marginLeft: '35%',
+                  fontSize: 16,
+                  color: '#02457A',
+                }}>
+                Xác nhận
+              </Text>
+            </Pressable>
+          </View>
+        </View>
+      </ModalPopup>
       <View>
         <Image
           source={require('../../assets/images/background.png')}
@@ -130,7 +200,7 @@ export default function SignInScreen(props) {
             Đăng nhập
           </Text>
         </Pressable>
-        <Pressable style={{margin: 10}}>
+        <Pressable style={{margin: 10}} onPress={() => setShowResetPass(true)}>
           <Text style={{fontSize: 16, textAlign: 'center', color: '#018ABE'}}>
             Quên mật khẩu
           </Text>

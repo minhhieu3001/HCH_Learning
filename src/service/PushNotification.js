@@ -38,3 +38,16 @@ export const MessageNotification = () => {
     channelId: channelId,
   });
 };
+
+export const AnswerNotification = () => {
+  PushNotification.localNotification({
+    autoCancel: true,
+    title: 'Thông báo',
+    message: 'Bạn có câu trả lời mới',
+    vibration: 300,
+    playSound: true,
+    soundName: 'default',
+    id: 1,
+    channelId: channelId,
+  });
+};

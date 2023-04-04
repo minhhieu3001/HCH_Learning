@@ -7,7 +7,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {BASE_URL} from './src/constant/constants';
 import axios from 'axios';
 import Loading from './src/components/Common/Loading';
-import {MessageNotification} from './src/service/PushNotification';
+import {
+  AnswerNotification,
+  MessageNotification,
+} from './src/service/PushNotification';
 import messaging from '@react-native-firebase/messaging';
 import {useDispatch, useSelector} from 'react-redux';
 import {setCount} from './src/redux/slice/notificationSlice';
@@ -39,13 +42,13 @@ const App = () => {
   useEffect(() => {
     const unsubscribe = messaging().onMessage(async remoteMessage => {
       console.log('fcm message home', remoteMessage);
-      const data = await AsyncStorage.getItem('notiCount');
-      const newCount = JSON.stringify(JSON.parse(data) + 1);
-      AsyncStorage.setItem('notiCount', newCount);
-      dispatch(setCount(newCount));
-      // if (remoteMessage.data.type == 1) {
-      //   MessageNotification();
-      // }
+      if (remoteMessage.data.type == 0) {
+        const data = await AsyncStorage.getItem('notiCount');
+        const newCount = JSON.stringify(JSON.parse(data) + 1);
+        AsyncStorage.setItem('notiCount', newCount);
+        dispatch(setCount(newCount));
+        AnswerNotification();
+      }
     });
 
     return unsubscribe;

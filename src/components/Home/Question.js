@@ -33,7 +33,7 @@ export default function Question({navigation}) {
     };
     axios
       .get(
-        `${BASE_URL}/post/searchQuestions?page=0&size=3&resolve=false`,
+        `${BASE_URL}/post/searchQuestions?page=0&size=6&resolve=false`,
         config,
       )
       .then(res => {
@@ -66,7 +66,10 @@ export default function Question({navigation}) {
         </Text>
         <Pressable
           style={{alignSelf: 'flex-end', flexDirection: 'row'}}
-          onPress={() => navigation.navigate('question-screen')}>
+          onPress={() => {
+            navigation.navigate('question-screen');
+            dispatch(showQuestionNav(true));
+          }}>
           <Text style={{color: '#018ABE', fontSize: 16}}>Xem thêm</Text>
           <Icon
             name="chevron-right"

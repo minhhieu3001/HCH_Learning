@@ -6,7 +6,9 @@ const Rate = ({starNumber, isChoose, size, setData}) => {
   const [defaultRating, setDefaultRating] = useState(starNumber);
   const [change, setChange] = useState(isChoose ? true : false);
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    console.log(starNumber);
+  }, []);
 
   return (
     <View style={{flexDirection: 'row'}}>

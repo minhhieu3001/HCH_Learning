@@ -140,9 +140,6 @@ export default function CallScreen({navigation, route}) {
             BtnTemplateContainer: {
               display: hidden ? 'none' : 'flex',
             },
-            minViewContainer: {
-              display: hidden ? 'none' : 'flex',
-            },
           }}
         />
       )}
