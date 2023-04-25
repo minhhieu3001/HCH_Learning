@@ -18,6 +18,7 @@ export default function CallScreen({navigation, route}) {
   const [rtcToken, setRtcToken] = useState(null);
   const [time, setTime] = useState(null);
 
+  //handle user press screen to show control button
   const handlePress = () => {
     setHidden(false);
     setTimeout(() => {
