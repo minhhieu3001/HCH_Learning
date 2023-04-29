@@ -105,13 +105,15 @@ export default function CreateQuestionScreen({navigation}) {
       successActionStatus: 201,
     };
 
-    if (images) {
+    if (images && images.length > 0) {
       for (let i = 0; i < images.length; i++) {
         RNS3.put(images[i], config);
       }
     }
 
-    RNS3.put(files[0], config);
+    if (files) {
+      RNS3.put(files[0], config);
+    }
     const token = await AsyncStorage.getItem('token');
     const configHeader = {
       headers: {
@@ -143,6 +145,7 @@ export default function CreateQuestionScreen({navigation}) {
           user.point -= point;
           const new_user = JSON.stringify(user);
           AsyncStorage.setItem('user', new_user);
+          navigation.goBack();
         }
       });
   };

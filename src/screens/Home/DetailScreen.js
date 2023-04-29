@@ -28,6 +28,7 @@ import messaging from '@react-native-firebase/messaging';
 import Point from '../../components/Common/Point';
 import socket from '../../service/socket';
 import {useFocusEffect} from '@react-navigation/native';
+import {Press} from 'hammerjs';
 
 const Item = ({text}) => {
   return (
@@ -63,6 +64,9 @@ const DetailScreen = ({route, navigation}) => {
   const [showReview, setShowReview] = useState(false);
   const [inputReview, setInputReview] = useState(null);
   const [starReview, setStarReview] = useState(0);
+  const [showReport, setShowReport] = useState(false);
+  const [reportTitle, setReportTitle] = useState(null);
+  const [reportContent, setReportContent] = useState(null);
 
   const getDetailTeacher = async () => {
     const token = await AsyncStorage.getItem('token');
@@ -218,6 +222,33 @@ const DetailScreen = ({route, navigation}) => {
   const convertTime = longTime => {
     const time = new Date(longTime);
     return `${time.getHours()}:${time.getMinutes()}:${time.getSeconds()}  ${time.getDate()}/${time.getMonth()}/${time.getFullYear()}`;
+  };
+
+  const handlePushReport = async () => {
+    const token = await AsyncStorage.getItem('token');
+    const config = {
+      headers: {
+        Authorization: token,
+      },
+    };
+    if (reportTitle != null && reportContent != null) {
+      const data = {
+        toId: teacherId,
+        title: reportTitle,
+        value: reportContent,
+      };
+      axios.post(`${BASE_URL}/ums/report`, data, config).then(res => {
+        if (res.data.code == 0) {
+          setShowReport(false);
+          Alert.alert(
+            'Thông báo',
+            'Báo cáo của bạn đã được hệ thống chuyển cho quản trị viên xác nhận.',
+          );
+        }
+      });
+    } else {
+      Alert.alert('Thông báo', 'Vui lòng không bỏ trống');
+    }
   };
 
   useEffect(() => {
@@ -378,12 +409,19 @@ const DetailScreen = ({route, navigation}) => {
               <Pressable
                 onPress={() => {
                   setShowReview(false);
-                  const newReview = {
-                    teacherId: teacher.id,
-                    star: starReview,
-                    content: inputReview,
-                  };
-                  pushReview(newReview);
+                  if (starReview != 0 && inputReview != null) {
+                    const newReview = {
+                      teacherId: teacher.id,
+                      star: starReview,
+                      content: inputReview,
+                    };
+                    pushReview(newReview);
+                  } else {
+                    Alert.alert(
+                      'Thông báo',
+                      'Bạn phải chọn số sao và nhập nội dung đánh giá',
+                    );
+                  }
                 }}
                 style={{
                   marginTop: 30,
@@ -400,6 +438,65 @@ const DetailScreen = ({route, navigation}) => {
                     color: 'white',
                     top: '10%',
                   }}>
+                  Xác nhận
+                </Text>
+              </Pressable>
+            </View>
+          </ModalPopup>
+          <ModalPopup visible={showReport}>
+            <View
+              style={{
+                backgroundColor: 'white',
+                width: '80%',
+                alignSelf: 'center',
+                top: 180,
+                borderRadius: 15,
+              }}>
+              <View style={{padding: 10}}>
+                <Icon
+                  onPress={() => {
+                    setShowReport(false);
+                    setReportTitle(null);
+                    setReportContent(null);
+                  }}
+                  name="close"
+                  size={24}
+                  style={{marginLeft: 'auto'}}
+                />
+                <TextInput
+                  style={{
+                    borderWidth: 1,
+                    margin: 10,
+                    borderRadius: 15,
+                    padding: 10,
+                    fontSize: 14,
+                  }}
+                  placeholder="Chủ đề"
+                  onChangeText={text => setReportTitle(text)}
+                />
+                <TextInput
+                  style={{
+                    borderWidth: 1,
+                    margin: 10,
+                    borderRadius: 15,
+                    padding: 10,
+                    fontSize: 14,
+                  }}
+                  placeholder="Nội dung báo cáo"
+                  numberOfLines={5}
+                  multiline={true}
+                  onChangeText={text => setReportContent(text)}
+                />
+              </View>
+              <Pressable
+                style={{
+                  height: 45,
+                  backgroundColor: '#018ABE',
+                  justifyContent: 'center',
+                }}
+                onPress={() => handlePushReport()}>
+                <Text
+                  style={{fontSize: 18, color: 'white', alignSelf: 'center'}}>
                   Xác nhận
                 </Text>
               </Pressable>
@@ -453,6 +550,19 @@ const DetailScreen = ({route, navigation}) => {
                 <Text style={{fontSize: 16}}>Yêu thích</Text>
               </Pressable>
             )}
+            <Icon
+              onPress={() => {
+                navigation.navigate('calendar-screen', {teacherId: teacherId});
+              }}
+              name="calendar-month"
+              size={30}
+              style={{
+                marginTop: 30,
+                marginLeft: 'auto',
+                marginRight: 40,
+                color: 'black',
+              }}
+            />
           </View>
           <View style={styles.userInfo}>
             <View
@@ -854,6 +964,24 @@ const DetailScreen = ({route, navigation}) => {
               </View>
             </View>
           </View>
+          <Pressable
+            onPress={() => setShowReport(true)}
+            style={{
+              backgroundColor: '#ff3333',
+              margin: 10,
+              padding: 10,
+              height: 45,
+            }}>
+            <Text
+              style={{
+                fontSize: 18,
+                textAlign: 'center',
+                color: 'white',
+                fontWeight: '500',
+              }}>
+              Báo cáo
+            </Text>
+          </Pressable>
           <View style={{height: 20}}></View>
         </ScrollView>
       )}
@@ -995,7 +1123,7 @@ const styles = StyleSheet.create({
     borderColor: 'black',
   },
   userInfo: {
-    marginTop: 60,
+    marginTop: 70,
     padding: 10,
     backgroundColor: 'white',
     elevation: 3,

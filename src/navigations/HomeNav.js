@@ -15,6 +15,7 @@ import PaymentScreen from '../screens/Common/PaymentScreen';
 import ResultSearchScreen from '../screens/Home/ResultSearchScreen';
 import ChoosePayment from '../screens/Common/ChoosePayment';
 import DetailQuestion from '../screens/Question/DetailQuestion';
+import CalendarScreen from '../screens/Home/CalendarScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -182,6 +183,17 @@ export default function HomeNav() {
       <Stack.Screen
         name="result-screen"
         component={ResultSearchScreen}
+        options={{
+          gestureDirection: 'vertical',
+          transitionSpec: {
+            open: config,
+            close: closeConfig,
+          },
+        }}
+      />
+      <Stack.Screen
+        name="calendar-screen"
+        component={CalendarScreen}
         options={{
           gestureDirection: 'vertical',
           transitionSpec: {

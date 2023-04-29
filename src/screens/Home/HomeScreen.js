@@ -6,7 +6,6 @@ import {
   Text,
   Pressable,
   FlatList,
-  Image,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 
@@ -30,6 +29,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {TEACHER_OFFLINE, TEACHER_ONLINE} from '../../constant/constants';
 import CustomAvatar from '../../components/Common/CustomAvatar';
 import socket from '../../service/socket';
+import {rank} from '../../data/rank';
 
 const Item = ({teacher, press}) => {
   return (
@@ -224,7 +224,11 @@ export default function HomeScreen({navigation}) {
       )
       .then(res => {
         if (res.data.code == 0) {
-          setRankDays(res.data.object);
+          if (res.data.object.length != 0) {
+            setRankDays(res.data.object);
+          } else {
+            setRankDays(rank);
+          }
         }
       });
   };
@@ -373,12 +377,12 @@ export default function HomeScreen({navigation}) {
             />
           </LinearGradient>
           <AllTeachers navigation={navigation} allTeachers={allTeachers} />
-          <Rank
+          {/* <Rank
             navigation={navigation}
             rankDays={rankDays}
             rankWeeks={rankWeeks}
             rankMonths={rankMonths}
-          />
+          /> */}
           <Question navigation={navigation} />
         </ScrollView>
       )}

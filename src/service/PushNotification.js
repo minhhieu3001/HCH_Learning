@@ -51,3 +51,42 @@ export const AnswerNotification = () => {
     channelId: channelId,
   });
 };
+
+export const StudyNotification = () => {
+  PushNotification.localNotification({
+    autoCancel: true,
+    title: 'Thông báo',
+    message: 'Sắp tới giờ học của bạn rồi',
+    vibration: 300,
+    playSound: true,
+    soundName: 'default',
+    id: 1,
+    channelId: channelId,
+  });
+};
+
+export const ReportSuccessNotification = () => {
+  PushNotification.localNotification({
+    autoCancel: true,
+    title: 'Thông báo',
+    message: 'Báo cáo của bạn đã được phê duyệt',
+    vibration: 300,
+    playSound: true,
+    soundName: 'default',
+    id: 1,
+    channelId: channelId,
+  });
+};
+
+export const ReportRefusedNotification = () => {
+  PushNotification.localNotification({
+    autoCancel: true,
+    title: 'Thông báo',
+    message: 'Báo cáo của bạn đã bị từ chối',
+    vibration: 300,
+    playSound: true,
+    soundName: 'default',
+    id: 1,
+    channelId: channelId,
+  });
+};

@@ -131,7 +131,7 @@ export default function Rank({navigation, rankDays, rankWeeks, rankMonths}) {
               renderItem={({item, index}) => (
                 <Item teacher={item} index={index} />
               )}
-              keyExtractor={item => item.id}
+              keyExtractor={item => item.ranking.id}
               ListHeaderComponent={() => <Header id={index} />}
               style={{
                 left: 10,

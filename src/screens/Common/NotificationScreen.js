@@ -1,4 +1,4 @@
-import {View, Text, StyleSheet} from 'react-native';
+import {View, Text, StyleSheet, ScrollView, Pressable} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useDispatch} from 'react-redux';
@@ -24,12 +24,36 @@ export default function NotificationScreen({navigation}) {
     };
     axios
       .get(
-        `${BASE_URL}/notification/getNotifications?page=0&size=10&sortType=aaa`,
+        `${BASE_URL}/notification/getNotifications?page=0&size=10&types=0,9,12`,
         config,
       )
       .then(res => {
-        console.log(res.data.object);
+        if (res.data.code == 0) {
+          setNotifications(res.data.object.notificationDBS);
+        }
       });
+  };
+
+  const handleNavigation = item => {
+    if (item.typeNotification == 0) {
+      navigation.navigate('detail-question-screen', {
+        questionId: item.questionId,
+      });
+    }
+    // if (item.typeNotification == 9) {
+    //   navigation.navigate('detail-screen', {teacherId: id});
+    // }
+  };
+
+  const handleTime = time => {
+    const date = new Date(time);
+    const now = new Date();
+
+    if (date.getDate() == now.getDate() && date.getMonth() == now.getMonth()) {
+      return `${date.getHours()}:${date.getMinutes()}`;
+    } else {
+      return `${date.getDate()}/Th${date.getMonth() + 1}`;
+    }
   };
 
   useEffect(() => {
@@ -64,7 +88,48 @@ export default function NotificationScreen({navigation}) {
         </View>
         <Point navigation={navigation} />
       </View>
-      <View></View>
+      <View>
+        <ScrollView showsVerticalScrollIndicator={false} style={{margin: 10}}>
+          {!notifications ? (
+            <></>
+          ) : (
+            notifications.map((item, index) => {
+              return (
+                <Pressable
+                  key={item.sendTime}
+                  onPress={() => handleNavigation(item)}
+                  style={{
+                    backgroundColor: 'white',
+                    padding: 10,
+                    borderRadius: 15,
+                    justifyContent: 'center',
+                    marginBottom: 5,
+                  }}>
+                  <Text style={{marginBottom: 10}}>Thông báo</Text>
+                  <Text style={{fontSize: 16, color: 'black'}}>
+                    {item.typeNotification == 0
+                      ? `Bạn có câu trả lời mới từ giáo viên ${item.humanDTO.realName} !`
+                      : item.typeNotification == 9
+                      ? 'Bạn sắp đến thời gian học với giáo viên!'
+                      : item.typeNotification == 12
+                      ? 'Báo cáo của bạn đã được chấp thuận!'
+                      : item.typeNotification == 13
+                      ? 'Báo cáo của bạn đã bị từ chối!'
+                      : ''}
+                  </Text>
+                  <View
+                    style={{
+                      marginTop: 10,
+                    }}>
+                    <Text>{handleTime(item.sendTime)}</Text>
+                  </View>
+                </Pressable>
+              );
+            })
+          )}
+          <View style={{height: 60}}></View>
+        </ScrollView>
+      </View>
     </View>
   );
 }

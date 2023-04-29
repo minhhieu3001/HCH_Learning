@@ -31,7 +31,9 @@ export default function DetailQuestion({route, navigation}) {
 
   const convertTime = longTime => {
     const time = new Date(longTime);
-    return `${time.getHours()}:${time.getMinutes()}:${time.getSeconds()}  ${time.getDate()}/${time.getMonth()}/${time.getFullYear()}`;
+    return `${time.getHours()}:${time.getMinutes()}:${time.getSeconds()}  ${time.getDate()}/${
+      time.getMonth() + 1
+    }/${time.getFullYear()}`;
   };
 
   const getQuestion = async () => {

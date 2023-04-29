@@ -114,7 +114,9 @@ export default function QuickSearch({navigation, type}) {
       )
       .then(res => {
         if (res.data.code === 0) {
-          setTeachers(res.data.object.teacherResponses);
+          if (res.data.object != null) {
+            setTeachers(res.data.object.teacherResponses);
+          } else setTeachers([]);
         }
       });
   };
