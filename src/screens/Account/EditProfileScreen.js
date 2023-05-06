@@ -87,7 +87,9 @@ export default function EditProfileScreen({navigation, route}) {
       secretKey: secretKey,
       successActionStatus: 201,
     };
-    RNS3.put(file, config);
+    if (newAvaPath) {
+      RNS3.put(file, config);
+    }
 
     const token = await AsyncStorage.getItem('token');
     const configHeader = {
@@ -99,7 +101,7 @@ export default function EditProfileScreen({navigation, route}) {
       .post(`${BASE_URL}/ums/session/student/update`, newUser, configHeader)
       .then(res => {
         navigation.goBack();
-        console.log(res.data);
+        Alert.alert('Thông báo', 'Bạn đã cập nhật thông tin thành công');
       })
       .catch(err => console.log(err));
   };
@@ -331,7 +333,13 @@ export default function EditProfileScreen({navigation, route}) {
           <Avatar
             size={100}
             rounded
-            source={file ? {uri: file.uri} : {uri: user.avaPath}}
+            source={
+              file
+                ? {uri: file.uri}
+                : user.avaPath
+                ? {uri: user.avaPath}
+                : require('../../assets/images/images.png')
+            }
           />
           <Pressable
             onPress={() => pickImage()}

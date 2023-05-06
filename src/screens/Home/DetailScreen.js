@@ -81,6 +81,7 @@ const DetailScreen = ({route, navigation}) => {
         config,
       )
       .then(res => {
+        console.log(res.data);
         if (res.data.code === 0) {
           setTeacher(res.data.object);
           if (res.data.object.favTeacher == false) {
@@ -996,7 +997,7 @@ const DetailScreen = ({route, navigation}) => {
                 teacherId: teacher.id,
                 teacherName: teacher.realName,
                 teacherStatus: teacher.status,
-                teacherPath: teacher.avaPath,
+                avaUrl: teacher.avaPath,
               })
             }
             style={{

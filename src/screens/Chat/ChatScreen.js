@@ -1,11 +1,4 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  Image,
-  Pressable,
-} from 'react-native';
+import {View, Text, StyleSheet, ScrollView, Pressable} from 'react-native';
 import React, {useEffect, useState, useRef, useLayoutEffect} from 'react';
 import ChatTop from '../../components/Chat/ChatTop';
 import {WIDTH, HEIGHT} from '../../constant/dimentions';
@@ -171,13 +164,20 @@ export default function ChatScreen({navigation}) {
       <View>
         {!conversations ? (
           <Loading />
+        ) : conversations.length == 0 ? (
+          <Text style={{fontSize: 16, alignSelf: 'center', marginTop: 10}}>
+            Bạn chưa có cuộc trò chuyện nào
+          </Text>
         ) : (
           <ScrollView
             onScroll={e => onScroll(e)}
             showsVerticalScrollIndicator={false}>
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
               {conversations.length == 0 ? (
-                <></>
+                <Text
+                  style={{fontSize: 16, alignSelf: 'center', marginTop: 10}}>
+                  Bạn chưa có cuộc trò chuyện nào
+                </Text>
               ) : (
                 conversations.map((item, index) => {
                   if (item.teacher.status === TEACHER_ONLINE) {
@@ -189,6 +189,7 @@ export default function ChatScreen({navigation}) {
                             teacherId: item.teacher.id,
                             teacherName: item.teacher.realName,
                             teacherStatus: item.teacher.status,
+                            avaUrl: item.teacher.avaPath,
                             chatId: item.id,
                           });
                           handleReadMessage(item.id);
@@ -240,6 +241,7 @@ export default function ChatScreen({navigation}) {
             </ScrollView>
             <View>
               {conversations?.map((item, index) => {
+                console.log(index + ' ' + item.teacher.avaPath);
                 return (
                   <Pressable
                     key={item.id}
@@ -248,6 +250,7 @@ export default function ChatScreen({navigation}) {
                         teacherId: item.teacher.id,
                         teacherName: item.teacher.realName,
                         teacherStatus: item.teacher.status,
+                        avaUrl: item.teacher.avaPath,
                         chatId: item.id,
                       });
                       handleReadMessage(item.id);
@@ -259,16 +262,12 @@ export default function ChatScreen({navigation}) {
                       paddingLeft: 10,
                       paddingRight: 10,
                     }}>
-                    {item.teacher.avaPath == 'null' ||
-                    item.teacher.avaPath == null ? (
-                      <CustomAvatar
-                        size={60}
-                        text={item.teacher.realName}
-                        url={null}
-                      />
-                    ) : (
-                      <CustomAvatar size={60} url={item.teacher.avaPath} />
-                    )}
+                    <CustomAvatar
+                      size={60}
+                      text={item.teacher.realName}
+                      url={item.teacher.avaPath}
+                    />
+
                     <View style={{padding: 10, width: WIDTH - 80}}>
                       <View
                         style={{

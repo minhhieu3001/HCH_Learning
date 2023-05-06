@@ -31,6 +31,14 @@ export default function SignInScreen(props) {
   const {navigation, deviceToken} = props;
 
   const login = () => {
+    if (!email) {
+      Alert.alert('Thông báo', 'Bạn cần điền email');
+      return;
+    }
+    if (!password) {
+      Alert.alert('Thông báo', 'Bạn cần điền mật khẩu');
+      return;
+    }
     axios({
       method: 'post',
       url: `${BASE_URL}/ums/session/student`,
@@ -146,6 +154,7 @@ export default function SignInScreen(props) {
         <TextInput
           onFocus={() => setActiveEmail(true)}
           onEndEditing={() => setActiveEmail(false)}
+          keyboardType="email-address"
           style={{
             borderBottomColor: activeEmail ? '#02457A' : 'gray',
             borderBottomWidth: 1,

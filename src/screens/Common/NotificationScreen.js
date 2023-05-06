@@ -1,4 +1,13 @@
-import {View, Text, StyleSheet, ScrollView, Pressable} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Pressable,
+  FlatList,
+  Alert,
+  ActivityIndicator,
+} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useDispatch} from 'react-redux';
@@ -7,6 +16,8 @@ import {hideTabNav} from '../../redux/slice/tabNavSlice';
 import axios from 'axios';
 import {BASE_URL} from '../../constant/constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Loading from '../../components/Common/Loading';
+import {HEIGHT} from '../../constant/dimentions';
 
 export default function NotificationScreen({navigation}) {
   const dispatch = useDispatch();
@@ -24,14 +35,36 @@ export default function NotificationScreen({navigation}) {
     };
     axios
       .get(
-        `${BASE_URL}/notification/getNotifications?page=0&size=10&types=0,9,12`,
+        `${BASE_URL}/notification/getNotifications?page=${page}&size=10&types=0,9,12`,
         config,
       )
       .then(res => {
+        setLoading(false);
         if (res.data.code == 0) {
-          setNotifications(res.data.object.notificationDBS);
+          if (!notifications) {
+            setNotifications(res.data.object.notificationDBS);
+          } else {
+            setNotifications(
+              notifications.concat(res.data.object.notificationDBS),
+            );
+          }
+        } else {
+          Alert.alert('Thông báo', 'Lỗi mạng! Vui lòng thử lại');
         }
       });
+  };
+
+  const handleLoadMore = () => {
+    setLoading(true);
+    setPage(page + 1);
+  };
+
+  const renderFooter = () => {
+    return loading ? (
+      <View>
+        <ActivityIndicator size={50} color="#82C6D0" />
+      </View>
+    ) : null;
   };
 
   const handleNavigation = item => {
@@ -61,8 +94,10 @@ export default function NotificationScreen({navigation}) {
   }, []);
 
   useEffect(() => {
-    getNotifications();
-  }, []);
+    if (loading == true) {
+      getNotifications();
+    }
+  }, [loading, page]);
 
   return (
     <View style={styles.container}>
@@ -89,46 +124,66 @@ export default function NotificationScreen({navigation}) {
         <Point navigation={navigation} />
       </View>
       <View>
-        <ScrollView showsVerticalScrollIndicator={false} style={{margin: 10}}>
+        <View style={{margin: 10, height: HEIGHT - 70}}>
           {!notifications ? (
-            <></>
+            <Loading />
+          ) : notifications.length == 0 ? (
+            <Text style={{fontSize: 16, alignSelf: 'center', marginTop: 10}}>
+              Không có thông báo
+            </Text>
           ) : (
-            notifications.map((item, index) => {
-              return (
-                <Pressable
-                  key={item.sendTime}
-                  onPress={() => handleNavigation(item)}
-                  style={{
-                    backgroundColor: 'white',
-                    padding: 10,
-                    borderRadius: 15,
-                    justifyContent: 'center',
-                    marginBottom: 5,
-                  }}>
-                  <Text style={{marginBottom: 10}}>Thông báo</Text>
-                  <Text style={{fontSize: 16, color: 'black'}}>
-                    {item.typeNotification == 0
-                      ? `Bạn có câu trả lời mới từ giáo viên ${item.humanDTO.realName} !`
-                      : item.typeNotification == 9
-                      ? 'Bạn sắp đến thời gian học với giáo viên!'
-                      : item.typeNotification == 12
-                      ? 'Báo cáo của bạn đã được chấp thuận!'
-                      : item.typeNotification == 13
-                      ? 'Báo cáo của bạn đã bị từ chối!'
-                      : ''}
-                  </Text>
-                  <View
+            <FlatList
+              showsVerticalScrollIndicator={false}
+              data={notifications}
+              style={{
+                alignSelf: 'center',
+                paddingTop: 10,
+                paddingBottom: 30,
+                width: '100%',
+              }}
+              renderItem={item => {
+                return (
+                  <Pressable
+                    key={item.item.sendTime}
+                    onPress={() => handleNavigation(item.item)}
                     style={{
-                      marginTop: 10,
+                      backgroundColor: 'white',
+                      padding: 10,
+                      borderRadius: 15,
+                      justifyContent: 'center',
+                      marginBottom: 5,
                     }}>
-                    <Text>{handleTime(item.sendTime)}</Text>
-                  </View>
-                </Pressable>
-              );
-            })
+                    <Text style={{marginBottom: 10}}>Thông báo</Text>
+                    <Text style={{fontSize: 16, color: 'black'}}>
+                      {item.item.typeNotification == 0
+                        ? `Bạn có câu trả lời mới từ giáo viên ${item.item.humanDTO.realName} !`
+                        : item.item.typeNotification == 9
+                        ? 'Bạn sắp đến thời gian học với giáo viên!'
+                        : item.item.typeNotification == 12
+                        ? 'Báo cáo của bạn đã được chấp thuận!'
+                        : item.item.typeNotification == 13
+                        ? 'Báo cáo của bạn đã bị từ chối!'
+                        : ''}
+                    </Text>
+                    <View
+                      style={{
+                        marginTop: 10,
+                      }}>
+                      <Text>{handleTime(item.item.sendTime)}</Text>
+                    </View>
+                  </Pressable>
+                );
+              }}
+              keyExtractor={item => item.id}
+              ListFooterComponent={renderFooter()}
+              onEndReached={() => {
+                handleLoadMore();
+              }}
+              onEndReachedThreshold={0.5}
+            />
           )}
-          <View style={{height: 60}}></View>
-        </ScrollView>
+          {/* <View style={{height: 10}}></View> */}
+        </View>
       </View>
     </View>
   );
@@ -138,7 +193,7 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: '#D6E8EE',
     width: '100%',
-    height: '100%',
+    height: HEIGHT,
   },
   settingTop: {
     flexDirection: 'row',

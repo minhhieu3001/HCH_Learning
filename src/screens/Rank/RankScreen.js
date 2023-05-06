@@ -273,7 +273,7 @@ export default function RankScreen({navigation}) {
                   />
                 );
               }}
-              keyExtractor={item => item.id}
+              keyExtractor={item => item.ranking.id}
               style={{padding: 10, marginBottom: 210}}
             />
           )}

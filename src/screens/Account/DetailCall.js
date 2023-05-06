@@ -8,7 +8,7 @@ import axios from 'axios';
 import {BASE_URL} from '../../constant/constants';
 
 export default function DetailCall({navigation, route}) {
-  const {id} = route.params;
+  const {id, time} = route.params;
 
   const getRecord = async () => {
     const token = await AsyncStorage.getItem('token');
@@ -27,6 +27,7 @@ export default function DetailCall({navigation, route}) {
   };
 
   useEffect(() => {
+    console.log(time);
     getRecord();
   }, []);
 
@@ -41,6 +42,9 @@ export default function DetailCall({navigation, route}) {
           size={30}
           style={{color: '#018ABE', alignSelf: 'center', paddingRight: 10}}
         />
+        <Text style={{alignSelf: 'center', fontSize: 16, color: 'black'}}>
+          Thời gian: {time}{' '}
+        </Text>
       </View>
       <Pressable
         style={{
@@ -53,7 +57,7 @@ export default function DetailCall({navigation, route}) {
         {pause || !url ? (
           <Image
             source={require('../../assets/images/play.png')}
-            style={{width: '90%', height: 350, alignSelf: 'center', top: '20%'}}
+            style={{width: '90%', height: 100, alignSelf: 'center', top: '35%'}}
             resizeMode="contain"
           />
         ) : (
@@ -79,9 +83,8 @@ export default function DetailCall({navigation, route}) {
 const styles = StyleSheet.create({
   top: {
     flexDirection: 'row',
-    width: WIDTH,
+    width: '100%',
     height: 55,
-    justifyContent: 'space-between',
     backgroundColor: 'white',
     paddingRight: 10,
     paddingStart: 10,

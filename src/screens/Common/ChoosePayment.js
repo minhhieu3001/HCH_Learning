@@ -6,7 +6,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import {BASE_URL} from '../../constant/constants';
 import {useFocusEffect} from '@react-navigation/native';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
+import {showTabNav} from '../../redux/slice/tabNavSlice';
 
 const Item = ({money, navigation}) => {
   const handlePress = async () => {
@@ -79,6 +80,7 @@ const Item = ({money, navigation}) => {
 };
 
 export default function ChoosePayment({navigation}) {
+  const dispatch = useDispatch();
   const point = useSelector(state => {
     return state.pointSlice.data;
   });
@@ -98,6 +100,7 @@ export default function ChoosePayment({navigation}) {
           size={30}
           style={{color: '#018ABE', alignSelf: 'center', paddingLeft: 10}}
           onPress={() => {
+            dispatch(showTabNav(true));
             navigation.goBack();
           }}
         />

@@ -7,6 +7,7 @@ import ChatDetailScreen from '../screens/Chat/ChatDetailScreen';
 import DetailScreen from '../screens/Home/DetailScreen';
 import PaymentScreen from '../screens/Common/PaymentScreen';
 import ChoosePayment from '../screens/Common/ChoosePayment';
+import CalendarScreen from '../screens/Home/CalendarScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -85,6 +86,17 @@ export default function ChatNav() {
       <Stack.Screen
         name="choose-payment-screen"
         component={ChoosePayment}
+        options={{
+          gestureDirection: 'vertical',
+          transitionSpec: {
+            open: config,
+            close: closeConfig,
+          },
+        }}
+      />
+      <Stack.Screen
+        name="calendar-screen"
+        component={CalendarScreen}
         options={{
           gestureDirection: 'vertical',
           transitionSpec: {

@@ -1,21 +1,14 @@
-import {
-  View,
-  Text,
-  Dimensions,
-  Pressable,
-  ScrollView,
-  FlatList,
-  Image,
-} from 'react-native';
-import React, {useState} from 'react';
+import {View, Text, Pressable, ScrollView, FlatList} from 'react-native';
+import React, {useState, useEffect} from 'react';
 import {WIDTH, HEIGHT} from '../../constant/dimentions';
-import * as data from '../../data/rank';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import LinearGradient from 'react-native-linear-gradient';
 import CustomAvatar from '../Common/CustomAvatar';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import {BASE_URL} from '../../constant/constants';
+import {rank} from '../../data/rank';
+import Loading from '../Common/Loading';
 
 const Item = ({teacher, index}) => {
   return (
@@ -89,8 +82,79 @@ const Header = ({id}) => {
   );
 };
 
-export default function Rank({navigation, rankDays, rankWeeks, rankMonths}) {
+export default function Rank({navigation}) {
   const to_map = [1, 2, 3];
+
+  const [rankDays, setRankDays] = useState(null);
+  const [rankWeeks, setRankWeeks] = useState(null);
+  const [rankMonths, setRankMonths] = useState(null);
+
+  const getRankDays = async () => {
+    const token = await AsyncStorage.getItem('token');
+    const config = {
+      headers: {
+        Authorization: token,
+      },
+    };
+    axios
+      .get(
+        `${BASE_URL}/payment/ranking?type=1&sortType=totalPoint&page=0&size=3`,
+        config,
+      )
+      .then(res => {
+        if (res.data.code == 0) {
+          if (res.data.object.length != 0) {
+            setRankDays(res.data.object);
+          } else {
+            setRankDays(rank);
+          }
+        }
+      });
+  };
+
+  const getRankWeeks = async () => {
+    const token = await AsyncStorage.getItem('token');
+    const config = {
+      headers: {
+        Authorization: token,
+      },
+    };
+    axios
+      .get(
+        `${BASE_URL}/payment/ranking?type=2&sortType=totalPoint&page=0&size=3`,
+        config,
+      )
+      .then(res => {
+        if (res.data.code == 0) {
+          setRankWeeks(res.data.object);
+        }
+      });
+  };
+
+  const getRankMonths = async () => {
+    const token = await AsyncStorage.getItem('token');
+    const config = {
+      headers: {
+        Authorization: token,
+      },
+    };
+    axios
+      .get(
+        `${BASE_URL}/payment/ranking?type=3&sortType=totalPoint&page=0&size=3`,
+        config,
+      )
+      .then(res => {
+        if (res.data.code == 0) {
+          setRankMonths(res.data.object);
+        }
+      });
+  };
+
+  useEffect(() => {
+    getRankDays();
+    getRankWeeks();
+    getRankMonths();
+  }, []);
   return (
     <View style={{width: WIDTH}}>
       <View

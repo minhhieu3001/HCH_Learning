@@ -36,7 +36,10 @@ const Video = ({item, navigation}) => {
         borderWidth: 1,
       }}
       onPress={() => {
-        navigation.navigate('detail-call-screen', {id: item.id});
+        navigation.navigate('detail-call-screen', {
+          id: item.id,
+          time: convertTime(item.callTime),
+        });
       }}>
       <Image
         source={require('../../assets/images/video.png')}

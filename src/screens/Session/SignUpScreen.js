@@ -199,6 +199,7 @@ export default function SignUpScreen({navigation}) {
           <TextInput
             style={styles.right}
             placeholder="Nhập email"
+            keyboardType="email-address"
             onChangeText={text => {
               setEmail(text);
             }}
@@ -248,6 +249,7 @@ export default function SignUpScreen({navigation}) {
               paddingRight: 10,
             }}
             placeholder="30"
+            keyboardType="number-pad"
             onChangeText={text => {
               setDate(text);
             }}
@@ -265,6 +267,7 @@ export default function SignUpScreen({navigation}) {
               paddingRight: 10,
             }}
             placeholder="01"
+            keyboardType="number-pad"
             onChangeText={text => {
               setMonth(text);
             }}
@@ -282,6 +285,7 @@ export default function SignUpScreen({navigation}) {
               paddingRight: 10,
             }}
             placeholder="2005"
+            keyboardType="number-pad"
             onChangeText={text => {
               setYear(text);
             }}
@@ -291,7 +295,7 @@ export default function SignUpScreen({navigation}) {
           <Text style={styles.left}>Điện thoại:</Text>
           <TextInput
             style={styles.right}
-            inputMode="numeric"
+            keyboardType="number-pad"
             placeholder="vd: 0813480271"
             onChangeText={text => {
               setPhone(text);
@@ -328,6 +332,7 @@ export default function SignUpScreen({navigation}) {
               paddingLeft: 10,
             }}
             placeholder="1...12"
+            keyboardType="numeric"
             onChangeText={text => {
               setGrade(text);
             }}
@@ -426,6 +431,8 @@ export default function SignUpScreen({navigation}) {
                       'Thông báo',
                       'Email này đã tồn tại.Mời bạn đăng ký lại',
                     );
+                  } else {
+                    Alert.alert('Thông báo', 'Có lỗi xảy ra vui lòng thử lại');
                   }
                 })
                 .catch(err =>

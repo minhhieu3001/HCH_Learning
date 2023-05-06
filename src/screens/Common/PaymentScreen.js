@@ -31,13 +31,14 @@ export default function PaymentScreen({navigation, route}) {
     user.point += money * 100;
     const new_User = JSON.stringify(user);
     AsyncStorage.setItem('user', new_User);
-    console.log('point', user.point);
     dispatch(setData(user.point));
     const body = {
       studentId: user.id,
-      money: money / 1000,
+      money: money,
       type: 'addPoint',
     };
+
+    console.log(body);
 
     axios.post(`${BASE_URL}/payment/point/action`, body, config).then(res => {
       console.log(res.data);

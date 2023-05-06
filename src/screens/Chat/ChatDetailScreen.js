@@ -28,6 +28,7 @@ import {accessKey, secretKey} from '../../constant/awsKey';
 import {hideTabNav} from '../../redux/slice/tabNavSlice';
 import socket from '../../service/socket';
 import {minusPoint} from '../../redux/slice/pointSlice';
+import CustomAvatar from '../../components/Common/CustomAvatar';
 
 Sound.setCategory('Playback');
 const newMsgSound = new Sound('new_msg.mp3', Sound.MAIN_BUNDLE, error => {
@@ -41,7 +42,7 @@ newMsgSound.setVolume(1);
 
 export default function ChatDetailScreen({navigation}) {
   const route = useRoute();
-  const {teacherId, teacherName, teacherStatus, chatId} = route.params;
+  const {teacherId, teacherName, teacherStatus, avaUrl, chatId} = route.params;
 
   const input = useRef(null);
   const scrollRef = useRef(null);
@@ -257,8 +258,6 @@ export default function ChatDetailScreen({navigation}) {
 
   //ban phim
   useEffect(() => {
-    console.log('a');
-
     dispatch(hideTabNav(false));
     getUser();
     if (scrollRef) scrollRef.current.scrollToEnd();
@@ -360,15 +359,7 @@ export default function ChatDetailScreen({navigation}) {
             navigation.navigate('detail-screen', {teacherId: teacherId})
           }
           style={{flexDirection: 'row', marginLeft: 10}}>
-          <Image
-            source={require('../../assets/images/images.png')}
-            style={{
-              width: 45,
-              height: 45,
-              alignSelf: 'center',
-              borderRadius: 22.5,
-            }}
-          />
+          <CustomAvatar text={teacherName} size={45} url={avaUrl} />
           {teacherStatus == TEACHER_ONLINE ? (
             <Icon
               name="moon-full"
