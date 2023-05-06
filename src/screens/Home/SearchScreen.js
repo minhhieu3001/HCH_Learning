@@ -425,7 +425,7 @@ export default function SearchScreen({navigation}) {
           height: 80,
           backgroundColor: 'white',
           position: 'absolute',
-          bottom: position,
+          bottom: 0,
           width: WIDTH,
           justifyContent: 'center',
         }}>

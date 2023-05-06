@@ -31,6 +31,7 @@ export default function ResultSearchScreen({route, navigation}) {
         config,
       )
       .then(res => {
+        console.log(res.data.object.teacherResponses);
         if (res.data.code == 0) {
           setLoading(false);
           if (res.data.object.teacherResponses.length != 0) {
@@ -39,6 +40,8 @@ export default function ResultSearchScreen({route, navigation}) {
             } else {
               setTeachers(teachers.concat(res.data.object.teacherResponses));
             }
+          } else {
+            setTeachers([]);
           }
         } else {
           Alert.alert('Thông báo', 'Lỗi mạng! Vui lòng thử lại');
@@ -85,11 +88,22 @@ export default function ResultSearchScreen({route, navigation}) {
           style={{color: '#018ABE', left: 10, alignSelf: 'center'}}
           onPress={() => navigation.goBack()}
         />
+        <Text
+          style={{
+            fontSize: 22,
+            color: 'black',
+            marginLeft: 20,
+            alignSelf: 'center',
+          }}>
+          Kết quả
+        </Text>
       </View>
       {!teachers ? (
         <></>
       ) : teachers.length == 0 ? (
-        <Text>Không có giáo viên thỏa mãn điều kiện</Text>
+        <Text style={{fontSize: 16, alignSelf: 'center', marginTop: 20}}>
+          Không có giáo viên thỏa mãn điều kiện
+        </Text>
       ) : (
         <FlatList
           showsVerticalScrollIndicator={false}

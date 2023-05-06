@@ -9,10 +9,17 @@ import axios from 'axios';
 import {BASE_URL} from '../../constant/constants';
 import {rank} from '../../data/rank';
 import Loading from '../Common/Loading';
+import {useDispatch} from 'react-redux';
+import {showTabNav} from '../../redux/slice/tabNavSlice';
 
-const Item = ({teacher, index}) => {
+const Item = ({teacher, index, navigation}) => {
   return (
-    <View
+    <Pressable
+      onPress={() => {
+        navigation.navigate('detail-screen', {
+          teacherId: teacher.teacherDTO.id,
+        });
+      }}
       style={{
         flexDirection: 'row',
         width: WIDTH - 80,
@@ -51,7 +58,7 @@ const Item = ({teacher, index}) => {
           {teacher.teacherDTO.realName}
         </Text>
       </View>
-    </View>
+    </Pressable>
   );
 };
 
@@ -84,6 +91,8 @@ const Header = ({id}) => {
 
 export default function Rank({navigation}) {
   const to_map = [1, 2, 3];
+
+  const dispatch = useDispatch();
 
   const [rankDays, setRankDays] = useState(null);
   const [rankWeeks, setRankWeeks] = useState(null);
@@ -164,6 +173,7 @@ export default function Rank({navigation}) {
           paddingRight: 10,
           flexDirection: 'row',
           justifyContent: 'space-between',
+          marginTop: 10,
         }}>
         <Text style={{fontSize: 20, color: '#02457A', fontWeight: '500'}}>
           Xếp hạng
@@ -171,6 +181,7 @@ export default function Rank({navigation}) {
         <Pressable
           style={{alignSelf: 'flex-end', flexDirection: 'row'}}
           onPress={() => {
+            dispatch(showTabNav(true));
             navigation.jumpTo('Rank');
           }}>
           <Text style={{color: '#018ABE', fontSize: 16}}>Xem thêm</Text>
@@ -191,9 +202,9 @@ export default function Rank({navigation}) {
           return (
             <FlatList
               key={index}
-              data={index == 1 ? rankDays : index == 2 ? rankWeeks : rankMonths}
+              data={index == 0 ? rankDays : index == 1 ? rankWeeks : rankMonths}
               renderItem={({item, index}) => (
-                <Item teacher={item} index={index} />
+                <Item teacher={item} index={index} navigation={navigation} />
               )}
               keyExtractor={item => item.ranking.id}
               ListHeaderComponent={() => <Header id={index} />}
